@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation"
+    app:startDestination="@id/meterDataListFragment">
+
+    <fragment
+        android:id="@+id/meterDataListFragment"
+        android:name="com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListFragment"
+        android:label="MeterDataListFragment"
+        tools:layout="@layout/fragment_meter_data_list">
+        <action
+            android:id="@+id/action_meterDataListFragment_to_meterDataInputFragment"
+            app:destination="@id/meterDataInputFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/meterDataInputFragment"
+        android:name="com.sergeyrodin.electricitymeter.meterdata.add.MeterDataInputFragment"
+        android:label="fragment_meter_data_input"
+        tools:layout="@layout/fragment_meter_data_input" />
+</navigation>
