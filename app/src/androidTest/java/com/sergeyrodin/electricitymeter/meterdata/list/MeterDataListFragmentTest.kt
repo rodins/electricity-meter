@@ -18,6 +18,7 @@ import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.DataHolder
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -27,6 +28,11 @@ import org.junit.runner.RunWith
 class MeterDataListFragmentTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
+
+    @Before
+    fun clearData() {
+        DataHolder.data.clear()
+    }
 
     @Test
     fun addDataClick_navigationCalled() {
@@ -44,11 +50,21 @@ class MeterDataListFragmentTest {
     }
 
     @Test
-    fun inputArgs_dataDisplayed() {
+    fun oneInputDataItem_dataDisplayed() {
         val data = "14556"
-        DataHolder.data = data
+        DataHolder.data.add(data)
         launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
         onView(withText(data)).check(matches(ViewMatchers.isDisplayed()))
+    }
+
+    @Test
+    fun fewInputDataItems_dataDisplayed() {
+        val data = listOf("14556", "14579")
+        DataHolder.data.addAll(data)
+        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+
+        onView(withText(data[0])).check(matches(ViewMatchers.isDisplayed()))
+        onView(withText(data[1])).check(matches(ViewMatchers.isDisplayed()))
     }
 }

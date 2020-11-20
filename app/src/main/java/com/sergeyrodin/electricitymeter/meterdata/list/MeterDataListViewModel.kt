@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.sergeyrodin.electricitymeter.Event
 
-class MeterDataListViewModel(data: String): ViewModel(){
+class MeterDataListViewModel(data: List<String>): ViewModel(){
     val dataToDisplay = data
 
     private val _addDataEvent = MutableLiveData<Event<Unit>>()

@@ -12,7 +12,7 @@ class MeterDataInputViewModel: ViewModel() {
         get() = _saveDataEvent
 
     fun onSaveData(data: String) {
-        DataHolder.data = data
+        DataHolder.data.add(data)
         _saveDataEvent.value = Event(Unit)
     }
 }

@@ -11,7 +11,6 @@ import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.DataHolder
 import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
-import java.lang.IllegalArgumentException
 
 class MeterDataListFragment : Fragment() {
 
@@ -20,10 +19,14 @@ class MeterDataListFragment : Fragment() {
         val binding = FragmentMeterDataListBinding.inflate(inflater, container, false)
 
         val viewModel by viewModels<MeterDataListViewModel>{
-            MeterDataViewModelFactory(DataHolder.data)
+            MeterDataListViewModelFactory(DataHolder.data)
         }
 
         binding.meterDataListViewModel = viewModel
+
+        val adapter = MeterDataAdapter()
+        adapter.data = viewModel.dataToDisplay
+        binding.dataList.adapter = adapter
 
         viewModel.addDataEvent.observe(viewLifecycleOwner, EventObserver{
             findNavController().navigate(

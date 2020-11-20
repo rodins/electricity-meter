@@ -13,7 +13,7 @@ class MeterDataListViewModelTest{
     var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var subject: MeterDataListViewModel
-    private val data = "14556"
+    private val data = listOf("14556", "14579")
 
     @Before
     fun initSubject(){
@@ -30,6 +30,7 @@ class MeterDataListViewModelTest{
 
     @Test
     fun dataParam_dataToDisplayEquals() {
-        assertThat(subject.dataToDisplay, `is`(data))
+        assertThat(subject.dataToDisplay[0], `is`(data[0]))
+        assertThat(subject.dataToDisplay[1], `is`(data[1]))
     }
 }
