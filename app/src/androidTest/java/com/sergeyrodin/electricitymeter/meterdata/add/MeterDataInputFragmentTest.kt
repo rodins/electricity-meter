@@ -27,6 +27,7 @@ class MeterDataInputFragmentTest{
 
     @Test
     fun saveDataClick_navigationCalled() {
+        val data = "14579"
         val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
         navController.setGraph(R.navigation.navigation)
         navController.setCurrentDestination(R.id.meterDataInputFragment)
@@ -36,6 +37,7 @@ class MeterDataInputFragmentTest{
             Navigation.setViewNavController(fragment.requireView(), navController)
         }
 
+        onView(withId(R.id.data_edit)).perform(typeText(data))
         onView(withId(R.id.save_data_fab)).perform(click())
 
         assertThat(navController.currentDestination?.id, `is`(R.id.meterDataListFragment))
@@ -57,6 +59,6 @@ class MeterDataInputFragmentTest{
         onView(withId(R.id.save_data_fab)).perform(click())
 
         val saved = DataHolder.data
-        assertThat(saved, `is`(data))
+        assertThat(saved[0].data.toString(), `is`(data))
     }
 }

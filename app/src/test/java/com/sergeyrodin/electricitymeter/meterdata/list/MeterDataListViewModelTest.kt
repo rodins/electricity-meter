@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.meterdata.getOrAwaitValue
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.*
@@ -13,7 +14,7 @@ class MeterDataListViewModelTest{
     var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var subject: MeterDataListViewModel
-    private val data = listOf("14556", "14579")
+    private val data = listOf(MeterData(14556), MeterData(14579))
 
     @Before
     fun initSubject(){

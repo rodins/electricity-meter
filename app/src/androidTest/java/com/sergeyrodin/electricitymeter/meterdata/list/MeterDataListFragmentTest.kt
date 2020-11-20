@@ -16,7 +16,10 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.DataHolder
+import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.meterdata.dateToString
 import org.hamcrest.CoreMatchers.`is`
+import org.junit.After
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -29,7 +32,7 @@ class MeterDataListFragmentTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    @Before
+    @After
     fun clearData() {
         DataHolder.data.clear()
     }
@@ -51,20 +54,32 @@ class MeterDataListFragmentTest {
 
     @Test
     fun oneInputDataItem_dataDisplayed() {
-        val data = "14556"
+        val data = MeterData(14556)
         DataHolder.data.add(data)
         launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
-        onView(withText(data)).check(matches(ViewMatchers.isDisplayed()))
+        onView(withText(data.data.toString())).check(matches(ViewMatchers.isDisplayed()))
     }
 
     @Test
     fun fewInputDataItems_dataDisplayed() {
-        val data = listOf("14556", "14579")
+        val data = listOf(MeterData(14556), MeterData(14579))
         DataHolder.data.addAll(data)
         launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
-        onView(withText(data[0])).check(matches(ViewMatchers.isDisplayed()))
-        onView(withText(data[1])).check(matches(ViewMatchers.isDisplayed()))
+        onView(withText(data[0].data.toString())).check(matches(ViewMatchers.isDisplayed()))
+        onView(withText(data[1].data.toString())).check(matches(ViewMatchers.isDisplayed()))
+    }
+
+    @Test
+    fun dataInput_dateDisplayed() {
+        val data = 14579
+        val date = System.currentTimeMillis()
+        val meterData = MeterData(data, date)
+        DataHolder.data.add(meterData)
+        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+
+        val dateString = dateToString(date)
+        onView(withText(dateString)).check(matches(ViewMatchers.isDisplayed()))
     }
 }

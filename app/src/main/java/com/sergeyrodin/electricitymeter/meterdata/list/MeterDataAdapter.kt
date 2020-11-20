@@ -6,10 +6,12 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sergeyrodin.electricitymeter.R
+import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.meterdata.dateToString
 
 class MeterDataAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
 
-    var data = listOf<String>()
+    var data = listOf<MeterData>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -23,13 +25,14 @@ class MeterDataAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
 
     override fun onBindViewHolder(holder: MeterDataItemViewHolder, position: Int) {
         val item = data[position]
-        holder.textView.text = item
+        holder.dateText.text = dateToString(item.date)
+        holder.dataText.text = item.data.toString()
     }
 
     override fun getItemCount(): Int = data.size
-
 }
 
 class MeterDataItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-    val textView = itemView as TextView
+    val dateText: TextView = itemView.findViewById(R.id.date_text)
+    val dataText: TextView = itemView.findViewById(R.id.data_item_text)
 }

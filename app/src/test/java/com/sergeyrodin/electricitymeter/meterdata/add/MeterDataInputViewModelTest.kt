@@ -35,6 +35,14 @@ class MeterDataInputViewModelTest{
         subject.onSaveData(data)
 
         val saved = DataHolder.data
-        assertThat(saved, `is`(data))
+        assertThat(saved[0].data.toString(), `is`(data))
+    }
+
+    @Test
+    fun onSaveEmptyData_dataIsEmpty() {
+        subject.onSaveData("")
+
+        val saved = DataHolder.data
+        assertThat(saved.isEmpty(), `is`(true))
     }
 }
