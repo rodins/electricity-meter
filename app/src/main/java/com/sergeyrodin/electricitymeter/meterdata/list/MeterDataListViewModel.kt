@@ -1,19 +1,16 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sergeyrodin.electricitymeter.Event
+import com.sergeyrodin.electricitymeter.database.DataHolder
 import com.sergeyrodin.electricitymeter.database.MeterData
 
-class MeterDataListViewModel(data: List<MeterData>): ViewModel(){
-    val dataToDisplay = data
+class MeterDataListViewModel(): ViewModel(){
+    val dataToDisplay = DataHolder.observableData
 
-    private val _addDataEvent = MutableLiveData<Event<Unit>>()
-    val addDataEvent: LiveData<Event<Unit>>
-        get() = _addDataEvent
-
-    fun onAddData() {
-        _addDataEvent.value = Event(Unit)
+    fun onAddData(data: String) {
+        if(data.isNotBlank()) {
+            val meterData = MeterData(data.toInt())
+            DataHolder.insert(meterData)
+        }
     }
 }

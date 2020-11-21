@@ -1,28 +1,28 @@
 package com.sergeyrodin.electricitymeter
 
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.navigation.NavController
-import androidx.navigation.fragment.NavHostFragment
-import androidx.navigation.ui.NavigationUI
+import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Observer
+import com.sergeyrodin.electricitymeter.database.DataHolder
+import com.sergeyrodin.electricitymeter.databinding.ActivityMainBinding
+import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataAdapter
+import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModel
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        val viewModel by viewModels<MeterDataListViewModel>()
 
-        val navController = getNavController()
-        NavigationUI.setupActionBarWithNavController(this, navController)
-    }
+        binding.meterDataListViewModel = viewModel
 
-    private fun getNavController(): NavController {
-        val navHostFragment =
-            supportFragmentManager.findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment
-        return navHostFragment.navController
-    }
+        val adapter = MeterDataAdapter()
+        binding.dataList.adapter = adapter
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = getNavController()
-        return navController.navigateUp()
+        viewModel.dataToDisplay.observe(this, Observer { meterData ->
+            adapter.data = meterData
+        })
     }
 }

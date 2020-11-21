@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.sergeyrodin.electricitymeter.database.DataHolder
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.meterdata.getOrAwaitValue
 import org.hamcrest.CoreMatchers.*
@@ -14,24 +15,31 @@ class MeterDataListViewModelTest{
     var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var subject: MeterDataListViewModel
-    private val data = listOf(MeterData(14556), MeterData(14579))
 
     @Before
     fun initSubject(){
-        subject = MeterDataListViewModel(data)
+        DataHolder.clear()
+        subject = MeterDataListViewModel()
     }
 
     @Test
-    fun onAddData_addDataEventNotNull() {
-        subject.onAddData()
+    fun onAddData_dataEquals() {
+        val input = "14594"
+        subject.onAddData(input)
 
-        val event = subject.addDataEvent.getOrAwaitValue().getContentIfNotHandled()
-        assertThat(event, `is`(not(nullValue())))
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay[0].data.toString(), `is`(input))
     }
 
     @Test
     fun dataParam_dataToDisplayEquals() {
-        assertThat(subject.dataToDisplay[0], `is`(data[0]))
-        assertThat(subject.dataToDisplay[1], `is`(data[1]))
+        val data1 = 14556
+        val data2 = 14579
+        DataHolder.insert(MeterData(data1))
+        DataHolder.insert(MeterData(data2))
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay[0].data.toString(), `is`(data1.toString()))
+        assertThat(dataToDisplay[1].data.toString(), `is`(data2.toString()))
     }
 }
