@@ -1,11 +1,10 @@
 package com.sergeyrodin.electricitymeter
 
 import android.os.Bundle
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
-import com.sergeyrodin.electricitymeter.database.DataHolder
+import androidx.lifecycle.ViewModelProvider
 import com.sergeyrodin.electricitymeter.databinding.ActivityMainBinding
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataAdapter
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModel
@@ -13,8 +12,10 @@ import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModel
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil.setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-        val viewModel by viewModels<MeterDataListViewModel>()
+        val binding = DataBindingUtil
+                .setContentView<ActivityMainBinding>(this, R.layout.activity_main)
+        val viewModel = ViewModelProvider(this, ViewModelProvider.NewInstanceFactory())
+                .get(MeterDataListViewModel::class.java)
 
         binding.meterDataListViewModel = viewModel
 
