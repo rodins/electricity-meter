@@ -65,7 +65,7 @@ class MainActivityTest {
     fun addMeterData_dateDisplayed() {
         val date = System.currentTimeMillis()
         val data = 14611
-        val meterData = MeterData(data, date)
+        val meterData = MeterData(data, date = date)
         DataHolder.insert(meterData)
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
 
