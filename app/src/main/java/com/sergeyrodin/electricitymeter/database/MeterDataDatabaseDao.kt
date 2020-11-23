@@ -13,4 +13,5 @@ interface MeterDataDatabaseDao {
 
     @Query("SELECT * FROM meter_data")
     fun getMeterData(): LiveData<List<MeterData>>
+
 }
