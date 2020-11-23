@@ -2,16 +2,19 @@ package com.sergeyrodin.electricitymeter
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
+import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
-import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
-import com.sergeyrodin.electricitymeter.database.DataHolder
 import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.database.MeterDataDatabase
+import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import com.sergeyrodin.electricitymeter.datasource.RoomMeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -21,12 +24,18 @@ import org.junit.runner.RunWith
 @RunWith(AndroidJUnit4::class)
 @LargeTest
 class MainActivityTest {
-    @get:Rule
-    var instantExecutorRule = InstantTaskExecutorRule()
+    private lateinit var database: MeterDataDatabase
+    private lateinit var dataSource: MeterDataSource
 
     @Before
-    fun clearData() {
-        DataHolder.clear()
+    fun initDataSource() {
+        database = MeterDataDatabase.getInstance(getApplicationContext())
+        dataSource = RoomMeterDataSource(database.meterDataDatabaseDao)
+    }
+
+    @After
+    fun clearDatabase() {
+        MeterDataDatabase.reset()
     }
 
     @Test
@@ -62,11 +71,11 @@ class MainActivityTest {
     }
 
     @Test
-    fun addMeterData_dateDisplayed() {
+    fun addMeterData_dateDisplayed() = runBlocking {
         val date = System.currentTimeMillis()
         val data = 14611
         val meterData = MeterData(data, date = date)
-        DataHolder.insert(meterData)
+        dataSource.insert(meterData)
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
 
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(dateToString(date)))))

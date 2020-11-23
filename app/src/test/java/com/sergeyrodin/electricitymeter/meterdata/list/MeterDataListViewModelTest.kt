@@ -1,9 +1,11 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.sergeyrodin.electricitymeter.database.DataHolder
 import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.meterdata.FakeDataSource
+import com.sergeyrodin.electricitymeter.meterdata.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.meterdata.getOrAwaitValue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.*
 import org.junit.Before
@@ -14,12 +16,17 @@ class MeterDataListViewModelTest{
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
+
+    private lateinit var dataSource: FakeDataSource
     private lateinit var subject: MeterDataListViewModel
 
     @Before
     fun initSubject(){
-        DataHolder.clear()
-        subject = MeterDataListViewModel()
+        dataSource = FakeDataSource()
+        subject = MeterDataListViewModel(dataSource)
     }
 
     @Test
@@ -35,8 +42,8 @@ class MeterDataListViewModelTest{
     fun dataParam_dataToDisplayEquals() {
         val data1 = 14556
         val data2 = 14579
-        DataHolder.insert(MeterData(data1))
-        DataHolder.insert(MeterData(data2))
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
 
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data.toString(), `is`(data1.toString()))
