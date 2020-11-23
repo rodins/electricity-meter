@@ -46,7 +46,21 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
 
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay[0].data.toString(), `is`(data1.toString()))
-        assertThat(dataToDisplay[1].data.toString(), `is`(data2.toString()))
+        assertThat(dataToDisplay[0].data, `is`(data1))
+        assertThat(dataToDisplay[1].data, `is`(data2))
+    }
+
+    @Test
+    fun twoDatas_diffEquals() {
+        val data1 = 14622
+        val data2 = 14638
+        val diff1 = 0
+        val diff2 = 16
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+
+        assertThat(dataToDisplay[0].diff, `is`(diff1))
+        assertThat(dataToDisplay[1].diff, `is`(diff2))
     }
 }

@@ -82,4 +82,24 @@ class MainActivityTest {
 
         activityScenario.close()
     }
+
+    @Test
+    fun twoDataItems_diffDisplayed() {
+        val data1 = "14556"
+        val data2 = "14579"
+        val diff1 = "0"
+        val diff2 = "23"
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+
+        onView(withId(R.id.data_edit)).perform(typeText(data1))
+        onView(withId(R.id.add_data_button)).perform(click())
+
+        onView(withId(R.id.data_edit)).perform(replaceText(data2))
+        onView(withId(R.id.add_data_button)).perform(click())
+
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(diff1))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(diff2))))
+
+        activityScenario.close()
+    }
 }

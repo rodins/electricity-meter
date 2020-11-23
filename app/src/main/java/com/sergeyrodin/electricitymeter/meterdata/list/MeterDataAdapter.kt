@@ -11,7 +11,7 @@ import com.sergeyrodin.electricitymeter.meterdata.dateToString
 
 class MeterDataAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
 
-    var data = listOf<MeterData>()
+    var data = listOf<MeterDataPresentation>()
         set(value) {
             field = value
             notifyDataSetChanged()
@@ -27,6 +27,7 @@ class MeterDataAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
         val item = data[position]
         holder.dateText.text = dateToString(item.date)
         holder.dataText.text = item.data.toString()
+        holder.diffText.text = item.diff.toString()
     }
 
     override fun getItemCount(): Int = data.size
@@ -35,4 +36,5 @@ class MeterDataAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
 class MeterDataItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
     val dateText: TextView = itemView.findViewById(R.id.date_text)
     val dataText: TextView = itemView.findViewById(R.id.data_item_text)
+    val diffText: TextView = itemView.findViewById(R.id.diff_text)
 }
