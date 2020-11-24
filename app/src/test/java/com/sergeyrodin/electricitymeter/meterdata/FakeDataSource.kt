@@ -8,6 +8,11 @@ import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 class FakeDataSource: MeterDataSource {
     private val data = mutableListOf<MeterData>()
     private val observableData = MutableLiveData<List<MeterData>>()
+
+    init{
+        observableData.value = data
+    }
+
     override suspend fun insert(meterData: MeterData) {
         testInsert(meterData)
     }

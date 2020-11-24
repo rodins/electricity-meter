@@ -1,5 +1,6 @@
 package com.sergeyrodin.electricitymeter
 
+import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
@@ -99,6 +100,32 @@ class MainActivityTest {
 
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(diff1))))
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(diff2))))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun fewItems_totalDisplayed() = runBlocking() {
+        val data1 = 14314
+        val data2 = 14509
+        val data3 = 14579
+        val data4 = 14638
+        val total = 324
+        val meterData1 = MeterData(data1)
+        val meterData2 = MeterData(data2)
+        val meterData3 = MeterData(data3)
+        val meterData4 = MeterData(data4)
+        dataSource.insert(meterData1)
+        dataSource.insert(meterData2)
+        dataSource.insert(meterData3)
+        dataSource.insert(meterData4)
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+
+        val context = getApplicationContext<Context>()
+        val totalValue = context.resources.getString(R.string.total_format, total)
+
+        onView(withText(totalValue)).check(matches(isDisplayed()))
 
         activityScenario.close()
     }

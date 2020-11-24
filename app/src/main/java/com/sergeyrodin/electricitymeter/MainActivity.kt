@@ -25,6 +25,7 @@ class MainActivity : AppCompatActivity() {
                 .get(MeterDataListViewModel::class.java)
 
         binding.meterDataListViewModel = viewModel
+        binding.lifecycleOwner = this
 
         val adapter = MeterDataAdapter()
         binding.dataList.adapter = adapter

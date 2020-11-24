@@ -51,7 +51,7 @@ class MeterDataListViewModelTest{
     }
 
     @Test
-    fun twoDatas_diffEquals() {
+    fun twoDataItems_diffEquals() {
         val data1 = 14622
         val data2 = 14638
         val diff1 = 0
@@ -63,4 +63,36 @@ class MeterDataListViewModelTest{
         assertThat(dataToDisplay[0].diff, `is`(diff1))
         assertThat(dataToDisplay[1].diff, `is`(diff2))
     }
+
+    @Test
+    fun fewItems_totalEquals() {
+        val data1 = 14314
+        val data2 = 14509
+        val data3 = 14579
+        val data4 = 14638
+        val total = 324
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+
+        val totalValue = subject.total.getOrAwaitValue()
+        assertThat(totalValue, `is`(total))
+    }
+
+    @Test
+    fun noItems_totalZero() {
+        val totalValue = subject.total.getOrAwaitValue()
+        assertThat(totalValue, `is`(0))
+    }
+
+    @Test
+    fun oneItem_totalZero() {
+        val data1 = 14638
+        dataSource.testInsert(MeterData(data1))
+
+        val totalValue = subject.total.getOrAwaitValue()
+        assertThat(totalValue, `is`(0))
+    }
+
 }
