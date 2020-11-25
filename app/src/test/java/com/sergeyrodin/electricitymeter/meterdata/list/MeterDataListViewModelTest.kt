@@ -126,4 +126,51 @@ class MeterDataListViewModelTest{
         assertThat(avgValue, `is`(0))
     }
 
+    @Test
+    fun fewItems_totalPriceEquals() {
+        val data1 = 14314
+        val data2 = 14509
+        val data3 = 14579
+        val data4 = 14638
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+        val price = 466.32
+
+        val priceValue = subject.price.getOrAwaitValue()
+        assertThat(priceValue, `is`(price))
+    }
+
+    @Test
+    fun fewItems_lessThenHundred_totalPriceEquals() {
+        val data1 = 14594
+        val data2 = 14611
+        val data3 = 14622
+        val data4 = 14638
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+        val price = 39.6
+
+        val priceValue = subject.price.getOrAwaitValue()
+        assertThat(priceValue, `is`(price))
+    }
+
+    @Test
+    fun noItems_priceZero() {
+        val priceValue = subject.price.getOrAwaitValue()
+        assertThat(priceValue, `is`(0.0))
+    }
+
+    @Test
+    fun oneItem_priceZero() {
+        val data1 = 14638
+        dataSource.testInsert(MeterData(data1))
+
+        val priceValue = subject.price.getOrAwaitValue()
+        assertThat(priceValue, `is`(0.0))
+    }
+
 }

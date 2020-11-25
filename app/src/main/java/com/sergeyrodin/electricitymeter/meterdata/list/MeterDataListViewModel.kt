@@ -5,6 +5,10 @@ import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import kotlinx.coroutines.launch
 
+private const val PRICE_KWH_SMALL = 0.9
+private const val PRICE_KWH_BIG = 1.68
+private const val PRICE_100_KWH = 90
+
 class MeterDataListViewModel(private val dataSource: MeterDataSource): ViewModel(){
     private val observableData = dataSource.getMeterData()
     val dataToDisplay: LiveData<List<MeterDataPresentation>> = Transformations.map(observableData) { meterData ->
@@ -37,6 +41,23 @@ class MeterDataListViewModel(private val dataSource: MeterDataSource): ViewModel
             val total = getTotal(meterData)
             val numberOfItems = meterData.size - 1
             total/numberOfItems
+        }
+    }
+
+    val price: LiveData<Double> = Transformations.map(observableData) { meterData ->
+        if(meterData.size < 2) {
+            0.0
+        }else {
+            calculatePrice(meterData)
+        }
+    }
+
+    private fun calculatePrice(meterData: List<MeterData>): Double {
+        val total = getTotal(meterData)
+        if(total > 100) {
+            return (total - 100) * PRICE_KWH_BIG + PRICE_100_KWH
+        }else{
+            return total * PRICE_KWH_SMALL
         }
     }
 

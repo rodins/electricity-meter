@@ -105,7 +105,7 @@ class MainActivityTest {
     }
 
     @Test
-    fun fewItems_totalAndAvgDisplayed() = runBlocking() {
+    fun fewItems_totalAvgPriceDisplayed() = runBlocking() {
         val data1 = 14594
         val data2 = 14611
         val data3 = 14622
@@ -120,11 +120,12 @@ class MainActivityTest {
         dataSource.insert(meterData4)
         val total = 44
         val avg = 14
+        val price = 39.6
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
 
         val context = getApplicationContext<Context>()
-        val totalValue = context.resources.getString(R.string.total_format, total, avg)
+        val totalValue = context.resources.getString(R.string.total_format, total, avg, price)
 
         onView(withText(totalValue)).check(matches(isDisplayed()))
 

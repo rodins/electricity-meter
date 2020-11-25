@@ -58,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:text="@{@string/total_format(meterDataListViewModel.total, meterDataListViewModel.avg)}"
+            android:text="@{@string/total_format(meterDataListViewModel.total, meterDataListViewModel.avg, meterDataListViewModel.price)}"
             android:textSize="24sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

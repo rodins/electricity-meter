@@ -3,5 +3,5 @@
     <string name="add_data">Add data</string>
     <string name="save_data">Save data</string>
     <string name="enter_data">Enter meter data</string>
-    <string name="total_format">Total: %d kWh Avg: %d kWh</string>
+    <string name="total_format">Total: %d kWh Avg: %d kWh Price: %f UAH</string>
 </resources>
