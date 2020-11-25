@@ -105,12 +105,11 @@ class MainActivityTest {
     }
 
     @Test
-    fun fewItems_totalDisplayed() = runBlocking() {
-        val data1 = 14314
-        val data2 = 14509
-        val data3 = 14579
+    fun fewItems_totalAndAvgDisplayed() = runBlocking() {
+        val data1 = 14594
+        val data2 = 14611
+        val data3 = 14622
         val data4 = 14638
-        val total = 324
         val meterData1 = MeterData(data1)
         val meterData2 = MeterData(data2)
         val meterData3 = MeterData(data3)
@@ -119,11 +118,13 @@ class MainActivityTest {
         dataSource.insert(meterData2)
         dataSource.insert(meterData3)
         dataSource.insert(meterData4)
+        val total = 44
+        val avg = 14
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
 
         val context = getApplicationContext<Context>()
-        val totalValue = context.resources.getString(R.string.total_format, total)
+        val totalValue = context.resources.getString(R.string.total_format, total, avg)
 
         onView(withText(totalValue)).check(matches(isDisplayed()))
 

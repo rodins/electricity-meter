@@ -20,9 +20,23 @@ class MeterDataListViewModel(private val dataSource: MeterDataSource): ViewModel
         if(meterData.isEmpty()) {
             0
         }else{
-            val first = meterData.first()
-            val last = meterData.last()
-            last.data - first.data
+            getTotal(meterData)
+        }
+    }
+
+    private fun getTotal(meterData: List<MeterData>): Int {
+        val first = meterData.first()
+        val last = meterData.last()
+        return last.data - first.data
+    }
+
+    val avg: LiveData<Int> = Transformations.map(observableData) { meterData ->
+        if(meterData.size < 2) {
+            0
+        }else{
+            val total = getTotal(meterData)
+            val numberOfItems = meterData.size - 1
+            total/numberOfItems
         }
     }
 

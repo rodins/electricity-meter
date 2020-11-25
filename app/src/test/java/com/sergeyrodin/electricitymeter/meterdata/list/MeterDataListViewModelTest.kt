@@ -95,4 +95,35 @@ class MeterDataListViewModelTest{
         assertThat(totalValue, `is`(0))
     }
 
+    @Test
+    fun fewItems_avgEquals() {
+        val data1 = 14594
+        val data2 = 14611
+        val data3 = 14622
+        val data4 = 14638
+        val avg = 14
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+
+        val avgValue = subject.avg.getOrAwaitValue()
+        assertThat(avgValue, `is`(avg))
+    }
+
+    @Test
+    fun noItems_avgZero() {
+        val avgValue = subject.avg.getOrAwaitValue()
+        assertThat(avgValue, `is`(0))
+    }
+
+    @Test
+    fun oneItem_avgZero() {
+        val data1 = 14638
+        dataSource.testInsert(MeterData(data1))
+
+        val avgValue = subject.avg.getOrAwaitValue()
+        assertThat(avgValue, `is`(0))
+    }
+
 }
