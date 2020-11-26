@@ -131,4 +131,21 @@ class MainActivityTest {
 
         activityScenario.close()
     }
+
+    @Test
+    fun twoItems_dailyPriceDisplayed() = runBlocking {
+        val data1 = 14622
+        val data2 = 14638
+        dataSource.insert(MeterData(data1))
+        dataSource.insert(MeterData(data2))
+        val price1 = 0.0
+        val price2 = 14.4
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(price1.toString()))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(price2.toString()))))
+
+        activityScenario.close()
+    }
 }

@@ -7,16 +7,39 @@ import kotlinx.coroutines.launch
 
 private const val PRICE_KWH_SMALL = 0.9
 private const val PRICE_KWH_BIG = 1.68
-private const val PRICE_100_KWH = 90
+private const val SMALL_PRICE_KW = 100
+private const val PRICE_100_KWH = PRICE_KWH_SMALL * SMALL_PRICE_KW
 
 class MeterDataListViewModel(private val dataSource: MeterDataSource): ViewModel(){
     private val observableData = dataSource.getMeterData()
     val dataToDisplay: LiveData<List<MeterDataPresentation>> = Transformations.map(observableData) { meterData ->
-        var prevData = -1
-        meterData.map {
-            val diff = if(prevData != -1) it.data - prevData else 0
-            prevData = it.data
-            MeterDataPresentation(it.data, it.date, diff)
+        if(meterData.isNotEmpty()) {
+            var prevData = -1
+            val firstData = meterData.first().data
+            meterData.map {
+                val dailyKw = if(prevData != -1) it.data - prevData else 0
+                prevData = it.data
+                var price = 0.0
+                if(dailyKw > 0) {
+                    val currentTotalKw = it.data - firstData
+                    if(currentTotalKw > SMALL_PRICE_KW) {
+                        if(currentTotalKw - dailyKw > SMALL_PRICE_KW) {
+                            price = dailyKw * PRICE_KWH_BIG
+                        }else {
+                            val bigPriceKw = currentTotalKw - SMALL_PRICE_KW
+                            val smallPriceKw = dailyKw - bigPriceKw
+                            val smallPrice = smallPriceKw * PRICE_KWH_SMALL
+                            val bigPrice = bigPriceKw * PRICE_KWH_BIG
+                            price = smallPrice + bigPrice
+                        }
+                    }else{
+                        price = dailyKw * PRICE_KWH_SMALL
+                    }
+                }
+                MeterDataPresentation(it.data, it.date, dailyKw, price)
+            }
+        }else {
+            listOf()
         }
     }
 

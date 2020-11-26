@@ -173,4 +173,117 @@ class MeterDataListViewModelTest{
         assertThat(priceValue, `is`(0.0))
     }
 
+    @Test
+    fun twoItems_lowPrice_dailyPriceEquals() {
+        val data1 = 14622
+        val data2 = 14638
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        val price1 = 0.0
+        val price2 = 14.4
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+
+        assertThat(dataToDisplay[0].price, `is`(price1))
+        assertThat(dataToDisplay[1].price, `is`(price2))
+    }
+
+    @Test
+    fun threeItems_highPrice3_dailyPriceEquals() {
+        val data1 = 14622
+        val data2 = 14722
+        val data3 = 14723
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        val price1 = 0.0
+        val price2 = 90.0
+        val price3 = 1.68
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay[0].price, `is`(price1))
+        assertThat(dataToDisplay[1].price, `is`(price2))
+        assertThat(dataToDisplay[2].price, `is`(price3))
+    }
+
+    @Test
+    fun threeItems_dayOnBorderSmallAndBig_dailyPriceEquals() {
+        val data1 = 14622
+        val data2 = 14692
+        val data3 = 14762
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        val price1 = 0.0
+        val price2 = 63.0
+        val price3 = 94.2
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay[0].price, `is`(price1))
+        assertThat(dataToDisplay[1].price, `is`(price2))
+        assertThat(dataToDisplay[2].price, `is`(price3))
+    }
+
+    @Test
+    fun oneItem_dailyPriceZero() {
+        val data = 114622
+        dataSource.testInsert(MeterData(data))
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay[0].price, `is`(0.0))
+    }
+
+    @Test
+    fun fewItems_pricesEqual() {
+        val data1 = 14314
+        val price1 = 0.0
+        val data2 = 14322
+        val price2 = 7.2
+        val data3 = 14330
+        val price3 = 7.2
+        val data4 = 14340
+        val price4 = 9.0
+        val data5 = 14348
+        val price5 = 7.2
+        val data6 = 14359
+        val price6 = 9.9
+        val data7 = 14371
+        val price7 = 10.8
+        val data8 = 14386
+        val price8 = 13.5
+        val data9 = 14401
+        val price9 = 13.5
+        val data10 = 14415
+        val price10 = 13.38
+        val data11 = 14427
+        val price11 = 20.16
+        val data12 = 14443
+        val price12 = 26.88
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+        dataSource.testInsert(MeterData(data5))
+        dataSource.testInsert(MeterData(data6))
+        dataSource.testInsert(MeterData(data7))
+        dataSource.testInsert(MeterData(data8))
+        dataSource.testInsert(MeterData(data9))
+        dataSource.testInsert(MeterData(data10))
+        dataSource.testInsert(MeterData(data11))
+        dataSource.testInsert(MeterData(data12))
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay[0].price, `is`(price1))
+        assertThat(dataToDisplay[1].price, `is`(price2))
+        assertThat(dataToDisplay[2].price, `is`(price3))
+        assertThat(dataToDisplay[3].price, `is`(price4))
+        assertThat(dataToDisplay[4].price, `is`(price5))
+        assertThat(dataToDisplay[5].price, `is`(price6))
+        assertThat(dataToDisplay[6].price, `is`(price7))
+        assertThat(dataToDisplay[7].price, `is`(price8))
+        assertThat(dataToDisplay[8].price, `is`(price9))
+        assertThat(dataToDisplay[9].price, `is`(price10))
+        assertThat(dataToDisplay[10].price, `is`(price11))
+        assertThat(dataToDisplay[11].price, `is`(price12))
+    }
 }
