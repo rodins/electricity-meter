@@ -11,6 +11,9 @@ import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.*
+
+private const val DATE_IS_NOT_IMPORTANT_FOR_TEST = -1L
 
 class MeterDataListViewModelTest{
     @get:Rule
@@ -26,11 +29,11 @@ class MeterDataListViewModelTest{
     @Before
     fun initSubject(){
         dataSource = FakeDataSource()
-        subject = MeterDataListViewModel(dataSource)
     }
 
     @Test
     fun onAddData_dataEquals() {
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val input = "14594"
         subject.onAddData(input)
 
@@ -44,6 +47,7 @@ class MeterDataListViewModelTest{
         val data2 = 14579
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
 
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, `is`(data1))
@@ -58,6 +62,7 @@ class MeterDataListViewModelTest{
         val diff2 = 16
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
 
         assertThat(dataToDisplay[0].diff, `is`(diff1))
@@ -75,6 +80,7 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
         dataSource.testInsert(MeterData(data4))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
 
         val totalValue = subject.total.getOrAwaitValue()
         assertThat(totalValue, `is`(total))
@@ -82,6 +88,7 @@ class MeterDataListViewModelTest{
 
     @Test
     fun noItems_totalZero() {
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val totalValue = subject.total.getOrAwaitValue()
         assertThat(totalValue, `is`(0))
     }
@@ -90,6 +97,7 @@ class MeterDataListViewModelTest{
     fun oneItem_totalZero() {
         val data1 = 14638
         dataSource.testInsert(MeterData(data1))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
 
         val totalValue = subject.total.getOrAwaitValue()
         assertThat(totalValue, `is`(0))
@@ -106,6 +114,7 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
         dataSource.testInsert(MeterData(data4))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
 
         val avgValue = subject.avg.getOrAwaitValue()
         assertThat(avgValue, `is`(avg))
@@ -113,6 +122,7 @@ class MeterDataListViewModelTest{
 
     @Test
     fun noItems_avgZero() {
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val avgValue = subject.avg.getOrAwaitValue()
         assertThat(avgValue, `is`(0))
     }
@@ -121,6 +131,7 @@ class MeterDataListViewModelTest{
     fun oneItem_avgZero() {
         val data1 = 14638
         dataSource.testInsert(MeterData(data1))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
 
         val avgValue = subject.avg.getOrAwaitValue()
         assertThat(avgValue, `is`(0))
@@ -136,6 +147,7 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
         dataSource.testInsert(MeterData(data4))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val price = 466.32
 
         val priceValue = subject.price.getOrAwaitValue()
@@ -152,6 +164,7 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
         dataSource.testInsert(MeterData(data4))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val price = 39.6
 
         val priceValue = subject.price.getOrAwaitValue()
@@ -160,6 +173,7 @@ class MeterDataListViewModelTest{
 
     @Test
     fun noItems_priceZero() {
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val priceValue = subject.price.getOrAwaitValue()
         assertThat(priceValue, `is`(0.0))
     }
@@ -168,6 +182,7 @@ class MeterDataListViewModelTest{
     fun oneItem_priceZero() {
         val data1 = 14638
         dataSource.testInsert(MeterData(data1))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
 
         val priceValue = subject.price.getOrAwaitValue()
         assertThat(priceValue, `is`(0.0))
@@ -179,6 +194,7 @@ class MeterDataListViewModelTest{
         val data2 = 14638
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val price1 = 0.0
         val price2 = 14.4
 
@@ -196,6 +212,7 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val price1 = 0.0
         val price2 = 90.0
         val price3 = 1.68
@@ -214,6 +231,7 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
         val price1 = 0.0
         val price2 = 63.0
         val price3 = 94.2
@@ -228,6 +246,7 @@ class MeterDataListViewModelTest{
     fun oneItem_dailyPriceZero() {
         val data = 114622
         dataSource.testInsert(MeterData(data))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
 
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].price, `is`(0.0))
@@ -271,6 +290,7 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data10))
         dataSource.testInsert(MeterData(data11))
         dataSource.testInsert(MeterData(data12))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
 
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].price, `is`(price1))
@@ -285,5 +305,28 @@ class MeterDataListViewModelTest{
         assertThat(dataToDisplay[9].price, `is`(price10))
         assertThat(dataToDisplay[10].price, `is`(price11))
         assertThat(dataToDisplay[11].price, `is`(price12))
+    }
+
+    @Test
+    fun filterCurrentMonthData() {
+        val data1 = 14314
+        val someDayOfPrevMonth = 1602219377796
+        val data2 = 14509
+        val lastDayOfPrevMonth = 1604123777809
+        val data3 = 14579
+        val lastDayOfCurrentMonth = 1606715777809
+        val data4 = 14638
+        val firstDayOfNextMonth = 1606802177809
+
+        dataSource.testInsert(MeterData(data1, date = someDayOfPrevMonth))
+        dataSource.testInsert(MeterData(data2, date = lastDayOfPrevMonth))
+        dataSource.testInsert(MeterData(data3, date = lastDayOfCurrentMonth))
+        dataSource.testInsert(MeterData(data4, date = firstDayOfNextMonth))
+        subject = MeterDataListViewModel(dataSource, lastDayOfCurrentMonth)
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay.size, `is`(2))
+        assertThat(dataToDisplay[0].data, `is`(data2))
+        assertThat(dataToDisplay[1].data, `is`(data3))
     }
 }

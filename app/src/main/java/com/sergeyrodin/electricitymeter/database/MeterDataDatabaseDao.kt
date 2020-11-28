@@ -14,4 +14,7 @@ interface MeterDataDatabaseDao {
     @Query("SELECT * FROM meter_data")
     fun getMeterData(): LiveData<List<MeterData>>
 
+    @Query("SELECT * FROM meter_data WHERE date >= :prevMonthMillis AND date <= :currentMonthMillis")
+    fun getMonthMeterData(prevMonthMillis: Long, currentMonthMillis: Long): LiveData<List<MeterData>>
+
 }

@@ -16,14 +16,16 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 
+@ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class RoomMeterDataSourceTest{
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
-    private lateinit var dataSource: MeterDataSource
+    private lateinit var dataSource: RoomMeterDataSource
 
     @Before
     fun createDataSource() {
@@ -33,7 +35,6 @@ class RoomMeterDataSourceTest{
         dataSource = RoomMeterDataSource(database.meterDataDatabaseDao)
     }
 
-    @ExperimentalCoroutinesApi
     @Test
     fun insertAndGetMeterData() = runBlockingTest{
         val data = 14622
@@ -43,5 +44,26 @@ class RoomMeterDataSourceTest{
 
         val meterDataFromDb = dataSource.getMeterData().getOrAwaitValue()
         assertThat(meterDataFromDb[0].data, `is`(data))
+    }
+
+    @Test
+    fun filterCurrentMonth() = runBlockingTest{
+        val data1 = 14314
+        val someDayOfPrevMonth = 1602219377796
+        val data2 = 14509
+        val lastDayOfPrevMonth = 1604123777809
+        val data3 = 14579
+        val lastDayOfCurrentMonth = 1606715777809
+        val data4 = 14638
+        val firstDayOfNextMonth = 1606802177809
+
+        dataSource.insert(MeterData(data1, date = someDayOfPrevMonth))
+        dataSource.insert(MeterData(data2, date = lastDayOfPrevMonth))
+        dataSource.insert(MeterData(data3, date = lastDayOfCurrentMonth))
+        dataSource.insert(MeterData(data4, date = firstDayOfNextMonth))
+
+        val meterDataFromDb = dataSource.getMonthMeterData(lastDayOfCurrentMonth).getOrAwaitValue()
+        assertThat(meterDataFromDb[0].data, `is`(data2))
+        assertThat(meterDataFromDb[1].data, `is`(data3))
     }
 }
