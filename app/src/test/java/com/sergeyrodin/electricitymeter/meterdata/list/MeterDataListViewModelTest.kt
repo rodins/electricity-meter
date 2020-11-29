@@ -329,4 +329,30 @@ class MeterDataListViewModelTest{
         assertThat(dataToDisplay[0].data, `is`(data2))
         assertThat(dataToDisplay[1].data, `is`(data3))
     }
+
+    @Test
+    fun filterLowerValue() {
+        val data1 = 14509
+        val data2 = 14314
+        dataSource.testInsert(MeterData(data1))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
+
+        subject.onAddData(data2.toString())
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay.size, `is`(1))
+        assertThat(dataToDisplay[0].data, `is`(data1))
+    }
+
+    @Test
+    fun filterEqualValue() {
+        val data = 14509
+        dataSource.testInsert(MeterData(data))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
+
+        subject.onAddData(data.toString())
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay.size, `is`(1))
+    }
 }

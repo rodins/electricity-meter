@@ -90,9 +90,17 @@ class MeterDataListViewModel(
 
     fun onAddData(data: String) {
         if (data.isNotBlank()) {
-            viewModelScope.launch {
-                val meterData = MeterData(data.toInt())
-                dataSource.insert(meterData)
+            val dataToInsert = data.toInt()
+            val lastItemData = if(observableData.value?.isNotEmpty() == true) {
+                observableData.value?.last()?.data?:0
+            }else{
+                0
+            }
+            if(lastItemData < dataToInsert) {
+                viewModelScope.launch {
+                    val meterData = MeterData(dataToInsert)
+                    dataSource.insert(meterData)
+                }
             }
         }
     }
