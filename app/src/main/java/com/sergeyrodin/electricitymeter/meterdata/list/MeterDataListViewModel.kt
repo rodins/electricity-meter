@@ -88,6 +88,10 @@ class MeterDataListViewModel(
         }
     }
 
+    val noItems = Transformations.map(observableData) {
+        it.isEmpty()
+    }
+
     fun onAddData(data: String) {
         if (data.isNotBlank()) {
             val dataToInsert = data.toInt()

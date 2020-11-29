@@ -16,6 +16,7 @@ import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.datasource.RoomMeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 import kotlinx.coroutines.runBlocking
+import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -145,6 +146,26 @@ class MainActivityTest {
 
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(price1.toString()))))
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(price2.toString()))))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun noItems_noItemsTextDisplayed() {
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+
+        onView(withText(R.string.no_items)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun oneItem_noItemsTextNotDisplayed() = runBlocking{
+        val data1 = 14622
+        dataSource.insert(MeterData(data1))
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+
+        onView(withText(R.string.no_items)).check(matches(not(isDisplayed())))
 
         activityScenario.close()
     }

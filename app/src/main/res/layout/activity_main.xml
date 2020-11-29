@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-       <variable
+        <import type="android.view.View"/>
+        <variable
            name="meterDataListViewModel"
            type="com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModel" />
     </data>
@@ -64,6 +65,18 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             tools:text="Total: 123 kW/h" />
+
+        <TextView
+            android:id="@+id/no_items_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/no_items"
+            android:textSize="20sp"
+            android:visibility="@{meterDataListViewModel.noItems ? View.VISIBLE : View.GONE }"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -355,4 +355,22 @@ class MeterDataListViewModelTest{
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay.size, `is`(1))
     }
+
+    @Test
+    fun noItems_eventIsTrue() {
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
+
+        val noItems = subject.noItems.getOrAwaitValue()
+        assertThat(noItems, `is`(true))
+    }
+
+    @Test
+    fun oneItem_noItemsEventsFalse() {
+        val data = 14509
+        dataSource.testInsert(MeterData(data))
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
+
+        val noItems = subject.noItems.getOrAwaitValue()
+        assertThat(noItems, `is`(false))
+    }
 }
