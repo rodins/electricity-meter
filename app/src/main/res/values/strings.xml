@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Electricity Meter</string>
     <string name="add_data">Add data</string>
-    <string name="save_data">Save data</string>
     <string name="enter_data">Enter meter data</string>
     <string name="total_format">Total: %d kWh Avg: %d kWh Price: %.2f UAH</string>
     <string name="no_items">No data to display</string>
+    <string name="data_format">%s %d kWh %d kWh %.2f UAH</string>
 </resources>

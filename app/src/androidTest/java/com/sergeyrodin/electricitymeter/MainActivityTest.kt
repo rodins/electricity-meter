@@ -48,7 +48,7 @@ class MainActivityTest {
         onView(withId(R.id.data_edit)).perform(typeText(data))
         onView(withId(R.id.add_data_button)).perform(click())
 
-        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(data))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data))))
 
         activityScenario.close()
     }
@@ -66,8 +66,8 @@ class MainActivityTest {
         onView(withId(R.id.data_edit)).perform(replaceText(data2))
         onView(withId(R.id.add_data_button)).perform(click())
 
-        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(data1))))
-        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(data2))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data1))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data2))))
 
         activityScenario.close()
     }
@@ -80,7 +80,7 @@ class MainActivityTest {
         dataSource.insert(meterData)
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
 
-        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(dateToString(date)))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(dateToString(date)))))
 
         activityScenario.close()
     }
@@ -99,8 +99,8 @@ class MainActivityTest {
         onView(withId(R.id.data_edit)).perform(replaceText(data2))
         onView(withId(R.id.add_data_button)).perform(click())
 
-        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(diff1))))
-        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(diff2))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(diff1))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(diff2))))
 
         activityScenario.close()
     }
@@ -144,8 +144,8 @@ class MainActivityTest {
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
 
-        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(price1.toString()))))
-        onView(withId(R.id.data_list)).check(matches(hasDescendant(withText(price2.toString()))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(price1.toString()))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(price2.toString()))))
 
         activityScenario.close()
     }

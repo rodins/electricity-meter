@@ -47,6 +47,17 @@ class RoomMeterDataSourceTest{
     }
 
     @Test
+    fun insertAndGetMonthMeterDataNow() = runBlockingTest{
+        val data = 14622
+        val meterData = MeterData(data)
+
+        dataSource.insert(meterData)
+
+        val meterDataFromDb = dataSource.getMonthMeterData(System.currentTimeMillis()).getOrAwaitValue()
+        assertThat(meterDataFromDb[0].data, `is`(data))
+    }
+
+    @Test
     fun filterCurrentMonth() = runBlockingTest{
         val data1 = 14314
         val someDayOfPrevMonth = 1602219377796

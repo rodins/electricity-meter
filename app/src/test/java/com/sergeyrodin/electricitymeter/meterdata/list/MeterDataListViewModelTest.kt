@@ -42,6 +42,16 @@ class MeterDataListViewModelTest{
     }
 
     @Test
+    fun onAddDataToday_dataEquals() {
+        subject = MeterDataListViewModel(dataSource)
+        val input = "14594"
+        subject.onAddData(input)
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay[0].data.toString(), `is`(input))
+    }
+
+    @Test
     fun dataParam_dataToDisplayEquals() {
         val data1 = 14556
         val data2 = 14579
@@ -372,5 +382,17 @@ class MeterDataListViewModelTest{
 
         val noItems = subject.noItems.getOrAwaitValue()
         assertThat(noItems, `is`(false))
+    }
+
+    @Test
+    fun lastDayOfMonthNoDataDisplayBug() {
+        val data = 14695
+        val viewModelCreateDate = 1606720157220L
+        val meterDataCreateDate = 1606720185174L
+        dataSource.testInsert(MeterData(data, date = meterDataCreateDate))
+        subject = MeterDataListViewModel(dataSource, viewModelCreateDate)
+
+        val items = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(items.size, `is`(1))
     }
 }

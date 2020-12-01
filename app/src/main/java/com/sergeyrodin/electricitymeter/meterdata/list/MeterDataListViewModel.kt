@@ -12,7 +12,7 @@ private const val PRICE_100_KWH = PRICE_KWH_SMALL * SMALL_PRICE_KW
 
 class MeterDataListViewModel(
     private val dataSource: MeterDataSource,
-    private val dateOfMonthToDisplay: Long = System.currentTimeMillis()
+    dateOfMonthToDisplay: Long = System.currentTimeMillis()
 ) : ViewModel() {
     private val observableData = dataSource.getMonthMeterData(dateOfMonthToDisplay)
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
