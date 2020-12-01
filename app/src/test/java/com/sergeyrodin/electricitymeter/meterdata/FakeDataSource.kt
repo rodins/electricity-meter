@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
-import com.sergeyrodin.electricitymeter.getMonthBoundariesByDate
-import java.util.*
+import com.sergeyrodin.electricitymeter.utils.getMonthBoundariesByDate
 
 class FakeDataSource: MeterDataSource {
     private val data = mutableListOf<MeterData>()

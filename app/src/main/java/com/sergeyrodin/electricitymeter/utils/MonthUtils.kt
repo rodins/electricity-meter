@@ -1,4 +1,4 @@
-package com.sergeyrodin.electricitymeter
+package com.sergeyrodin.electricitymeter.utils
 
 import java.util.*
 

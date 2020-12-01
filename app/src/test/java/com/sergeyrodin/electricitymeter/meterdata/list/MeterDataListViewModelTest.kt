@@ -395,4 +395,14 @@ class MeterDataListViewModelTest{
         val items = subject.dataToDisplay.getOrAwaitValue()
         assertThat(items.size, `is`(1))
     }
+
+    @Test
+    fun onAddData_hideKeyboardEventNotNull() {
+        val data = "14695"
+        subject = MeterDataListViewModel(dataSource, DATE_IS_NOT_IMPORTANT_FOR_TEST)
+        subject.onAddData(data)
+
+        val keyboardEvent = subject.hideKeyboardEvent.getOrAwaitValue()
+        assertThat(keyboardEvent, `is`(not(nullValue())))
+    }
 }

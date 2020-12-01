@@ -12,6 +12,7 @@ import com.sergeyrodin.electricitymeter.datasource.RoomMeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataAdapter
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModel
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModelFactory
+import com.sergeyrodin.electricitymeter.utils.hideKeyboard
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,6 +33,10 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.dataToDisplay.observe(this, Observer { meterData ->
             adapter.data = meterData
+        })
+
+        viewModel.hideKeyboardEvent.observe(this, EventObserver{
+            hideKeyboard(this)
         })
     }
 }

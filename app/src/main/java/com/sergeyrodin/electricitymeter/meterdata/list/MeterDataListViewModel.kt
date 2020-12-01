@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
 import androidx.lifecycle.*
+import com.sergeyrodin.electricitymeter.Event
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import kotlinx.coroutines.launch
@@ -92,6 +93,10 @@ class MeterDataListViewModel(
         it.isEmpty()
     }
 
+    private val _hideKeyboardEvent = MutableLiveData<Event<Unit>>()
+    val hideKeyboardEvent: LiveData<Event<Unit>>
+       get() = _hideKeyboardEvent
+
     fun onAddData(data: String) {
         if (data.isNotBlank()) {
             val dataToInsert = data.toInt()
@@ -106,6 +111,7 @@ class MeterDataListViewModel(
                     dataSource.insert(meterData)
                 }
             }
+            _hideKeyboardEvent.value = Event(Unit)
         }
     }
 }
