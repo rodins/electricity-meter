@@ -4,5 +4,6 @@
     <string name="enter_data">Enter meter data</string>
     <string name="total_format">Total: %d kWh Avg: %d kWh Price: %.2f UAH</string>
     <string name="no_items">No data to display</string>
-    <string name="data_format">%s %d kWh %d kWh %.2f UAH</string>
+    <string name="kwh_format">%d kWh</string>
+    <string name="price_format">%.2f UAH</string>
 </resources>

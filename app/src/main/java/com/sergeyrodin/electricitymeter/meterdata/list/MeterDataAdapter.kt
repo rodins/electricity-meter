@@ -25,14 +25,20 @@ class MeterDataAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
 
     override fun onBindViewHolder(holder: MeterDataItemViewHolder, position: Int) {
         val item = data[position]
-        holder.dataText.text = holder.itemView.context
-            .getString(R.string.data_format, dateToString(item.date),
-                item.data, item.diff, item.price)
+        holder.dateText.text = dateToString(item.date)
+        holder.dataText.text = holder.itemView.context.getString(R.string.kwh_format, item.data)
+        holder.dailyKwhText.text = holder.itemView.context
+            .getString(R.string.kwh_format, item.diff)
+        holder.dailyPriceText.text = holder.itemView.context
+            .getString(R.string.price_format, item.price)
     }
 
     override fun getItemCount(): Int = data.size
 }
 
 class MeterDataItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
+    val dateText: TextView = itemView.findViewById(R.id.date_text)
     val dataText: TextView = itemView.findViewById(R.id.data_text)
+    val dailyKwhText: TextView = itemView.findViewById(R.id.daily_kwh_text)
+    val dailyPriceText: TextView = itemView.findViewById(R.id.daily_price_text)
 }
