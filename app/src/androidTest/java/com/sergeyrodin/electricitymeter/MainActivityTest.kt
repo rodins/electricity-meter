@@ -169,4 +169,17 @@ class MainActivityTest {
 
         activityScenario.close()
     }
+
+    @Test
+    fun onAddItem_clearDataEdit() {
+        val data = "14704"
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+
+        onView(withId(R.id.data_edit)).perform(typeText(data))
+        onView(withId(R.id.add_data_button)).perform(click())
+
+        onView(withId(R.id.data_edit)).check(matches(withText("")))
+
+        activityScenario.close()
+    }
 }

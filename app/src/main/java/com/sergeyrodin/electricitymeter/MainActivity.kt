@@ -37,6 +37,7 @@ class MainActivity : AppCompatActivity() {
 
         viewModel.hideKeyboardEvent.observe(this, EventObserver{
             hideKeyboard(this)
+            binding.dataEdit.text.clear()
         })
     }
 }
