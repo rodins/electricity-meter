@@ -6,4 +6,5 @@
     <string name="no_items">No data to display</string>
     <string name="kwh_format">%d kWh</string>
     <string name="price_format">%.2f UAH</string>
+    <string name="paid">Paid</string>
 </resources>

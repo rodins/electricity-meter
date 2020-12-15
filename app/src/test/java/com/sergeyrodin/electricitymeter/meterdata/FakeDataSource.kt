@@ -3,12 +3,14 @@ package com.sergeyrodin.electricitymeter.meterdata
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.utils.getMonthBoundariesByDate
 
 class FakeDataSource: MeterDataSource {
     private val data = mutableListOf<MeterData>()
     private val observableData = MutableLiveData<List<MeterData>>()
+    private val paidDates = mutableListOf<PaidDate>()
 
     init{
         observableData.value = data
@@ -41,5 +43,24 @@ class FakeDataSource: MeterDataSource {
         }
     }
 
+    override suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>? {
+        return data.filter {
+            it.date in beginDate until endDate
+        }
+    }
+
+    override suspend fun insertPaidDate(paidDate: PaidDate) {
+        paidDates.add(paidDate)
+    }
+
+    override suspend fun getPaidDate(): PaidDate? {
+        return paidDates.lastOrNull()
+    }
+
+    override suspend fun deletePaidDate(paidDate: PaidDate?) {
+        paidDates.remove(paidDate)
+    }
+
+    fun testPaidDatesSize() = paidDates.size
 
 }

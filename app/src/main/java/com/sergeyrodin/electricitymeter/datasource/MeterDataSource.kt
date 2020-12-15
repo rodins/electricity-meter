@@ -2,6 +2,7 @@ package com.sergeyrodin.electricitymeter.datasource
 
 import androidx.lifecycle.LiveData
 import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.database.PaidDate
 
 interface MeterDataSource {
 
@@ -9,4 +10,9 @@ interface MeterDataSource {
 
     fun getMeterData(): LiveData<List<MeterData>>
     fun getMonthMeterData(dateOfMonthToDisplay: Long): LiveData<List<MeterData>>
+    suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>?
+
+    suspend fun insertPaidDate(paidDate: PaidDate)
+    suspend fun getPaidDate(): PaidDate?
+    suspend fun deletePaidDate(paidDate: PaidDate?)
 }

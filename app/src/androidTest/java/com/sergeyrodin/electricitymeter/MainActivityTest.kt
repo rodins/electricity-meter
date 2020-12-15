@@ -6,6 +6,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.*
+import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -179,6 +180,22 @@ class MainActivityTest {
         onView(withId(R.id.add_data_button)).perform(click())
 
         onView(withId(R.id.data_edit)).check(matches(withText("")))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun onPaidClick_firstDataNotDisplayed() = runBlocking {
+        val data1 = 14622
+        val data2 = 14638
+        dataSource.insert(MeterData(data1))
+        dataSource.insert(MeterData(data2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+
+        onView(withId(R.id.paid_button)).perform(click())
+        onView(withSubstring(data1.toString())).check(doesNotExist())
+        onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
 
         activityScenario.close()
     }
