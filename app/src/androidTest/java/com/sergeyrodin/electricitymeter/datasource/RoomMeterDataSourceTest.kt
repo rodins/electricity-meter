@@ -149,4 +149,13 @@ class RoomMeterDataSourceTest {
         assertThat(items?.get(0)?.data, `is`(data2))
         assertThat(items?.get(1)?.data, `is`(data3))
     }
+
+    @Test
+    fun getPaidDates_sizeEquals() = runBlockingTest {
+        val date = 1602219377796L
+        dataSource.insertPaidDate(PaidDate(date = date))
+
+        val items = dataSource.getPaidDates().getOrAwaitValue()
+        assertThat(items.size, `is`(1))
+    }
 }

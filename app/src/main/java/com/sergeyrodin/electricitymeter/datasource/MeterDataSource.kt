@@ -15,4 +15,5 @@ interface MeterDataSource {
     suspend fun insertPaidDate(paidDate: PaidDate)
     suspend fun getPaidDate(): PaidDate?
     suspend fun deletePaidDate(paidDate: PaidDate?)
+    fun getPaidDates(): LiveData<List<PaidDate>>
 }

@@ -30,4 +30,7 @@ interface MeterDataDatabaseDao {
     @Query("SELECT * FROM meter_data WHERE date BETWEEN :beginDate AND :endDate")
     suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>?
 
+    @Query("SELECT * FROM paid_dates")
+    fun getPaidDates(): LiveData<List<PaidDate>>
+
 }

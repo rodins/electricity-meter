@@ -1,4 +1,4 @@
-package com.sergeyrodin.electricitymeter.meterdata
+package com.sergeyrodin.electricitymeter
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -11,9 +11,11 @@ class FakeDataSource: MeterDataSource {
     private val data = mutableListOf<MeterData>()
     private val observableData = MutableLiveData<List<MeterData>>()
     private val paidDates = mutableListOf<PaidDate>()
+    private val observablePaidDates = MutableLiveData<List<PaidDate>>()
 
     init{
         observableData.value = data
+        observablePaidDates.value = paidDates
     }
 
     override suspend fun insert(meterData: MeterData) {
@@ -50,7 +52,12 @@ class FakeDataSource: MeterDataSource {
     }
 
     override suspend fun insertPaidDate(paidDate: PaidDate) {
+        testInsert(paidDate)
+    }
+
+    fun testInsert(paidDate: PaidDate) {
         paidDates.add(paidDate)
+        observablePaidDates.value = paidDates
     }
 
     override suspend fun getPaidDate(): PaidDate? {
@@ -62,5 +69,9 @@ class FakeDataSource: MeterDataSource {
     }
 
     fun testPaidDatesSize() = paidDates.size
+
+    override fun getPaidDates(): LiveData<List<PaidDate>> {
+        return observablePaidDates
+    }
 
 }

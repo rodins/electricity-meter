@@ -1,4 +1,4 @@
-package com.sergeyrodin.electricitymeter.meterdata
+package com.sergeyrodin.electricitymeter
 
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

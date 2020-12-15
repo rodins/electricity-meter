@@ -36,4 +36,8 @@ class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): Meter
     override suspend fun deletePaidDate(paidDate: PaidDate?) {
         meterDataDao.deletePaidDate(paidDate)
     }
+
+    override fun getPaidDates(): LiveData<List<PaidDate>> {
+        return meterDataDao.getPaidDates()
+    }
 }
