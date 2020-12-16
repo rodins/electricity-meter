@@ -6,23 +6,32 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.lifecycle.Observer
+import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.R
+import com.sergeyrodin.electricitymeter.databinding.PaidListFragmentBinding
 
 class PaidListFragment : Fragment() {
-
-    private lateinit var viewModel: PaidListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.paid_list_fragment, container, false)
-    }
+        val binding = PaidListFragmentBinding.inflate(inflater, container, false)
+        val viewModelFactory = PaidListViewModelFactory(
+            (requireActivity().application as ElectricityMeterApplication).meterDataSource
+        )
+        val viewModel = ViewModelProvider(this, viewModelFactory).get(PaidListViewModel::class.java)
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = viewModel
+        val adapter = PaidListAdapter()
+        binding.dateItems.adapter = adapter
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(PaidListViewModel::class.java)
-        // TODO: Use the ViewModel
+        viewModel.paidDates.observe(viewLifecycleOwner, Observer{
+            adapter.data = it
+        })
+
+        return binding.root
     }
 
 }
