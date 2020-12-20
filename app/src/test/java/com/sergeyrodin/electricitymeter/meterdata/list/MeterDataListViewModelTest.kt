@@ -438,24 +438,4 @@ class MeterDataListViewModelTest{
         val keyboardEvent = subject.hideKeyboardEvent.getOrAwaitValue()
         assertThat(keyboardEvent, `is`(not(nullValue())))
     }
-
-    @Test
-    fun onPaid_prevPaidDeleted() {
-        val data1 = 14314
-        val date1 = 1602219377796
-        val data2 = 14695
-        dataSource.testInsert(MeterData(data1, date = date1))
-        subject = MeterDataListViewModel(dataSource)
-
-        subject.onPaid()
-
-        subject.onAddData(data2.toString())
-
-        subject.onPaid()
-
-        subject = MeterDataListViewModel(dataSource)
-
-        val paidDatesSize = dataSource.testPaidDatesSize()
-        assertThat(paidDatesSize, `is`(1))
-    }
 }

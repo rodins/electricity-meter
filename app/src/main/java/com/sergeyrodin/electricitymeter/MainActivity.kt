@@ -2,42 +2,28 @@ package com.sergeyrodin.electricitymeter
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import com.sergeyrodin.electricitymeter.database.MeterDataDatabase
-import com.sergeyrodin.electricitymeter.databinding.ActivityMainBinding
-import com.sergeyrodin.electricitymeter.datasource.RoomMeterDataSource
-import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataAdapter
-import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModel
-import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModelFactory
-import com.sergeyrodin.electricitymeter.utils.hideKeyboard
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.NavigationUI
 
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val binding = DataBindingUtil
-                .setContentView<ActivityMainBinding>(this, R.layout.activity_main)
-        val database = MeterDataDatabase.getInstance(applicationContext)
-        val dataSource = RoomMeterDataSource(database.meterDataDatabaseDao)
-        val viewModelFactory = MeterDataListViewModelFactory(dataSource)
-        val viewModel = ViewModelProvider(this, viewModelFactory)
-                .get(MeterDataListViewModel::class.java)
-
-        binding.meterDataListViewModel = viewModel
-        binding.lifecycleOwner = this
-
-        val adapter = MeterDataAdapter()
-        binding.dataList.adapter = adapter
-
-        viewModel.dataToDisplay.observe(this, Observer { meterData ->
-            adapter.data = meterData
-        })
-
-        viewModel.hideKeyboardEvent.observe(this, EventObserver{
-            hideKeyboard(this)
-            binding.dataEdit.text.clear()
-        })
+        setContentView(R.layout.activity_main)
+        val navController = getNavController()
+        NavigationUI.setupActionBarWithNavController(this, navController)
     }
+
+    override fun onSupportNavigateUp(): Boolean {
+        val navController = getNavController()
+        return navController.navigateUp()
+    }
+
+    private fun getNavController(): NavController {
+        val navHostFragment =
+            supportFragmentManager.findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment
+        return navHostFragment.navController
+    }
+
 }

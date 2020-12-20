@@ -134,10 +134,6 @@ class MeterDataListViewModel(private val dataSource: MeterDataSource) : ViewMode
             if(data.isNotEmpty()) {
                 viewModelScope.launch{
                     val last = data.last()
-                    val prevPaidDate = dataSource.getPaidDate()
-                    prevPaidDate?.let{
-                        dataSource.deletePaidDate(prevPaidDate)
-                    }
                     val paidDate = PaidDate(date = last.date)
                     dataSource.insertPaidDate(paidDate)
                     updateObservableData(last.date)
