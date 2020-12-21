@@ -36,6 +36,11 @@ android {
     buildFeatures {
         dataBinding = true
     }
+
+    testOptions.unitTests {
+        includeAndroidResources = true
+        returnDefaultValues = true
+    }
 }
 
 dependencies {
@@ -64,12 +69,14 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0"
 
-    debugImplementation "androidx.fragment:fragment-testing:1.3.0-beta02"
+    debugImplementation "androidx.fragment:fragment-testing:1.3.0-beta01"
 
     // Navigation
     def nav_version = "2.3.2"
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
+
+    implementation "androidx.test.espresso:espresso-idling-resource:3.4.0-alpha02"
 
 }

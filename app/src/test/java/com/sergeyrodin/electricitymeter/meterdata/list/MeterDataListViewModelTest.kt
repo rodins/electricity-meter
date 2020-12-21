@@ -344,7 +344,6 @@ class MeterDataListViewModelTest{
         val data2 = 14509
         val date2 = 1604123777809
         val data3 = 14579
-        val data4 = 14638
         dataSource.testInsert(MeterData(data1, date = date1))
         dataSource.testInsert(MeterData(data2, date = date2))
         subject = MeterDataListViewModel(dataSource)
@@ -352,12 +351,11 @@ class MeterDataListViewModelTest{
         subject.onPaid()
 
         subject.onAddData(data3.toString())
-        subject.onAddData(data4.toString())
 
         subject.onPaid()
 
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay[0].data, `is`(data4))
+        assertThat(dataToDisplay[0].data, `is`(data3))
     }
 
     @Test

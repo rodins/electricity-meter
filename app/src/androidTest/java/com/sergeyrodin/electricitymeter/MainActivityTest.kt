@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -16,6 +17,9 @@ import com.sergeyrodin.electricitymeter.database.MeterDataDatabase
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.datasource.RoomMeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
+import com.sergeyrodin.electricitymeter.utils.DataBindingIdlingResource
+import com.sergeyrodin.electricitymeter.utils.EspressoIdlingResource
+import com.sergeyrodin.electricitymeter.utils.monitorActivity
 import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
@@ -28,6 +32,20 @@ import org.junit.runner.RunWith
 @LargeTest
 class MainActivityTest {
     private lateinit var dataSource: MeterDataSource
+
+    private val dataBindingIdlingResource = DataBindingIdlingResource()
+
+    @Before
+    fun registerIdlingResource() {
+        IdlingRegistry.getInstance().register(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().register(dataBindingIdlingResource)
+    }
+
+    @After
+    fun unregisterIdlingResource() {
+        IdlingRegistry.getInstance().unregister(EspressoIdlingResource.countingIdlingResource)
+        IdlingRegistry.getInstance().unregister(dataBindingIdlingResource)
+    }
 
     @Before
     fun initDataSource() {
@@ -44,6 +62,7 @@ class MainActivityTest {
         val data = 14622
         dataSource.insert(MeterData(data))
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
 
         onView(withId(R.id.paidListFragment)).perform(click())
         onView(withText(R.string.no_items)).check(matches(isDisplayed()))
@@ -57,6 +76,7 @@ class MainActivityTest {
         val date = 1602219377796
         dataSource.insert(MeterData(data, date = date))
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
 
         onView(withId(R.id.paid_button)).perform(click())
         onView(withId(R.id.paidListFragment)).perform(click())
@@ -73,6 +93,7 @@ class MainActivityTest {
         val date2 = System.currentTimeMillis()
         dataSource.insert(MeterData(data1, date = date1))
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
 
         onView(withId(R.id.paid_button)).perform(click())
 

@@ -5,15 +5,20 @@ import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.MeterDataDatabaseDao
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.utils.getMonthBoundariesByDate
+import com.sergeyrodin.electricitymeter.utils.wrapEspressoIdlingResource
 
 class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): MeterDataSource {
 
     override suspend fun insert(meterData: MeterData) {
-        meterDataDao.insert(meterData)
+        wrapEspressoIdlingResource {
+            meterDataDao.insert(meterData)
+        }
     }
 
     override fun getMeterData(): LiveData<List<MeterData>> {
-        return meterDataDao.getMeterData()
+        wrapEspressoIdlingResource {
+            return meterDataDao.getMeterData()
+        }
     }
 
     override fun getMonthMeterData(dateOfMonthToDisplay: Long): LiveData<List<MeterData>> {
@@ -22,22 +27,32 @@ class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): Meter
     }
 
     override suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>? {
-        return meterDataDao.getMeterDataBetweenDates(beginDate, endDate)
+        wrapEspressoIdlingResource {
+            return meterDataDao.getMeterDataBetweenDates(beginDate, endDate)
+        }
     }
 
     override suspend fun insertPaidDate(paidDate: PaidDate) {
-        meterDataDao.insertPaidDate(paidDate)
+        wrapEspressoIdlingResource {
+            meterDataDao.insertPaidDate(paidDate)
+        }
     }
 
     override suspend fun getPaidDate(): PaidDate? {
-        return meterDataDao.getPaidDate()
+        wrapEspressoIdlingResource {
+            return meterDataDao.getPaidDate()
+        }
     }
 
     override suspend fun deletePaidDate(paidDate: PaidDate?) {
-        meterDataDao.deletePaidDate(paidDate)
+        wrapEspressoIdlingResource {
+            meterDataDao.deletePaidDate(paidDate)
+        }
     }
 
     override fun getPaidDates(): LiveData<List<PaidDate>> {
-        return meterDataDao.getPaidDates()
+        wrapEspressoIdlingResource {
+            return meterDataDao.getPaidDates()
+        }
     }
 }
