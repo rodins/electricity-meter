@@ -97,7 +97,7 @@ class MeterDataListViewModel(private val dataSource: MeterDataSource) : ViewMode
 
     init{
         viewModelScope.launch{
-            val paidDate = dataSource.getPaidDate()
+            val paidDate = dataSource.getLastPaidDate()
             if(paidDate == null) {
                 updateObservableData()
             }else {

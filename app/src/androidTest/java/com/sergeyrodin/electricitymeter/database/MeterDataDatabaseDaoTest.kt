@@ -58,7 +58,7 @@ class MeterDataDatabaseDaoTest {
 
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate)
 
-        val paidDateFromDb = meterDataDatabase.meterDataDatabaseDao.getPaidDate()
+        val paidDateFromDb = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate()
         assertThat(paidDateFromDb?.date, `is`(date))
     }
 
@@ -69,11 +69,11 @@ class MeterDataDatabaseDaoTest {
 
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate)
 
-        val paidDateToDelete = meterDataDatabase.meterDataDatabaseDao.getPaidDate()
+        val paidDateToDelete = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate()
 
         meterDataDatabase.meterDataDatabaseDao.deletePaidDate(paidDateToDelete)
 
-        val paidDateFromDb = meterDataDatabase.meterDataDatabaseDao.getPaidDate()
+        val paidDateFromDb = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate()
         assertThat(paidDateFromDb, `is`(nullValue()))
     }
 
@@ -127,5 +127,16 @@ class MeterDataDatabaseDaoTest {
 
         val items = meterDataDatabase.meterDataDatabaseDao.getPaidDates().getOrAwaitValue()
         assertThat(items.size, `is`(1))
+    }
+
+    @Test
+    fun getLastPaidDate() = runBlockingTest {
+        val date1 = 1602219377796
+        val date2 = 1604123777809
+        meterDataDatabase.meterDataDatabaseDao.insertPaidDate(PaidDate(date = date1))
+        meterDataDatabase.meterDataDatabaseDao.insertPaidDate(PaidDate(date = date2))
+
+        val paidDate = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate()
+        assertThat(paidDate?.date, `is`(date2))
     }
 }

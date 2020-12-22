@@ -13,7 +13,7 @@ interface MeterDataSource {
     suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>?
 
     suspend fun insertPaidDate(paidDate: PaidDate)
-    suspend fun getPaidDate(): PaidDate?
+    suspend fun getLastPaidDate(): PaidDate?
     suspend fun deletePaidDate(paidDate: PaidDate?)
     fun getPaidDates(): LiveData<List<PaidDate>>
 }

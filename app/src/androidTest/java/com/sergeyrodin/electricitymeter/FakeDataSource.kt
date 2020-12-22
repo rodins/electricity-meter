@@ -60,7 +60,7 @@ class FakeDataSource: MeterDataSource {
         observablePaidDates.value = paidDates
     }
 
-    override suspend fun getPaidDate(): PaidDate? {
+    override suspend fun getLastPaidDate(): PaidDate? {
         return paidDates.lastOrNull()
     }
 

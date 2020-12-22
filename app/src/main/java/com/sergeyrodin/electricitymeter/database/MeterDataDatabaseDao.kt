@@ -21,8 +21,8 @@ interface MeterDataDatabaseDao {
     @Insert
     suspend fun insertPaidDate(paidDate: PaidDate)
 
-    @Query("SELECT * FROM paid_dates LIMIT 1")
-    suspend fun getPaidDate(): PaidDate?
+    @Query("SELECT * FROM paid_dates ORDER BY id DESC LIMIT 1")
+    suspend fun getLastPaidDate(): PaidDate?
 
     @Delete
     suspend fun deletePaidDate(paidDate: PaidDate?)

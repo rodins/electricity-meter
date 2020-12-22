@@ -38,9 +38,9 @@ class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): Meter
         }
     }
 
-    override suspend fun getPaidDate(): PaidDate? {
+    override suspend fun getLastPaidDate(): PaidDate? {
         wrapEspressoIdlingResource {
-            return meterDataDao.getPaidDate()
+            return meterDataDao.getLastPaidDate()
         }
     }
 

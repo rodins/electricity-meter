@@ -18,7 +18,6 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
-import java.util.*
 
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
@@ -88,7 +87,7 @@ class RoomMeterDataSourceTest {
 
         dataSource.insertPaidDate(paidDate)
 
-        val paidDateFromDb = dataSource.getPaidDate()
+        val paidDateFromDb = dataSource.getLastPaidDate()
         assertThat(paidDate.date, `is`(paidDateFromDb?.date))
     }
 
@@ -99,11 +98,11 @@ class RoomMeterDataSourceTest {
 
         dataSource.insertPaidDate(paidDate)
 
-        val paidDateToDelete = dataSource.getPaidDate()
+        val paidDateToDelete = dataSource.getLastPaidDate()
 
         dataSource.deletePaidDate(paidDateToDelete)
 
-        val paidDateDeleted = dataSource.getPaidDate()
+        val paidDateDeleted = dataSource.getLastPaidDate()
         assertThat(paidDateDeleted, `is`(nullValue()))
     }
 
