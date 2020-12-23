@@ -157,4 +157,25 @@ class RoomMeterDataSourceTest {
         val items = dataSource.getPaidDates().getOrAwaitValue()
         assertThat(items.size, `is`(1))
     }
+
+    @Test
+    fun getPaidDatesRange() = runBlockingTest {
+        val date1 = 1602219377796
+        val date2 = 1604123777809
+        val date3 = 1606715777809
+        val date4 = 1606802177809
+
+        val paidDate1 = PaidDate(1, date1)
+        val paidDate2 = PaidDate(2, date2)
+        val paidDate3 = PaidDate(3, date3)
+        val paidDate4 = PaidDate(4, date4)
+
+        dataSource.insertPaidDate(paidDate1)
+        dataSource.insertPaidDate(paidDate2)
+        dataSource.insertPaidDate(paidDate3)
+        dataSource.insertPaidDate(paidDate4)
+
+        val items = dataSource.getPaidDatesRangeById(paidDate2.id)
+        assertThat(items?.size, `is`(2))
+    }
 }

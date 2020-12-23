@@ -13,6 +13,9 @@ import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
 import com.sergeyrodin.electricitymeter.utils.hideKeyboard
 
+const val PAID_DATE_ID = "ID"
+const val NO_PAID_DATE_ID = -1
+
 class MeterDataListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -20,7 +23,9 @@ class MeterDataListFragment : Fragment() {
     ): View? {
         val binding = FragmentMeterDataListBinding.inflate(inflater, container, false)
         val dataSource = (requireActivity().application as ElectricityMeterApplication).meterDataSource
-        val viewModelFactory = MeterDataListViewModelFactory(dataSource)
+        val args = requireArguments()
+        val paidDateId = args.getInt(PAID_DATE_ID, NO_PAID_DATE_ID)
+        val viewModelFactory = MeterDataListViewModelFactory(dataSource, paidDateId)
         val viewModel = ViewModelProvider(this, viewModelFactory)
             .get(MeterDataListViewModel::class.java)
 

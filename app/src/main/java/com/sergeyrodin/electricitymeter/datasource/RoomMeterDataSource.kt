@@ -55,4 +55,10 @@ class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): Meter
             return meterDataDao.getPaidDates()
         }
     }
+
+    override fun getPaidDatesRangeById(id: Int): List<PaidDate>? {
+        wrapEspressoIdlingResource {
+            return meterDataDao.getPaidDatesRangeById(id)
+        }
+    }
 }

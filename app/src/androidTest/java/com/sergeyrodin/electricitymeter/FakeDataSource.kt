@@ -47,7 +47,7 @@ class FakeDataSource: MeterDataSource {
 
     override suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>? {
         return data.filter {
-            it.date in beginDate until endDate
+            it.date in beginDate..endDate
         }
     }
 
@@ -73,6 +73,18 @@ class FakeDataSource: MeterDataSource {
 
     override fun getPaidDates(): LiveData<List<PaidDate>> {
         return observablePaidDates
+    }
+
+    override fun getPaidDatesRangeById(id: Int): List<PaidDate>? {
+        val paidDatesRange = paidDates.filter {
+            it.id >= id
+        }
+
+        if(paidDatesRange.size <= 2) {
+            return paidDatesRange
+        } else {
+            return paidDatesRange.subList(0, 2)
+        }
     }
 
 }

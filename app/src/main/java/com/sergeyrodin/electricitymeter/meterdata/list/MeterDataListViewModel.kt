@@ -12,7 +12,10 @@ private const val PRICE_KWH_BIG = 1.68
 private const val SMALL_PRICE_KW = 100
 private const val PRICE_100_KWH = PRICE_KWH_SMALL * SMALL_PRICE_KW
 
-class MeterDataListViewModel(private val dataSource: MeterDataSource) : ViewModel() {
+class MeterDataListViewModel(
+    private val dataSource: MeterDataSource,
+    private val paidDateId: Int = NO_PAID_DATE_ID
+) : ViewModel() {
     private val observableData = MutableLiveData<List<MeterData>>()
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
         Transformations.map(observableData) { meterData ->
@@ -96,12 +99,21 @@ class MeterDataListViewModel(private val dataSource: MeterDataSource) : ViewMode
        get() = _hideKeyboardEvent
 
     init{
-        viewModelScope.launch{
-            val paidDate = dataSource.getLastPaidDate()
-            if(paidDate == null) {
-                updateObservableData()
-            }else {
-                updateObservableData(paidDate.date)
+        viewModelScope.launch {
+            if(paidDateId == NO_PAID_DATE_ID) {
+                val paidDate = dataSource.getLastPaidDate()
+                if(paidDate == null) {
+                    updateObservableData()
+                }else {
+                    updateObservableData(paidDate.date)
+                }
+            } else {
+                val paidDateRange = dataSource.getPaidDatesRangeById(paidDateId)
+                if(paidDateRange?.size == 2) {
+                    updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
+                }else if(paidDateRange?.size == 1) {
+                    updateObservableData(paidDateRange[0].date)
+                }
             }
         }
     }

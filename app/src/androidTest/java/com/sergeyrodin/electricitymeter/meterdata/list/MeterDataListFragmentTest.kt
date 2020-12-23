@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
 import android.content.Context
+import android.os.Bundle
 import androidx.appcompat.view.menu.ActionMenuItem
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
@@ -19,6 +20,7 @@ import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.ServiceLocator
 import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
@@ -34,9 +36,11 @@ class MeterDataListFragmentTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
     private lateinit var dataSource: FakeDataSource
+    private lateinit var args: Bundle
 
     @Before
     fun initDataSource() {
+        args = Bundle()
         dataSource = FakeDataSource()
         ServiceLocator.dataSource = dataSource
     }
@@ -48,14 +52,14 @@ class MeterDataListFragmentTest {
 
     @Test
     fun noItems_noDataTextDisplayed() {
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
         onView(withText(R.string.no_items)).check(matches(isDisplayed()))
     }
 
     @Test
     fun addItemClick_nameEquals() {
         val data = "14525"
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_edit)).perform(typeText(data))
         onView(withId(R.id.add_data_button)).perform(click())
@@ -67,7 +71,7 @@ class MeterDataListFragmentTest {
     fun addTwoItems_namesDisplayed() {
         val data1 = "14556"
         val data2 = "14579"
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_edit)).perform(typeText(data1))
         onView(withId(R.id.add_data_button)).perform(click())
@@ -84,7 +88,7 @@ class MeterDataListFragmentTest {
         val date = System.currentTimeMillis()
         val data = 14611
         dataSource.testInsert(MeterData(data, date = date))
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(dateToString(date)))))
     }
@@ -95,7 +99,7 @@ class MeterDataListFragmentTest {
         val data2 = "14579"
         val diff1 = "0"
         val diff2 = "23"
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_edit)).perform(typeText(data1))
         onView(withId(R.id.add_data_button)).perform(click())
@@ -120,7 +124,7 @@ class MeterDataListFragmentTest {
         val total = 44
         val avg = 14
         val price = 39.6
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         val context = ApplicationProvider.getApplicationContext<Context>()
         val totalValue = context.resources.getString(R.string.total_format, total, avg, price)
@@ -136,7 +140,7 @@ class MeterDataListFragmentTest {
         dataSource.testInsert(MeterData(data2))
         val price1 = 0.0
         val price2 = 14.4
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(price1.toString()))))
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(price2.toString()))))
@@ -146,15 +150,14 @@ class MeterDataListFragmentTest {
     fun oneItem_noItemsTextNotDisplayed() {
         val data = 14622
         dataSource.testInsert(MeterData(data))
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
-
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
         onView(withText(R.string.no_items)).check(matches(not(isDisplayed())))
     }
 
     @Test
     fun onAddItem_clearDataEdit() {
         val data = "14704"
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_edit)).perform(typeText(data))
         onView(withId(R.id.add_data_button)).perform(click())
@@ -170,7 +173,7 @@ class MeterDataListFragmentTest {
         val date2 = 1604123777809
         dataSource.testInsert(MeterData(data1, date = date1))
         dataSource.testInsert(MeterData(data2, date = date2))
-        launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.paid_button)).perform(click())
         onView(withSubstring(data1.toString())).check(doesNotExist())
@@ -182,7 +185,7 @@ class MeterDataListFragmentTest {
         val navController = TestNavHostController(getApplicationContext())
         navController.setGraph(R.navigation.navigation)
 
-        val scenario = launchFragmentInContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+        val scenario = launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
         val historyMenuItem = ActionMenuItem(
             getApplicationContext(),
             0,
@@ -197,5 +200,40 @@ class MeterDataListFragmentTest {
         }
 
         assertThat(navController.currentDestination?.id, `is`(R.id.paidListFragment))
+    }
+
+    @Test
+    fun paidDateIdArgs_filteredMeterDataDisplayed() {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        val data3 = 14579
+        val date3 = 1606715777809
+        val data4 = 14638
+        val date4 = 1606802177809
+        val data5 = 14971
+
+        dataSource.testInsert(MeterData(data1, date = date1))
+        dataSource.testInsert(MeterData(data2, date = date2))
+        dataSource.testInsert(MeterData(data3, date = date3))
+        dataSource.testInsert(MeterData(data4, date = date4))
+        dataSource.testInsert(MeterData(data5))
+
+        val paidDate1 = PaidDate(1, date2)
+        val paidDate2 = PaidDate(2, date4)
+
+        dataSource.testInsert(paidDate1)
+        dataSource.testInsert(paidDate2)
+
+        val args = Bundle()
+        args.putInt(PAID_DATE_ID, paidDate1.id)
+        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
+
+        onView(withSubstring(data1.toString())).check(doesNotExist())
+        onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data3.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data4.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data5.toString())).check(doesNotExist())
     }
 }

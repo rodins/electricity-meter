@@ -6,7 +6,12 @@
     <fragment
         android:id="@+id/meterDataListFragment"
         android:name="com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListFragment"
-        android:label="MeterDataListFragment" />
+        android:label="MeterDataListFragment" >
+        <argument
+            android:name="paidDateId"
+            app:argType="integer"
+            android:defaultValue="-1" />
+    </fragment>
     <fragment
         android:id="@+id/paidListFragment"
         android:name="com.sergeyrodin.electricitymeter.paidlist.PaidListFragment"

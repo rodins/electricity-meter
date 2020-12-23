@@ -33,4 +33,7 @@ interface MeterDataDatabaseDao {
     @Query("SELECT * FROM paid_dates")
     fun getPaidDates(): LiveData<List<PaidDate>>
 
+    @Query("SELECT * FROM paid_dates WHERE id >= :id LIMIT 2")
+    fun getPaidDatesRangeById(id: Int): List<PaidDate>?
+
 }
