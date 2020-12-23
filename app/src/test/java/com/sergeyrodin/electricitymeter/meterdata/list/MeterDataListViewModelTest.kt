@@ -1,11 +1,11 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.FakeDataSource
+import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.PaidDate
-import com.sergeyrodin.electricitymeter.meterdata.getOrAwaitValue
+import com.sergeyrodin.electricitymeter.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.*
