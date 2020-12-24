@@ -37,50 +37,6 @@ class RoomMeterDataSourceTest {
     }
 
     @Test
-    fun insertAndGetMeterData() = runBlockingTest {
-        val data = 14622
-        val meterData = MeterData(data)
-
-        dataSource.insert(meterData)
-
-        val meterDataFromDb = dataSource.getMeterData().getOrAwaitValue()
-        assertThat(meterDataFromDb[0].data, `is`(data))
-    }
-
-    @Test
-    fun insertAndGetMonthMeterDataNow() = runBlockingTest {
-        val data = 14622
-        val meterData = MeterData(data)
-
-        dataSource.insert(meterData)
-
-        val meterDataFromDb =
-            dataSource.getMonthMeterData(System.currentTimeMillis()).getOrAwaitValue()
-        assertThat(meterDataFromDb[0].data, `is`(data))
-    }
-
-    @Test
-    fun filterCurrentMonth() = runBlockingTest {
-        val data1 = 14314
-        val someDayOfPrevMonth = 1602219377796
-        val data2 = 14509
-        val lastDayOfPrevMonth = 1604123777809
-        val data3 = 14579
-        val lastDayOfCurrentMonth = 1606715777809
-        val data4 = 14638
-        val firstDayOfNextMonth = 1606802177809
-
-        dataSource.insert(MeterData(data1, date = someDayOfPrevMonth))
-        dataSource.insert(MeterData(data2, date = lastDayOfPrevMonth))
-        dataSource.insert(MeterData(data3, date = lastDayOfCurrentMonth))
-        dataSource.insert(MeterData(data4, date = firstDayOfNextMonth))
-
-        val meterDataFromDb = dataSource.getMonthMeterData(lastDayOfCurrentMonth).getOrAwaitValue()
-        assertThat(meterDataFromDb[0].data, `is`(data2))
-        assertThat(meterDataFromDb[1].data, `is`(data3))
-    }
-
-    @Test
     fun insertAndGetPaidDate() = runBlockingTest {
         val date = 1602219377796
         val paidDate = PaidDate(date = date)

@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.MeterDataDatabaseDao
 import com.sergeyrodin.electricitymeter.database.PaidDate
-import com.sergeyrodin.electricitymeter.utils.getMonthBoundariesByDate
 import com.sergeyrodin.electricitymeter.utils.wrapEspressoIdlingResource
 
 class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): MeterDataSource {
@@ -13,17 +12,6 @@ class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): Meter
         wrapEspressoIdlingResource {
             meterDataDao.insert(meterData)
         }
-    }
-
-    override fun getMeterData(): LiveData<List<MeterData>> {
-        wrapEspressoIdlingResource {
-            return meterDataDao.getMeterData()
-        }
-    }
-
-    override fun getMonthMeterData(dateOfMonthToDisplay: Long): LiveData<List<MeterData>> {
-        val boundaries = getMonthBoundariesByDate(dateOfMonthToDisplay)
-        return meterDataDao.getMonthMeterData(boundaries.lastDayOfPrevMonthMillis, boundaries.lastDayOfCurrentMonthMillis)
     }
 
     override suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>? {

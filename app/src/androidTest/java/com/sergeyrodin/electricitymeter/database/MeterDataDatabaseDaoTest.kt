@@ -38,19 +38,6 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.close()
     }
 
-
-    @Test
-    fun insertAndGetMeterData() = runBlockingTest {
-        val data = 14622
-        val meterData = MeterData(data)
-
-        meterDataDatabase.meterDataDatabaseDao.insert(meterData)
-
-        val meterDataFromDb = meterDataDatabase
-            .meterDataDatabaseDao.getMeterData().getOrAwaitValue()
-        assertThat(meterDataFromDb[0].data, `is`(data))
-    }
-
     @Test
     fun insertAndGetPaidDate() = runBlockingTest {
         val date = 1602219377796

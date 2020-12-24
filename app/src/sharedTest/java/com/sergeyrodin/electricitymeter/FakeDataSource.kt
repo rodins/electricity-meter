@@ -5,7 +5,6 @@ import androidx.lifecycle.MutableLiveData
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
-import com.sergeyrodin.electricitymeter.utils.getMonthBoundariesByDate
 
 class FakeDataSource: MeterDataSource {
     private val data = mutableListOf<MeterData>()
@@ -25,24 +24,6 @@ class FakeDataSource: MeterDataSource {
     fun testInsert(meterData: MeterData) {
         data.add(meterData)
         observableData.value = data
-    }
-
-    override fun getMeterData(): LiveData<List<MeterData>> {
-        return observableData
-    }
-
-    override fun getMonthMeterData(dateOfMonthToDisplay: Long): LiveData<List<MeterData>> {
-        if(dateOfMonthToDisplay == -1L) {
-            return observableData
-        }else{
-            val boundaries = getMonthBoundariesByDate(dateOfMonthToDisplay)
-
-            val dataOfMonth = data.filter {
-                it.date in boundaries.lastDayOfPrevMonthMillis..boundaries.lastDayOfCurrentMonthMillis
-            }
-            observableData.value = dataOfMonth
-            return observableData
-        }
     }
 
     override suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>? {
