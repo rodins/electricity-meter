@@ -9,7 +9,7 @@ import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 
-class PaidListAdapter: RecyclerView.Adapter<PaidListAdapter.ViewHolder>() {
+class PaidListAdapter(private val clickListener: PaidDateClickListener): RecyclerView.Adapter<PaidListAdapter.ViewHolder>() {
 
     var data = listOf<PaidDate>()
         set(value) {
@@ -26,6 +26,9 @@ class PaidListAdapter: RecyclerView.Adapter<PaidListAdapter.ViewHolder>() {
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = data[position]
         holder.textView.text = dateToString(item.date)
+        holder.textView.setOnClickListener {
+            clickListener.onClick(item.id)
+        }
     }
 
     override fun getItemCount() = data.size
@@ -33,4 +36,8 @@ class PaidListAdapter: RecyclerView.Adapter<PaidListAdapter.ViewHolder>() {
     class ViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)  {
         val textView = itemView as TextView
     }
+}
+
+class PaidDateClickListener(val clickListener: (id: Int) -> Unit) {
+    fun onClick(id: Int) = clickListener(id)
 }

@@ -6,8 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
+import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.PaidListFragmentBinding
 
@@ -24,11 +27,21 @@ class PaidListFragment : Fragment() {
         val viewModel = ViewModelProvider(this, viewModelFactory).get(PaidListViewModel::class.java)
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        val adapter = PaidListAdapter()
+        val adapter = PaidListAdapter(PaidDateClickListener { id ->
+            viewModel.onItemClick(id)
+        })
         binding.dateItems.adapter = adapter
 
         viewModel.paidDates.observe(viewLifecycleOwner, Observer{
             adapter.data = it
+        })
+
+        viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver{ paidDateId ->
+            val bundle = bundleOf("paidDateId" to paidDateId)
+            findNavController().navigate(
+                R.id.action_paidListFragment_to_meterDataListFragment,
+                bundle
+            )
         })
 
         return binding.root

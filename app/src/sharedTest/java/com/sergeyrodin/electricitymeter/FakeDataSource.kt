@@ -75,7 +75,7 @@ class FakeDataSource: MeterDataSource {
         return observablePaidDates
     }
 
-    override fun getPaidDatesRangeById(id: Int): List<PaidDate>? {
+    override suspend fun getPaidDatesRangeById(id: Int): List<PaidDate>? {
         val paidDatesRange = paidDates.filter {
             it.id >= id
         }

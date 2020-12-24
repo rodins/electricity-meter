@@ -13,7 +13,7 @@ import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
 import com.sergeyrodin.electricitymeter.utils.hideKeyboard
 
-const val PAID_DATE_ID = "ID"
+const val PAID_DATE_ID = "paidDateId"
 const val NO_PAID_DATE_ID = -1
 
 class MeterDataListFragment : Fragment() {

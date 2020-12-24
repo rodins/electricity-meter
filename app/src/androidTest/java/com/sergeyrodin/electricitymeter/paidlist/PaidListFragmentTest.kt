@@ -2,7 +2,11 @@ package com.sergeyrodin.electricitymeter.paidlist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
+import androidx.navigation.Navigation
+import androidx.navigation.testing.TestNavHostController
+import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withText
@@ -13,6 +17,7 @@ import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.ServiceLocator
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
+import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Assert.*
@@ -73,5 +78,24 @@ class PaidListFragmentTest {
 
         onView(withText(dateToString(date1))).check(matches(isDisplayed()))
         onView(withText(dateToString(date2))).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun itemClicked_navigationCalled() {
+        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+        navController.setGraph(R.navigation.navigation)
+        navController.setCurrentDestination(R.id.paidListFragment)
+
+        val id = 1
+        val date = 1602219377796
+        dataSource.testInsert(PaidDate(id, date))
+        val scenario = launchFragmentInContainer<PaidListFragment>(null, R.style.Theme_ElectricityMeter)
+        scenario.onFragment { fragment ->
+            Navigation.setViewNavController(fragment.requireView(), navController)
+        }
+
+        onView(withText(dateToString(date))).perform(click())
+
+        assertThat(navController.currentDestination?.id, `is`(R.id.meterDataListFragment))
     }
 }

@@ -6,7 +6,7 @@ import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Rule
@@ -64,5 +64,14 @@ class PaidListViewModelTest {
 
         val items = subject.paidDates.getOrAwaitValue()
         assertThat(items.size, `is`(3))
+    }
+
+    @Test
+    fun onItemClick_navigationEventIdEquals() {
+        val id = 1
+        subject.onItemClick(id)
+
+        val event = subject.itemClickEvent.getOrAwaitValue()
+        assertThat(event.getContentIfNotHandled(), `is`(id))
     }
 }

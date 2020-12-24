@@ -14,6 +14,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.MeterDataDatabase
+import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.datasource.RoomMeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
@@ -105,6 +106,80 @@ class MainActivityTest {
 
         onView(withText(dateToString(date1))).check(matches(isDisplayed()))
         onView(withText(dateToString(date2))).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun displayMeterDataByPaidDate() = runBlocking {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        val data3 = 14579
+        val date3 = 1606715777809
+        val data4 = 14638
+        val date4 = 1606802177809
+        val data5 = 14971
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insert(MeterData(data3, date = date3))
+        dataSource.insert(MeterData(data4, date = date4))
+        dataSource.insert(MeterData(data5))
+
+        val paidDate1 = PaidDate(date = date2)
+        val paidDate2 = PaidDate(date = date4)
+
+        dataSource.insertPaidDate(paidDate1)
+        dataSource.insertPaidDate(paidDate2)
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.paidListFragment)).perform(click())
+        onView(withText(dateToString(date2))).perform(click())
+
+        onView(withSubstring(data1.toString())).check(doesNotExist())
+        onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data3.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data4.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data5.toString())).check(doesNotExist())
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun displayMeterDataBySinglePaidDate() = runBlocking {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        val data3 = 14579
+        val date3 = 1606715777809
+        val data4 = 14638
+        val date4 = 1606802177809
+        val data5 = 14971
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insert(MeterData(data3, date = date3))
+        dataSource.insert(MeterData(data4, date = date4))
+        dataSource.insert(MeterData(data5))
+
+        val paidDate = PaidDate(date = date2)
+
+        dataSource.insertPaidDate(paidDate)
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.paidListFragment)).perform(click())
+        onView(withText(dateToString(date2))).perform(click())
+
+        onView(withSubstring(data1.toString())).check(doesNotExist())
+        onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data3.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data4.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data5.toString())).check(matches(isDisplayed()))
 
         activityScenario.close()
     }

@@ -15,5 +15,9 @@
     <fragment
         android:id="@+id/paidListFragment"
         android:name="com.sergeyrodin.electricitymeter.paidlist.PaidListFragment"
-        android:label="PaidListFragment" />
+        android:label="PaidListFragment" >
+        <action
+            android:id="@+id/action_paidListFragment_to_meterDataListFragment"
+            app:destination="@id/meterDataListFragment" />
+    </fragment>
 </navigation>
