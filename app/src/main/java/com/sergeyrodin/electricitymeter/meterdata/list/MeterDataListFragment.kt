@@ -6,15 +6,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.NavigationUI
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
 import com.sergeyrodin.electricitymeter.utils.hideKeyboard
-
-const val PAID_DATE_ID = "paidDateId"
-const val NO_PAID_DATE_ID = -1
 
 class MeterDataListFragment : Fragment() {
     override fun onCreateView(
@@ -23,9 +21,8 @@ class MeterDataListFragment : Fragment() {
     ): View? {
         val binding = FragmentMeterDataListBinding.inflate(inflater, container, false)
         val dataSource = (requireActivity().application as ElectricityMeterApplication).meterDataSource
-        val args = requireArguments()
-        val paidDateId = args.getInt(PAID_DATE_ID, NO_PAID_DATE_ID)
-        val viewModelFactory = MeterDataListViewModelFactory(dataSource, paidDateId)
+        val args: MeterDataListFragmentArgs by navArgs()
+        val viewModelFactory = MeterDataListViewModelFactory(dataSource, args.paidDateId)
         val viewModel = ViewModelProvider(this, viewModelFactory)
             .get(MeterDataListViewModel::class.java)
 

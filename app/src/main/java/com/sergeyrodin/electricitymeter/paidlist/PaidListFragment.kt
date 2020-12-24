@@ -37,10 +37,8 @@ class PaidListFragment : Fragment() {
         })
 
         viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver{ paidDateId ->
-            val bundle = bundleOf("paidDateId" to paidDateId)
             findNavController().navigate(
-                R.id.action_paidListFragment_to_meterDataListFragment,
-                bundle
+                PaidListFragmentDirections.actionPaidListFragmentToMeterDataListFragment(paidDateId)
             )
         })
 

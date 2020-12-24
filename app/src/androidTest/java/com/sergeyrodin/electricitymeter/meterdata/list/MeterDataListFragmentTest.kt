@@ -226,8 +226,7 @@ class MeterDataListFragmentTest {
         dataSource.testInsert(paidDate1)
         dataSource.testInsert(paidDate2)
 
-        val args = Bundle()
-        args.putInt(PAID_DATE_ID, paidDate1.id)
+        val args = MeterDataListFragmentArgs(paidDate1.id).toBundle()
         launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withSubstring(data1.toString())).check(doesNotExist())

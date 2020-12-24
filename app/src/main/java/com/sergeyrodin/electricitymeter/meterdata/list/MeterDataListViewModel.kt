@@ -11,6 +11,7 @@ private const val PRICE_KWH_SMALL = 0.9
 private const val PRICE_KWH_BIG = 1.68
 private const val SMALL_PRICE_KW = 100
 private const val PRICE_100_KWH = PRICE_KWH_SMALL * SMALL_PRICE_KW
+private const val NO_PAID_DATE_ID = -1
 
 class MeterDataListViewModel(
     private val dataSource: MeterDataSource,
