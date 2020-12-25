@@ -13,8 +13,6 @@ class MeterDataListViewModel(
     private val dataSource: MeterDataSource,
     private val paidDateId: Int = NO_PAID_DATE_ID
 ) : ViewModel() {
-    private val priceCalculator = PriceCalculator()
-    private val kwhCalculator = KwhCalculator()
 
     private val observableData = MutableLiveData<List<MeterData>>()
 
@@ -28,9 +26,9 @@ class MeterDataListViewModel(
             var prevData = -1
             val firstData = meterData.first().data
             meterData.map { currentData ->
-                val dailyKw = kwhCalculator.calculateDailyKwh(prevData, currentData)
+                val dailyKw = calculateDailyKwh(prevData, currentData)
                 prevData = currentData.data
-                val dailyPrice = priceCalculator.calculateDailyPrice(dailyKw, currentData, firstData)
+                val dailyPrice = calculateDailyPrice(dailyKw, currentData, firstData)
                 MeterDataPresentation(currentData.data, currentData.date, dailyKw, dailyPrice)
             }
         } else {
@@ -41,7 +39,7 @@ class MeterDataListViewModel(
         if (meterData.isEmpty()) {
             0
         } else {
-            kwhCalculator.getTotalKwh(meterData)
+            getTotalKwh(meterData)
         }
     }
 
@@ -55,7 +53,7 @@ class MeterDataListViewModel(
         if (meterData.size < 2) {
             0
         } else {
-            kwhCalculator.getAverageKwh(meterData)
+            getAverageKwh(meterData)
         }
     }
 
@@ -69,7 +67,7 @@ class MeterDataListViewModel(
 
     private fun calculateTotalPrice(meterData: List<MeterData>): Double {
         val totalKwh = getTotalKwh(meterData)
-        return priceCalculator.calculateTotalPrice(totalKwh)
+        return calculateTotalPrice(totalKwh)
     }
 
     val noItems = Transformations.map(observableData) {
