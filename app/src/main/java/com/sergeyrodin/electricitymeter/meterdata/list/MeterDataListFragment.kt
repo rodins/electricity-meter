@@ -3,8 +3,7 @@ package com.sergeyrodin.electricitymeter.meterdata.list
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.NavigationUI
@@ -15,35 +14,51 @@ import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
 import com.sergeyrodin.electricitymeter.utils.hideKeyboard
 
 class MeterDataListFragment : Fragment() {
+    private val args: MeterDataListFragmentArgs by navArgs()
+    private val viewModel by viewModels<MeterDataListViewModel> {
+        MeterDataListViewModelFactory(
+            (requireActivity().application as ElectricityMeterApplication).meterDataSource,
+            args.paidDateId)
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         val binding = FragmentMeterDataListBinding.inflate(inflater, container, false)
-        val dataSource = (requireActivity().application as ElectricityMeterApplication).meterDataSource
-        val args: MeterDataListFragmentArgs by navArgs()
-        val viewModelFactory = MeterDataListViewModelFactory(dataSource, args.paidDateId)
-        val viewModel = ViewModelProvider(this, viewModelFactory)
-            .get(MeterDataListViewModel::class.java)
-
-        binding.meterDataListViewModel = viewModel
-        binding.lifecycleOwner = this
-
         val adapter = MeterDataAdapter()
-        binding.dataList.adapter = adapter
 
-        viewModel.dataToDisplay.observe(viewLifecycleOwner, Observer { meterData ->
-            adapter.data = meterData
-        })
-
-        viewModel.hideKeyboardEvent.observe(viewLifecycleOwner, EventObserver{
-            hideKeyboard(requireActivity())
-            binding.dataEdit.text.clear()
-        })
+        setupBinding(binding, adapter)
+        setDataToAdapter(adapter)
+        observeHideKeyboardEvent(binding)
 
         setHasOptionsMenu(true)
 
         return binding.root
+    }
+
+    private fun setupBinding(
+        binding: FragmentMeterDataListBinding,
+        adapter: MeterDataAdapter
+    ) {
+        binding.apply {
+            meterDataListViewModel = viewModel
+            lifecycleOwner = viewLifecycleOwner
+            dataList.adapter = adapter
+        }
+    }
+
+    private fun setDataToAdapter(adapter: MeterDataAdapter) {
+        viewModel.dataToDisplay.observe(viewLifecycleOwner, { meterData ->
+            adapter.data = meterData
+        })
+    }
+
+    private fun observeHideKeyboardEvent(binding: FragmentMeterDataListBinding) {
+        viewModel.hideKeyboardEvent.observe(viewLifecycleOwner, EventObserver {
+            hideKeyboard(requireActivity())
+            binding.dataEdit.text.clear()
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
