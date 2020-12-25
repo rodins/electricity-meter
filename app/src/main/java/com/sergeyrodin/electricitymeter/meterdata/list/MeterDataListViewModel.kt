@@ -18,47 +18,79 @@ class MeterDataListViewModel(
     private val paidDateId: Int = NO_PAID_DATE_ID
 ) : ViewModel() {
     private val observableData = MutableLiveData<List<MeterData>>()
+
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
         Transformations.map(observableData) { meterData ->
-            if (meterData.isNotEmpty()) {
-                var prevData = -1
-                val firstData = meterData.first().data
-                meterData.map {
-                    val dailyKw = if (prevData != -1) it.data - prevData else 0
-                    prevData = it.data
-                    var price = 0.0
-                    if (dailyKw > 0) {
-                        val currentTotalKw = it.data - firstData
-                        if (currentTotalKw > SMALL_PRICE_KW) {
-                            if (currentTotalKw - dailyKw > SMALL_PRICE_KW) {
-                                price = dailyKw * PRICE_KWH_BIG
-                            } else {
-                                val bigPriceKw = currentTotalKw - SMALL_PRICE_KW
-                                val smallPriceKw = dailyKw - bigPriceKw
-                                val smallPrice = smallPriceKw * PRICE_KWH_SMALL
-                                val bigPrice = bigPriceKw * PRICE_KWH_BIG
-                                price = smallPrice + bigPrice
-                            }
-                        } else {
-                            price = dailyKw * PRICE_KWH_SMALL
-                        }
-                    }
-                    MeterDataPresentation(it.data, it.date, dailyKw, price)
+            convertMeterDataListToPresentationList(meterData)
+        }
+
+    private fun convertMeterDataListToPresentationList(meterData: List<MeterData>) =
+        if (meterData.isNotEmpty()) {
+            var prevData = -1
+            val firstData = meterData.first().data
+            meterData.map { currentData ->
+                val dailyKw = calculateDailyKwh(prevData, currentData)
+                prevData = currentData.data
+                val dailyPrice = calculateDailyPrice(dailyKw, currentData, firstData)
+                MeterDataPresentation(currentData.data, currentData.date, dailyKw, dailyPrice)
+            }
+        } else {
+            listOf()
+        }
+
+    private fun calculateDailyKwh(
+        prevData: Int,
+        data: MeterData
+    ): Int {
+        return if (prevData != -1) data.data - prevData else 0
+    }
+
+
+    private fun calculateDailyPrice(
+        dailyKw: Int,
+        currentData: MeterData,
+        firstData: Int
+    ): Double {
+        var price = 0.0
+        if (dailyKw > 0) {
+            val currentTotalKw = currentData.data - firstData
+            if (currentTotalKw > SMALL_PRICE_KW) {
+                if (currentTotalKw - dailyKw > SMALL_PRICE_KW) {
+                    price = calculateBigPrice(dailyKw)
+                } else {
+                    price = calculateMixedPrice(currentTotalKw, dailyKw)
                 }
             } else {
-                listOf()
+                price = calculateSmallPrice(dailyKw)
             }
         }
+        return price
+    }
+
+    private fun calculateBigPrice(dailyKw: Int) = dailyKw * PRICE_KWH_BIG
+
+    private fun calculateMixedPrice(
+        currentTotalKw: Int,
+        dailyKw: Int
+    ): Double {
+        val bigPriceKw = currentTotalKw - SMALL_PRICE_KW
+        val smallPriceKw = dailyKw - bigPriceKw
+        val smallPrice = calculateSmallPrice(smallPriceKw)
+        val bigPrice = calculateBigPrice(bigPriceKw)
+        return smallPrice + bigPrice
+    }
+
+    private fun calculateSmallPrice(dailyKw: Int) = dailyKw * PRICE_KWH_SMALL
 
     val total: LiveData<Int> = Transformations.map(observableData) { meterData ->
         if (meterData.isEmpty()) {
             0
         } else {
-            getTotal(meterData)
+            getTotalKwh(meterData)
         }
     }
 
-    private fun getTotal(meterData: List<MeterData>): Int {
+    private fun getTotalKwh(meterData: List<MeterData>): Int {
         val first = meterData.first()
         val last = meterData.last()
         return last.data - first.data
@@ -68,26 +100,30 @@ class MeterDataListViewModel(
         if (meterData.size < 2) {
             0
         } else {
-            val total = getTotal(meterData)
-            val numberOfItems = meterData.size - 1
-            total / numberOfItems
+            getAverageKwh(meterData)
         }
+    }
+
+    private fun getAverageKwh(meterData: List<MeterData>): Int {
+        val total = getTotalKwh(meterData)
+        val numberOfItems = meterData.size - 1
+        return total / numberOfItems
     }
 
     val price: LiveData<Double> = Transformations.map(observableData) { meterData ->
         if (meterData.size < 2) {
             0.0
         } else {
-            calculatePrice(meterData)
+            calculateTotalPrice(meterData)
         }
     }
 
-    private fun calculatePrice(meterData: List<MeterData>): Double {
-        val total = getTotal(meterData)
+    private fun calculateTotalPrice(meterData: List<MeterData>): Double {
+        val total = getTotalKwh(meterData)
         if (total > 100) {
             return (total - 100) * PRICE_KWH_BIG + PRICE_100_KWH
         } else {
-            return total * PRICE_KWH_SMALL
+            return calculateSmallPrice(total)
         }
     }
 
@@ -123,14 +159,14 @@ class MeterDataListViewModel(
         }
     }
 
+    private suspend fun updateObservableData(beginDate: Long = 0L, endDate: Long = Long.MAX_VALUE) {
+        observableData.value = dataSource.getMeterDataBetweenDates(beginDate, endDate)
+    }
+
     fun onAddData(data: String) {
         if (data.isNotBlank()) {
             val dataToInsert = data.toInt()
-            val lastItemData = if(observableData.value?.isNotEmpty() == true) {
-                observableData.value?.last()?.data?:0
-            }else{
-                0
-            }
+            val lastItemData = getLastItemData()
             if(lastItemData < dataToInsert) {
                 viewModelScope.launch {
                     val meterData = MeterData(dataToInsert)
@@ -142,8 +178,10 @@ class MeterDataListViewModel(
         }
     }
 
-    private suspend fun updateObservableData(beginDate: Long = 0L, endDate: Long = Long.MAX_VALUE) {
-        observableData.value = dataSource.getMeterDataBetweenDates(beginDate, endDate)
+    private fun getLastItemData() = if (observableData.value?.isNotEmpty() == true) {
+        observableData.value?.last()?.data ?: 0
+    } else {
+        0
     }
 
     fun onPaid() {
