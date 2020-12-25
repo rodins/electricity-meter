@@ -101,20 +101,24 @@ class MeterDataListViewModel(
 
     init{
         viewModelScope.launch {
-            if(paidDateId == NO_PAID_DATE_ID) {
-                val paidDate = dataSource.getLastPaidDate()
-                if(paidDate == null) {
-                    updateObservableData()
-                }else {
-                    updateObservableData(paidDate.date)
-                }
+            updateMeterData()
+        }
+    }
+
+    private suspend fun updateMeterData() {
+        if (paidDateId == NO_PAID_DATE_ID) {
+            val paidDate = dataSource.getLastPaidDate()
+            if (paidDate == null) {
+                updateObservableData()
             } else {
-                val paidDateRange = dataSource.getPaidDatesRangeById(paidDateId)
-                if(paidDateRange?.size == 2) {
-                    updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
-                }else if(paidDateRange?.size == 1) {
-                    updateObservableData(paidDateRange[0].date)
-                }
+                updateObservableData(paidDate.date)
+            }
+        } else {
+            val paidDateRange = dataSource.getPaidDatesRangeById(paidDateId)
+            if (paidDateRange?.size == 2) {
+                updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
+            } else if (paidDateRange?.size == 1) {
+                updateObservableData(paidDateRange[0].date)
             }
         }
     }
@@ -131,7 +135,7 @@ class MeterDataListViewModel(
                 viewModelScope.launch {
                     val meterData = MeterData(dataToInsert)
                     dataSource.insert(meterData)
-                    updateObservableData()
+                    updateMeterData()
                 }
             }
             _hideKeyboardEvent.value = Event(Unit)

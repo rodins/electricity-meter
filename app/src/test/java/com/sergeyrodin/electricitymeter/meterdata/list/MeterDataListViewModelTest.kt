@@ -524,4 +524,32 @@ class MeterDataListViewModelTest{
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, `is`(data4))
     }
+
+    @Test
+    fun addItemAfterOnPaid_dataEquals() {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        val data3 = 14579
+        val date3 = 1606715777809
+        val data4 = 14638
+        val date4 = 1606802177809
+        val data5 = 15011
+
+        dataSource.testInsert(MeterData(data1, date = date1))
+        dataSource.testInsert(MeterData(data2, date = date2))
+        dataSource.testInsert(MeterData(data3, date = date3))
+        dataSource.testInsert(MeterData(data4, date = date4))
+
+        subject = MeterDataListViewModel(dataSource)
+
+        subject.onPaid()
+
+        subject.onAddData(data5.toString())
+
+        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay[0].data, `is`(data4))
+        assertThat(dataToDisplay[1].data, `is`(data5))
+    }
 }
