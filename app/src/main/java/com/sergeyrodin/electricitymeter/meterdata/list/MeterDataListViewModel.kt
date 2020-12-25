@@ -43,12 +43,6 @@ class MeterDataListViewModel(
         }
     }
 
-    private fun getTotalKwh(meterData: List<MeterData>): Int {
-        val first = meterData.first()
-        val last = meterData.last()
-        return last.data - first.data
-    }
-
     val avg: LiveData<Int> = Transformations.map(observableData) { meterData ->
         if (meterData.size < 2) {
             0
@@ -86,19 +80,27 @@ class MeterDataListViewModel(
 
     private suspend fun updateMeterData() {
         if (paidDateId == NO_PAID_DATE_ID) {
-            val paidDate = dataSource.getLastPaidDate()
-            if (paidDate == null) {
-                updateObservableData()
-            } else {
-                updateObservableData(paidDate.date)
-            }
+            updateMeterDataByDefault()
         } else {
-            val paidDateRange = dataSource.getPaidDatesRangeById(paidDateId)
-            if (paidDateRange?.size == 2) {
-                updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
-            } else if (paidDateRange?.size == 1) {
-                updateObservableData(paidDateRange[0].date)
-            }
+            updateMeterDataByPaidDateId()
+        }
+    }
+
+    private suspend fun updateMeterDataByDefault() {
+        val paidDate = dataSource.getLastPaidDate()
+        if (paidDate == null) {
+            updateObservableData()
+        } else {
+            updateObservableData(paidDate.date)
+        }
+    }
+
+    private suspend fun updateMeterDataByPaidDateId() {
+        val paidDateRange = dataSource.getPaidDatesRangeById(paidDateId)
+        if (paidDateRange?.size == 2) {
+            updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
+        } else if (paidDateRange?.size == 1) {
+            updateObservableData(paidDateRange[0].date)
         }
     }
 
