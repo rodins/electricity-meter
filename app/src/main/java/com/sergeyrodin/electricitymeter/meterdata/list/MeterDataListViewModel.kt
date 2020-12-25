@@ -14,6 +14,8 @@ class MeterDataListViewModel(
     private val paidDateId: Int = NO_PAID_DATE_ID
 ) : ViewModel() {
     private val priceCalculator = PriceCalculator()
+    private val kwhCalculator = KwhCalculator()
+
     private val observableData = MutableLiveData<List<MeterData>>()
 
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
@@ -26,7 +28,7 @@ class MeterDataListViewModel(
             var prevData = -1
             val firstData = meterData.first().data
             meterData.map { currentData ->
-                val dailyKw = calculateDailyKwh(prevData, currentData)
+                val dailyKw = kwhCalculator.calculateDailyKwh(prevData, currentData)
                 prevData = currentData.data
                 val dailyPrice = priceCalculator.calculateDailyPrice(dailyKw, currentData, firstData)
                 MeterDataPresentation(currentData.data, currentData.date, dailyKw, dailyPrice)
@@ -35,18 +37,11 @@ class MeterDataListViewModel(
             listOf()
         }
 
-    private fun calculateDailyKwh(
-        prevData: Int,
-        data: MeterData
-    ): Int {
-        return if (prevData != -1) data.data - prevData else 0
-    }
-
     val total: LiveData<Int> = Transformations.map(observableData) { meterData ->
         if (meterData.isEmpty()) {
             0
         } else {
-            getTotalKwh(meterData)
+            kwhCalculator.getTotalKwh(meterData)
         }
     }
 
@@ -60,14 +55,8 @@ class MeterDataListViewModel(
         if (meterData.size < 2) {
             0
         } else {
-            getAverageKwh(meterData)
+            kwhCalculator.getAverageKwh(meterData)
         }
-    }
-
-    private fun getAverageKwh(meterData: List<MeterData>): Int {
-        val total = getTotalKwh(meterData)
-        val numberOfItems = meterData.size - 1
-        return total / numberOfItems
     }
 
     val price: LiveData<Double> = Transformations.map(observableData) { meterData ->
