@@ -7,16 +7,13 @@ import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import kotlinx.coroutines.launch
 
-private const val PRICE_KWH_SMALL = 0.9
-private const val PRICE_KWH_BIG = 1.68
-private const val SMALL_PRICE_KW = 100
-private const val PRICE_100_KWH = PRICE_KWH_SMALL * SMALL_PRICE_KW
 private const val NO_PAID_DATE_ID = -1
 
 class MeterDataListViewModel(
     private val dataSource: MeterDataSource,
     private val paidDateId: Int = NO_PAID_DATE_ID
 ) : ViewModel() {
+    private val priceCalculator = PriceCalculator()
     private val observableData = MutableLiveData<List<MeterData>>()
 
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
@@ -31,7 +28,7 @@ class MeterDataListViewModel(
             meterData.map { currentData ->
                 val dailyKw = calculateDailyKwh(prevData, currentData)
                 prevData = currentData.data
-                val dailyPrice = calculateDailyPrice(dailyKw, currentData, firstData)
+                val dailyPrice = priceCalculator.calculateDailyPrice(dailyKw, currentData, firstData)
                 MeterDataPresentation(currentData.data, currentData.date, dailyKw, dailyPrice)
             }
         } else {
@@ -44,43 +41,6 @@ class MeterDataListViewModel(
     ): Int {
         return if (prevData != -1) data.data - prevData else 0
     }
-
-
-    private fun calculateDailyPrice(
-        dailyKw: Int,
-        currentData: MeterData,
-        firstData: Int
-    ): Double {
-        var price = 0.0
-        if (dailyKw > 0) {
-            val currentTotalKw = currentData.data - firstData
-            if (currentTotalKw > SMALL_PRICE_KW) {
-                if (currentTotalKw - dailyKw > SMALL_PRICE_KW) {
-                    price = calculateBigPrice(dailyKw)
-                } else {
-                    price = calculateMixedPrice(currentTotalKw, dailyKw)
-                }
-            } else {
-                price = calculateSmallPrice(dailyKw)
-            }
-        }
-        return price
-    }
-
-    private fun calculateBigPrice(dailyKw: Int) = dailyKw * PRICE_KWH_BIG
-
-    private fun calculateMixedPrice(
-        currentTotalKw: Int,
-        dailyKw: Int
-    ): Double {
-        val bigPriceKw = currentTotalKw - SMALL_PRICE_KW
-        val smallPriceKw = dailyKw - bigPriceKw
-        val smallPrice = calculateSmallPrice(smallPriceKw)
-        val bigPrice = calculateBigPrice(bigPriceKw)
-        return smallPrice + bigPrice
-    }
-
-    private fun calculateSmallPrice(dailyKw: Int) = dailyKw * PRICE_KWH_SMALL
 
     val total: LiveData<Int> = Transformations.map(observableData) { meterData ->
         if (meterData.isEmpty()) {
@@ -119,12 +79,8 @@ class MeterDataListViewModel(
     }
 
     private fun calculateTotalPrice(meterData: List<MeterData>): Double {
-        val total = getTotalKwh(meterData)
-        if (total > 100) {
-            return (total - 100) * PRICE_KWH_BIG + PRICE_100_KWH
-        } else {
-            return calculateSmallPrice(total)
-        }
+        val totalKwh = getTotalKwh(meterData)
+        return priceCalculator.calculateTotalPrice(totalKwh)
     }
 
     val noItems = Transformations.map(observableData) {
