@@ -5,6 +5,7 @@ import com.sergeyrodin.electricitymeter.Event
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import com.sergeyrodin.electricitymeter.utils.convertMeterDataListToPresentationList
 import kotlinx.coroutines.launch
 
 private const val NO_PAID_DATE_ID = -1
@@ -19,20 +20,6 @@ class MeterDataListViewModel(
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
         Transformations.map(observableData) { meterData ->
             convertMeterDataListToPresentationList(meterData)
-        }
-
-    private fun convertMeterDataListToPresentationList(meterData: List<MeterData>) =
-        if (meterData.isNotEmpty()) {
-            var prevData = -1
-            val firstData = meterData.first().data
-            meterData.map { currentData ->
-                val dailyKw = calculateDailyKwh(prevData, currentData)
-                prevData = currentData.data
-                val dailyPrice = calculateDailyPrice(dailyKw, currentData, firstData)
-                MeterDataPresentation(currentData.data, currentData.date, dailyKw, dailyPrice)
-            }
-        } else {
-            listOf()
         }
 
     val total: LiveData<Int> = Transformations.map(observableData) { meterData ->
