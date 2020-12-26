@@ -5,6 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
@@ -83,7 +84,8 @@ class MainActivityTest {
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        onView(withId(R.id.paid_button)).perform(click())
+        openActionBarOverflowOrOptionsMenu(getApplicationContext())
+        onView(withText(R.string.paid)).perform(click())
         onView(withId(R.id.paidListFragment)).perform(click())
         onView(withText(dateToString(date))).check(matches(isDisplayed()))
 
@@ -100,12 +102,14 @@ class MainActivityTest {
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        onView(withId(R.id.paid_button)).perform(click())
+        openActionBarOverflowOrOptionsMenu(getApplicationContext())
+        onView(withText(R.string.paid)).perform(click())
 
         onView(withId(R.id.data_edit)).perform(typeText(data2.toString()))
         onView(withId(R.id.add_data_button)).perform(click())
 
-        onView(withId(R.id.paid_button)).perform(click())
+        openActionBarOverflowOrOptionsMenu(getApplicationContext())
+        onView(withText(R.string.paid)).perform(click())
         onView(withId(R.id.paidListFragment)).perform(click())
 
         onView(withText(dateToString(date1))).check(matches(isDisplayed()))

@@ -67,7 +67,12 @@ class MeterDataListFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return NavigationUI.onNavDestinationSelected(item, findNavController())
-                || super.onOptionsItemSelected(item)
+        if(item.itemId == R.id.action_paid) {
+            viewModel.onPaid()
+            return true
+        }else {
+            return NavigationUI.onNavDestinationSelected(item, findNavController())
+                    || super.onOptionsItemSelected(item)
+        }
     }
 }

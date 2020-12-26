@@ -7,4 +7,8 @@
         android:icon="@android:drawable/ic_menu_recent_history"
         app:showAsAction="ifRoom"
         android:title="@string/action_history" />
+
+    <item
+        android:id="@+id/action_paid"
+        android:title="@string/paid" />
 </menu>

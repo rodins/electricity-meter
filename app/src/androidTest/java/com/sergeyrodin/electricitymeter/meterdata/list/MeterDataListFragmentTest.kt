@@ -173,9 +173,20 @@ class MeterDataListFragmentTest {
         val date2 = 1604123777809
         dataSource.testInsert(MeterData(data1, date = date1))
         dataSource.testInsert(MeterData(data2, date = date2))
-        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
+        val scenario = launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
+        val actionPaid = ActionMenuItem(
+            getApplicationContext(),
+            0,
+            R.id.action_paid,
+            0,
+            0,
+            null
+        )
 
-        onView(withId(R.id.paid_button)).perform(click())
+        scenario.onFragment { fragment ->
+            fragment.onOptionsItemSelected(actionPaid)
+        }
+
         onView(withSubstring(data1.toString())).check(doesNotExist())
         onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
     }
