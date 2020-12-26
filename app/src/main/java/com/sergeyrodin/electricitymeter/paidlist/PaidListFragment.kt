@@ -1,48 +1,65 @@
 package com.sergeyrodin.electricitymeter.paidlist
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
-import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.PaidListFragmentBinding
 
 class PaidListFragment : Fragment() {
+    private val viewModel by viewModels<PaidListViewModel>{
+        PaidListViewModelFactory(
+            (requireActivity().application as ElectricityMeterApplication).meterDataSource
+        )
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = PaidListFragmentBinding.inflate(inflater, container, false)
-        val viewModelFactory = PaidListViewModelFactory(
-            (requireActivity().application as ElectricityMeterApplication).meterDataSource
-        )
-        val viewModel = ViewModelProvider(this, viewModelFactory).get(PaidListViewModel::class.java)
-        binding.lifecycleOwner = viewLifecycleOwner
-        binding.viewModel = viewModel
-        val adapter = PaidListAdapter(PaidDateClickListener { id ->
-            viewModel.onItemClick(id)
-        })
-        binding.dateItems.adapter = adapter
+        val adapter = createAdapter()
 
-        viewModel.paidDates.observe(viewLifecycleOwner, Observer{
-            adapter.data = it
-        })
-
-        viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver{ paidDateId ->
-            findNavController().navigate(
-                PaidListFragmentDirections.actionPaidListFragmentToMeterDataListFragment(paidDateId)
-            )
-        })
+        setupBinding(binding, adapter)
+        setDataToAdapter(adapter)
+        observeItemClickEvent()
 
         return binding.root
     }
 
+    private fun createAdapter() = PaidListAdapter(PaidDateClickListener { id ->
+        viewModel.onItemClick(id)
+    })
+
+    private fun setupBinding(
+        binding: PaidListFragmentBinding,
+        adapter: PaidListAdapter
+    ) {
+        binding.lifecycleOwner = viewLifecycleOwner
+        binding.viewModel = viewModel
+        binding.dateItems.adapter = adapter
+    }
+
+    private fun setDataToAdapter(adapter: PaidListAdapter) {
+        viewModel.paidDates.observe(viewLifecycleOwner, {
+            adapter.data = it
+        })
+    }
+
+    private fun observeItemClickEvent() {
+        viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver { paidDateId ->
+            navigateToMeterDataListFragment(paidDateId)
+        })
+    }
+
+    private fun navigateToMeterDataListFragment(paidDateId: Int) {
+        findNavController().navigate(
+            PaidListFragmentDirections.actionPaidListFragmentToMeterDataListFragment(paidDateId)
+        )
+    }
 }
