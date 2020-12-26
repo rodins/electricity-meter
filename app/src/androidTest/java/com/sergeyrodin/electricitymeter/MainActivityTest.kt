@@ -51,6 +51,10 @@ class MainActivityTest {
     @Before
     fun initDataSource() {
         dataSource = ServiceLocator.provideMeterDataSource(getApplicationContext())
+        runBlocking {
+            dataSource.deleteAllMeterData()
+            dataSource.deleteAllPaidDates()
+        }
     }
 
     @After

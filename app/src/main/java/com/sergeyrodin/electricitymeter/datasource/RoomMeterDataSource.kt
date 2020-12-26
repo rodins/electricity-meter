@@ -49,4 +49,16 @@ class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): Meter
             return meterDataDao.getPaidDatesRangeById(id)
         }
     }
+
+    override suspend fun deleteAllMeterData() {
+        wrapEspressoIdlingResource {
+            meterDataDao.deleteAllMeterData()
+        }
+    }
+
+    override suspend fun deleteAllPaidDates() {
+        wrapEspressoIdlingResource {
+            meterDataDao.deleteAllPaidDates()
+        }
+    }
 }

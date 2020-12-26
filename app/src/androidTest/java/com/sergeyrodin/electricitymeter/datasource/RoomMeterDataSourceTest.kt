@@ -134,4 +134,44 @@ class RoomMeterDataSourceTest {
         val items = dataSource.getPaidDatesRangeById(paidDate2.id)
         assertThat(items?.size, `is`(2))
     }
+
+    @Test
+    fun deleteAllMeterData() = runBlockingTest {
+        val data1 = 14314
+        val data2 = 14509
+        val data3 = 14579
+        val data4 = 14638
+        dataSource.insert(MeterData(data1))
+        dataSource.insert(MeterData(data2))
+        dataSource.insert(MeterData(data3))
+        dataSource.insert(MeterData(data4))
+
+        dataSource.deleteAllMeterData()
+
+        val items = dataSource.getMeterDataBetweenDates(0L, Long.MAX_VALUE)
+        assertThat(items?.size, `is`(0))
+    }
+
+    @Test
+    fun deleteAllPaidDates() = runBlockingTest {
+        val date1 = 1602219377796
+        val date2 = 1604123777809
+        val date3 = 1606715777809
+        val date4 = 1606802177809
+
+        val paidDate1 = PaidDate(1, date1)
+        val paidDate2 = PaidDate(2, date2)
+        val paidDate3 = PaidDate(3, date3)
+        val paidDate4 = PaidDate(4, date4)
+
+        dataSource.insertPaidDate(paidDate1)
+        dataSource.insertPaidDate(paidDate2)
+        dataSource.insertPaidDate(paidDate3)
+        dataSource.insertPaidDate(paidDate4)
+
+        dataSource.deleteAllPaidDates()
+
+        val items = dataSource.getPaidDates().getOrAwaitValue()
+        assertThat(items.size, `is`(0))
+    }
 }

@@ -12,4 +12,6 @@ interface MeterDataSource {
     suspend fun deletePaidDate(paidDate: PaidDate?)
     fun getPaidDates(): LiveData<List<PaidDate>>
     suspend fun getPaidDatesRangeById(id: Int): List<PaidDate>?
+    suspend fun deleteAllMeterData()
+    suspend fun deleteAllPaidDates()
 }

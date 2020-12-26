@@ -68,4 +68,12 @@ class FakeDataSource: MeterDataSource {
         }
     }
 
+    override suspend fun deleteAllMeterData() {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun deleteAllPaidDates() {
+        TODO("Not yet implemented")
+    }
+
 }

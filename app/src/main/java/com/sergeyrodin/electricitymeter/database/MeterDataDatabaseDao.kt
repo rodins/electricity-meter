@@ -30,4 +30,9 @@ interface MeterDataDatabaseDao {
     @Query("SELECT * FROM paid_dates WHERE id >= :id LIMIT 2")
     suspend fun getPaidDatesRangeById(id: Int): List<PaidDate>?
 
+    @Query("DELETE FROM meter_data")
+    suspend fun deleteAllMeterData()
+
+    @Query("DELETE FROM paid_dates")
+    suspend fun deleteAllPaidDates()
 }
