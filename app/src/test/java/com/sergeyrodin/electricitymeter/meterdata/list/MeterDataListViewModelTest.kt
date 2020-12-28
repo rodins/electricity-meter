@@ -30,26 +30,6 @@ class MeterDataListViewModelTest{
     }
 
     @Test
-    fun onAddData_dataEquals() {
-        subject = MeterDataListViewModel(dataSource)
-        val input = "14594"
-        subject.onAddData(input)
-
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay[0].data.toString(), `is`(input))
-    }
-
-    @Test
-    fun onAddDataToday_dataEquals() {
-        subject = MeterDataListViewModel(dataSource)
-        val input = "14594"
-        subject.onAddData(input)
-
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay[0].data.toString(), `is`(input))
-    }
-
-    @Test
     fun dataParam_dataToDisplayEquals() {
         val data1 = 14556
         val data2 = 14579
@@ -351,7 +331,8 @@ class MeterDataListViewModelTest{
 
         subject.onPaid()
 
-        subject.onAddData(data3.toString())
+        dataSource.testInsert(MeterData(data3))
+        subject = MeterDataListViewModel(dataSource)
 
         subject.onPaid()
 
@@ -385,32 +366,6 @@ class MeterDataListViewModelTest{
     }
 
     @Test
-    fun filterLowerValue() {
-        val data1 = 14509
-        val data2 = 14314
-        dataSource.testInsert(MeterData(data1))
-        subject = MeterDataListViewModel(dataSource)
-
-        subject.onAddData(data2.toString())
-
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay.size, `is`(1))
-        assertThat(dataToDisplay[0].data, `is`(data1))
-    }
-
-    @Test
-    fun filterEqualValue() {
-        val data = 14509
-        dataSource.testInsert(MeterData(data))
-        subject = MeterDataListViewModel(dataSource)
-
-        subject.onAddData(data.toString())
-
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay.size, `is`(1))
-    }
-
-    @Test
     fun noItems_eventIsTrue() {
         subject = MeterDataListViewModel(dataSource)
 
@@ -426,16 +381,6 @@ class MeterDataListViewModelTest{
 
         val noItems = subject.noItems.getOrAwaitValue()
         assertThat(noItems, `is`(false))
-    }
-
-    @Test
-    fun onAddData_hideKeyboardEventNotNull() {
-        val data = "14695"
-        subject = MeterDataListViewModel(dataSource)
-        subject.onAddData(data)
-
-        val keyboardEvent = subject.hideKeyboardEvent.getOrAwaitValue()
-        assertThat(keyboardEvent, `is`(not(nullValue())))
     }
 
     @Test
@@ -546,10 +491,21 @@ class MeterDataListViewModelTest{
 
         subject.onPaid()
 
-        subject.onAddData(data5.toString())
+        dataSource.testInsert(MeterData(data5))
+        subject = MeterDataListViewModel(dataSource)
 
         val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, `is`(data4))
         assertThat(dataToDisplay[1].data, `is`(data5))
+    }
+
+    @Test
+    fun onAddMeterDataFab_addMeterDataEventNotNull() {
+        subject = MeterDataListViewModel(dataSource)
+
+        subject.onAddMeterData()
+
+        val event = subject.addMeterDataEvent.getOrAwaitValue().getContentIfNotHandled()
+        assertThat(event, `is`(not(nullValue())))
     }
 }

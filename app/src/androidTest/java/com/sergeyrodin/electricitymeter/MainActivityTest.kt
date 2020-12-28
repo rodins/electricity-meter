@@ -105,8 +105,9 @@ class MainActivityTest {
         openActionBarOverflowOrOptionsMenu(getApplicationContext())
         onView(withText(R.string.paid)).perform(click())
 
-        onView(withId(R.id.data_edit)).perform(typeText(data2.toString()))
-        onView(withId(R.id.add_data_button)).perform(click())
+        onView(withId(R.id.add_meter_data_fab)).perform(click())
+        onView(withId(R.id.meter_data_edit)).perform(typeText(data2.toString()))
+        onView(withId(R.id.save_meter_data_fab)).perform(click())
 
         openActionBarOverflowOrOptionsMenu(getApplicationContext())
         onView(withText(R.string.paid)).perform(click())
@@ -188,6 +189,43 @@ class MainActivityTest {
         onView(withSubstring(data3.toString())).check(matches(isDisplayed()))
         onView(withSubstring(data4.toString())).check(matches(isDisplayed()))
         onView(withSubstring(data5.toString())).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun addMeterData_meterDataDisplayed() {
+        val data = 14314
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.add_meter_data_fab)).perform(click())
+        onView(withId(R.id.meter_data_edit)).perform(typeText(data.toString()))
+        onView(withId(R.id.save_meter_data_fab)).perform(click())
+
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data.toString()))))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun addTwoItems_namesDisplayed() {
+        val data1 = "14556"
+        val data2 = "14579"
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.add_meter_data_fab)).perform(click())
+        onView(withId(R.id.meter_data_edit)).perform(typeText(data1))
+        onView(withId(R.id.save_meter_data_fab)).perform(click())
+
+        onView(withId(R.id.add_meter_data_fab)).perform(click())
+        onView(withId(R.id.meter_data_edit)).perform(typeText(data2))
+        onView(withId(R.id.save_meter_data_fab)).perform(click())
+
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data1))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data2))))
 
         activityScenario.close()
     }

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/navigation.xml"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navigation.xml"
     app:startDestination="@id/meterDataListFragment">
 
     <fragment
@@ -11,6 +13,9 @@
             android:name="paidDateId"
             app:argType="integer"
             android:defaultValue="-1" />
+        <action
+            android:id="@+id/action_meterDataListFragment_to_addEditMeterDataFragment"
+            app:destination="@id/addEditMeterDataFragment" />
     </fragment>
     <fragment
         android:id="@+id/paidListFragment"
@@ -18,6 +23,15 @@
         android:label="PaidListFragment" >
         <action
             android:id="@+id/action_paidListFragment_to_meterDataListFragment"
+            app:destination="@id/meterDataListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addEditMeterDataFragment"
+        android:name="com.sergeyrodin.electricitymeter.meterdata.edit.AddEditMeterDataFragment"
+        android:label="add_edit_meter_data_fragment"
+        tools:layout="@layout/add_edit_meter_data_fragment" >
+        <action
+            android:id="@+id/action_addEditMeterDataFragment_to_meterDataListFragment"
             app:destination="@id/meterDataListFragment" />
     </fragment>
 </navigation>

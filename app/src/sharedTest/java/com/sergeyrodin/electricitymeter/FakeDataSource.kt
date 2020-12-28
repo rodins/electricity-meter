@@ -76,4 +76,8 @@ class FakeDataSource: MeterDataSource {
         TODO("Not yet implemented")
     }
 
+    fun  getMeterDataForTest(): List<MeterData> {
+        return data
+    }
+
 }

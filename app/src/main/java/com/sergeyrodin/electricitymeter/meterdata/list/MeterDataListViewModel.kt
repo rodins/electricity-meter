@@ -55,9 +55,9 @@ class MeterDataListViewModel(
         it.isEmpty()
     }
 
-    private val _hideKeyboardEvent = MutableLiveData<Event<Unit>>()
-    val hideKeyboardEvent: LiveData<Event<Unit>>
-       get() = _hideKeyboardEvent
+    private val _addMeterDataEvent = MutableLiveData<Event<Unit>>()
+    val addMeterDataEvent: LiveData<Event<Unit>>
+       get() = _addMeterDataEvent
 
     init{
         viewModelScope.launch {
@@ -95,37 +95,20 @@ class MeterDataListViewModel(
         observableData.value = dataSource.getMeterDataBetweenDates(beginDate, endDate)
     }
 
-    fun onAddData(data: String) {
-        if (data.isNotBlank()) {
-            val dataToInsert = data.toInt()
-            val lastItemData = getLastItemData()
-            if(lastItemData < dataToInsert) {
-                viewModelScope.launch {
-                    val meterData = MeterData(dataToInsert)
-                    dataSource.insert(meterData)
-                    updateMeterData()
-                }
-            }
-            _hideKeyboardEvent.value = Event(Unit)
-        }
-    }
-
-    private fun getLastItemData() = if (observableData.value?.isNotEmpty() == true) {
-        observableData.value?.last()?.data ?: 0
-    } else {
-        0
-    }
-
     fun onPaid() {
         observableData.value?.let { data ->
             if(data.isNotEmpty()) {
+                val last = data.last()
+                val paidDate = PaidDate(date = last.date)
                 viewModelScope.launch{
-                    val last = data.last()
-                    val paidDate = PaidDate(date = last.date)
                     dataSource.insertPaidDate(paidDate)
                     updateObservableData(last.date)
                 }
             }
         }
+    }
+
+    fun onAddMeterData() {
+        _addMeterDataEvent.value = Event(Unit)
     }
 }

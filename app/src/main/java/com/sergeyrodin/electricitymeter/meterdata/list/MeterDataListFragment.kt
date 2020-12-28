@@ -11,7 +11,6 @@ import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
-import com.sergeyrodin.electricitymeter.utils.hideKeyboard
 
 class MeterDataListFragment : Fragment() {
     private val args: MeterDataListFragmentArgs by navArgs()
@@ -24,13 +23,18 @@ class MeterDataListFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val binding = FragmentMeterDataListBinding.inflate(inflater, container, false)
         val adapter = MeterDataAdapter()
 
         setupBinding(binding, adapter)
         setDataToAdapter(adapter)
-        observeHideKeyboardEvent(binding)
+
+        viewModel.addMeterDataEvent.observe(viewLifecycleOwner, EventObserver{
+            findNavController().navigate(
+                MeterDataListFragmentDirections.actionMeterDataListFragmentToAddEditMeterDataFragment()
+            )
+        })
 
         setHasOptionsMenu(true)
 
@@ -51,13 +55,6 @@ class MeterDataListFragment : Fragment() {
     private fun setDataToAdapter(adapter: MeterDataAdapter) {
         viewModel.dataToDisplay.observe(viewLifecycleOwner, { meterData ->
             adapter.data = meterData
-        })
-    }
-
-    private fun observeHideKeyboardEvent(binding: FragmentMeterDataListBinding) {
-        viewModel.hideKeyboardEvent.observe(viewLifecycleOwner, EventObserver {
-            hideKeyboard(requireActivity())
-            binding.dataEdit.text.clear()
         })
     }
 
