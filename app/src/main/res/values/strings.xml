@@ -8,7 +8,7 @@
     <string name="price_format">%.2f UAH</string>
     <string name="paid">Paid</string>
     <string name="action_history">History</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_meter_data">Add meter data</string>
+    <string name="meter_data_title">Meter Data</string>
+    <string name="paid_dates">Paid Dates</string>
 </resources>

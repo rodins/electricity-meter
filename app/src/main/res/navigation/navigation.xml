@@ -8,11 +8,11 @@
     <fragment
         android:id="@+id/meterDataListFragment"
         android:name="com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListFragment"
-        android:label="MeterDataListFragment" >
+        android:label="@string/meter_data_title">
         <argument
             android:name="paidDateId"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:defaultValue="-1"
+            app:argType="integer" />
         <action
             android:id="@+id/action_meterDataListFragment_to_addEditMeterDataFragment"
             app:destination="@id/addEditMeterDataFragment" />
@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/paidListFragment"
         android:name="com.sergeyrodin.electricitymeter.paidlist.PaidListFragment"
-        android:label="PaidListFragment" >
+        android:label="@string/paid_dates">
         <action
             android:id="@+id/action_paidListFragment_to_meterDataListFragment"
             app:destination="@id/meterDataListFragment" />
@@ -28,8 +28,8 @@
     <fragment
         android:id="@+id/addEditMeterDataFragment"
         android:name="com.sergeyrodin.electricitymeter.meterdata.edit.AddEditMeterDataFragment"
-        android:label="add_edit_meter_data_fragment"
-        tools:layout="@layout/add_edit_meter_data_fragment" >
+        android:label="@string/add_data"
+        tools:layout="@layout/add_edit_meter_data_fragment">
         <action
             android:id="@+id/action_addEditMeterDataFragment_to_meterDataListFragment"
             app:destination="@id/meterDataListFragment" />

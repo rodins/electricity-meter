@@ -17,7 +17,9 @@
         <EditText
             android:id="@+id/meter_data_edit"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="8dp"
             android:inputType="numberDecimal"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -27,7 +29,7 @@
             android:layout_margin="@dimen/fab_margin"
             android:layout_gravity="bottom|end"
             android:onClick='@{() -> viewModel.onSaveMeterData(meterDataEdit.getText().toString())}'
-            app:srcCompat="@drawable/ic_add"
+            app:srcCompat="@drawable/ic_done"
             app:fabSize="normal"
             app:layout_anchorGravity="bottom|right|end"
             android:contentDescription="@string/add_meter_data" />
