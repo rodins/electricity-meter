@@ -37,7 +37,9 @@ class AddEditMeterDataFragment : Fragment() {
             )
         })
 
-        setHasOptionsMenu(true)
+        val isItemIdSet = args.meterDataId != -1
+
+        setHasOptionsMenu(isItemIdSet)
 
         return binding.root
     }
