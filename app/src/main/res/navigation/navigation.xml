@@ -28,14 +28,18 @@
     <fragment
         android:id="@+id/addEditMeterDataFragment"
         android:name="com.sergeyrodin.electricitymeter.meterdata.edit.AddEditMeterDataFragment"
-        android:label="@string/add_data"
+        android:label="{title}"
         tools:layout="@layout/add_edit_meter_data_fragment">
         <action
             android:id="@+id/action_addEditMeterDataFragment_to_meterDataListFragment"
             app:destination="@id/meterDataListFragment" />
         <argument
             android:name="meterDataId"
-            app:argType="integer"
-            android:defaultValue="-1" />
+            android:defaultValue="-1"
+            app:argType="integer" />
+        <argument
+            android:name="title"
+            app:argType="string"
+            android:defaultValue='""' />
     </fragment>
 </navigation>

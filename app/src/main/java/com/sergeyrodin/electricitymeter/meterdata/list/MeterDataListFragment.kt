@@ -33,8 +33,14 @@ class MeterDataListFragment : Fragment() {
         setDataToAdapter(adapter)
 
         viewModel.addMeterDataEvent.observe(viewLifecycleOwner, EventObserver{ meterDataId ->
+            val title = if(meterDataId == -1)
+                getString(R.string.add_data)
+            else
+                getString(R.string.edit_data)
+
             findNavController().navigate(
-                MeterDataListFragmentDirections.actionMeterDataListFragmentToAddEditMeterDataFragment(meterDataId)
+                MeterDataListFragmentDirections
+                    .actionMeterDataListFragmentToAddEditMeterDataFragment(meterDataId, title)
             )
         })
 

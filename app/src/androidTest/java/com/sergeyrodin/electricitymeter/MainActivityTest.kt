@@ -292,4 +292,31 @@ class MainActivityTest {
         activityScenario.close()
     }
 
+    @Test
+    fun addNewItem_titleEquals() {
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.add_meter_data_fab)).perform(click())
+
+        onView(withText(R.string.add_data)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun editItem_titleEquals() = runBlocking {
+        val data = 14314
+        dataSource.insert(MeterData(data))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withSubstring(data.toString())).perform(click())
+
+        onView(withText(R.string.edit_data)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
 }
