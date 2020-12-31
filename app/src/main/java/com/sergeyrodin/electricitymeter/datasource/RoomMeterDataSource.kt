@@ -73,4 +73,10 @@ class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): Meter
             meterDataDao.update(meterData)
         }
     }
+
+    override suspend fun deleteMeterData(meterData: MeterData) {
+        wrapEspressoIdlingResource {
+            meterDataDao.deleteMeterData(meterData)
+        }
+    }
 }

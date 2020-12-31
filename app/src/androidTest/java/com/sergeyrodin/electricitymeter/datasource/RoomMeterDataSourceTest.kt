@@ -199,4 +199,43 @@ class RoomMeterDataSourceTest {
         val meterDataFromDb = dataSource.getMeterDataById(id)
         assertThat(meterDataFromDb?.data, `is`(newData))
     }
+
+    @Test
+    fun deleteMeterData() = runBlockingTest {
+        val id1 = 1
+        val data1 = 14314
+        val date1 = 1602219377796
+
+        val id2 = 2
+        val data2 = 14509
+        val date2 = 1604123777809
+
+        val id3 = 3
+        val data3 = 14579
+        val date3 = 1606715777809
+
+        val id4 = 4
+        val data4 = 14638
+        val date4 = 1606802177809
+
+        val meterData1 = MeterData(data1, id1, date1)
+        val meterData2 = MeterData(data2, id2, date2)
+        val meterData3 = MeterData(data3, id3, date3)
+        val meterData4 = MeterData(data4, id4, date4)
+
+        dataSource.insert(meterData1)
+        dataSource.insert(meterData2)
+        dataSource.insert(meterData3)
+        dataSource.insert(meterData4)
+
+        dataSource.deleteMeterData(meterData2)
+
+        val items = dataSource.getMeterDataBetweenDates(0L, Long.MAX_VALUE)
+        assertThat(items?.size, `is`(3))
+        items?.let {
+            assertThat(it[0].data, `is`(data1))
+            assertThat(it[1].data, `is`(data3))
+            assertThat(it[2].data, `is`(data4))
+        }
+    }
 }

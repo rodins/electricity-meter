@@ -11,4 +11,5 @@
     <string name="add_meter_data">Add meter data</string>
     <string name="meter_data_title">Meter Data</string>
     <string name="paid_dates">Paid Dates</string>
+    <string name="delete">Delete</string>
 </resources>

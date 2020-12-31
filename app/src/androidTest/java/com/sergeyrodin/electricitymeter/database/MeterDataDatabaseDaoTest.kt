@@ -11,10 +11,7 @@ import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.nullValue
 import org.hamcrest.MatcherAssert.assertThat
-import org.junit.After
-import org.junit.Before
-import org.junit.Rule
-import org.junit.Test
+import org.junit.*
 import org.junit.runner.RunWith
 
 @ExperimentalCoroutinesApi
@@ -235,5 +232,44 @@ class MeterDataDatabaseDaoTest {
 
         val meterDataFromDb = meterDataDatabase.meterDataDatabaseDao.getMeterDataById(id)
         assertThat(meterDataFromDb?.data, `is`(newData))
+    }
+
+    @Test
+    fun deleteMeterData() = runBlockingTest {
+        val id1 = 1
+        val data1 = 14314
+        val date1 = 1602219377796
+
+        val id2 = 2
+        val data2 = 14509
+        val date2 = 1604123777809
+
+        val id3 = 3
+        val data3 = 14579
+        val date3 = 1606715777809
+
+        val id4 = 4
+        val data4 = 14638
+        val date4 = 1606802177809
+
+        val meterData1 = MeterData(data1, id1, date1)
+        val meterData2 = MeterData(data2, id2, date2)
+        val meterData3 = MeterData(data3, id3, date3)
+        val meterData4 = MeterData(data4, id4, date4)
+
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData1)
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData2)
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData3)
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData4)
+
+        meterDataDatabase.meterDataDatabaseDao.deleteMeterData(meterData2)
+
+        val items = meterDataDatabase.meterDataDatabaseDao.getMeterDataBetweenDates(0L, Long.MAX_VALUE)
+        assertThat(items?.size, `is`(3))
+        items?.let {
+            Assert.assertThat(it[0].data, `is`(data1))
+            Assert.assertThat(it[1].data, `is`(data3))
+            Assert.assertThat(it[2].data, `is`(data4))
+        }
     }
 }

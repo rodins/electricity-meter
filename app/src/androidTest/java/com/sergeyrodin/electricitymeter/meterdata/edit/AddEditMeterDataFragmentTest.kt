@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter.meterdata.edit
 
 import android.os.Bundle
+import androidx.appcompat.view.menu.ActionMenuItem
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.Navigation
@@ -54,7 +55,10 @@ class AddEditMeterDataFragmentTest {
         navController.setGraph(R.navigation.navigation)
         navController.setCurrentDestination(R.id.addEditMeterDataFragment)
 
-        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(noMeterDataIdArgs, R.style.Theme_ElectricityMeter)
+        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(
+            noMeterDataIdArgs,
+            R.style.Theme_ElectricityMeter
+        )
         scenario.onFragment { fragment ->
             Navigation.setViewNavController(fragment.requireView(), navController)
         }
@@ -71,7 +75,10 @@ class AddEditMeterDataFragmentTest {
         navController.setGraph(R.navigation.navigation)
         navController.setCurrentDestination(R.id.addEditMeterDataFragment)
 
-        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(noMeterDataIdArgs, R.style.Theme_ElectricityMeter)
+        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(
+            noMeterDataIdArgs,
+            R.style.Theme_ElectricityMeter
+        )
         scenario.onFragment { fragment ->
             Navigation.setViewNavController(fragment.requireView(), navController)
         }
@@ -93,5 +100,36 @@ class AddEditMeterDataFragmentTest {
         launchFragmentInContainer<AddEditMeterDataFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withText(data.toString())).check(matches(ViewMatchers.isDisplayed()))
+    }
+
+    @Test
+    fun onDeleteActionClick_navigationCalled() {
+        val id = 1
+        val data = 15058
+        dataSource.testInsert(MeterData(id = id, data = data))
+        val args = AddEditMeterDataFragmentArgs(id).toBundle()
+
+        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+        navController.setGraph(R.navigation.navigation)
+        navController.setCurrentDestination(R.id.addEditMeterDataFragment)
+
+        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(
+            args,
+            R.style.Theme_ElectricityMeter
+        )
+        val deleteMenuItem = ActionMenuItem(
+            ApplicationProvider.getApplicationContext(),
+            0,
+            R.id.action_delete,
+            0,
+            0,
+            null
+        )
+        scenario.onFragment { fragment ->
+            Navigation.setViewNavController(fragment.requireView(), navController)
+            fragment.onOptionsItemSelected(deleteMenuItem)
+        }
+
+        assertThat(navController.currentDestination?.id, `is`(R.id.meterDataListFragment))
     }
 }

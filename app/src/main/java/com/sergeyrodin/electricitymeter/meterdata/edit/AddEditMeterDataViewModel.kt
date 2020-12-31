@@ -56,4 +56,13 @@ class AddEditMeterDataViewModel(
             }
         }
     }
+
+    fun onDeleteMeterData() {
+        meterData?.let {
+            viewModelScope.launch {
+                dataSource.deleteMeterData(it)
+                _saveMeterDataEvent.value = Event(Unit)
+            }
+        }
+    }
 }

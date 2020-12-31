@@ -1,15 +1,14 @@
 package com.sergeyrodin.electricitymeter.meterdata.edit
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
+import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.AddEditMeterDataFragmentBinding
 import com.sergeyrodin.electricitymeter.utils.hideKeyboard
 
@@ -38,7 +37,22 @@ class AddEditMeterDataFragment : Fragment() {
             )
         })
 
+        setHasOptionsMenu(true)
+
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.edit_meter_data_menu, menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == R.id.action_delete) {
+            viewModel.onDeleteMeterData()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

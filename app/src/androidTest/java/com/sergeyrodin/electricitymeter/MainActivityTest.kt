@@ -248,5 +248,36 @@ class MainActivityTest {
         activityScenario.close()
     }
 
+    @Test
+    fun selectItem_deleteItem_itemNotDisplayed() = runBlocking {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        val data3 = 14579
+        val date3 = 1606715777809
+        val data4 = 14638
+        val date4 = 1606802177809
+        val data5 = 14971
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insert(MeterData(data3, date = date3))
+        dataSource.insert(MeterData(data4, date = date4))
+        dataSource.insert(MeterData(data5))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withSubstring(data3.toString())).perform(click())
+        onView(withId(R.id.action_delete)).perform(click())
+
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data1.toString()))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data2.toString()))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data4.toString()))))
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data5.toString()))))
+        onView(withSubstring(data3.toString())).check(doesNotExist())
+
+        activityScenario.close()
+    }
 
 }

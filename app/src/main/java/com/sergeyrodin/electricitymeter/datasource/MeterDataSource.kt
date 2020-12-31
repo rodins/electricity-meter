@@ -16,4 +16,5 @@ interface MeterDataSource {
     suspend fun deleteAllPaidDates()
     suspend fun getMeterDataById(id: Int): MeterData?
     suspend fun update(meterData: MeterData)
+    suspend fun deleteMeterData(meterData: MeterData)
 }

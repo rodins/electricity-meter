@@ -133,4 +133,46 @@ class AddEditMeterDataViewModelTest {
         val items = dataSource.getMeterDataForTest()
         assertThat(items[1].data, `is`(newData))
     }
+
+    @Test
+    fun onDeleteMeterData_saveMeterDataEventNotNull() {
+        val id1 = 1
+        val data1 = 14314
+        dataSource.testInsert(MeterData(data1, id1))
+        subject = AddEditMeterDataViewModel(dataSource, id1)
+
+        subject.onDeleteMeterData()
+
+        val event = subject.saveMeterDataEvent.getOrAwaitValue().getContentIfNotHandled()
+        assertThat(event, `is`(not(nullValue())))
+    }
+
+    @Test
+    fun deleteMeterData_itemDeleted() {
+        val id1 = 1
+        val data1 = 14314
+        val date1 = 1602219377796
+        val id2 = 2
+        val data2 = 14509
+        val date2 = 1604123777809
+        val id3 = 3
+        val data3 = 14579
+        val date3 = 1606715777809
+        val id4 = 4
+        val data4 = 14638
+        val date4 = 1606802177809
+        dataSource.testInsert(MeterData(data1, id1, date1))
+        dataSource.testInsert(MeterData(data2, id2, date2))
+        dataSource.testInsert(MeterData(data3, id3, date3))
+        dataSource.testInsert(MeterData(data4, id4, date4))
+        subject = AddEditMeterDataViewModel(dataSource, id2)
+
+        subject.onDeleteMeterData()
+
+        val items = dataSource.getMeterDataForTest()
+        assertThat(items.size, `is`(3))
+        assertThat(items[0].data, `is`(data1))
+        assertThat(items[1].data, `is`(data3))
+        assertThat(items[2].data, `is`(data4))
+    }
 }

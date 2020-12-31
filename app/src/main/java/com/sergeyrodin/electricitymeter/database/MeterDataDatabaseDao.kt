@@ -38,4 +38,7 @@ interface MeterDataDatabaseDao {
 
     @Update
     suspend fun update(meterData: MeterData)
+
+    @Delete
+    suspend fun deleteMeterData(meterData: MeterData)
 }

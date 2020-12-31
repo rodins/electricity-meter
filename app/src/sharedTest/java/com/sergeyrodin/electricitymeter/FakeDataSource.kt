@@ -94,4 +94,8 @@ class FakeDataSource: MeterDataSource {
         data[index] = meterData
     }
 
+    override suspend fun deleteMeterData(meterData: MeterData) {
+        data.remove(meterData)
+    }
+
 }
