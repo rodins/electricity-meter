@@ -174,4 +174,29 @@ class RoomMeterDataSourceTest {
         val items = dataSource.getPaidDates().getOrAwaitValue()
         assertThat(items.size, `is`(0))
     }
+
+    @Test
+    fun getMeterDataById() = runBlockingTest {
+        val id = 1
+        val data = 14314
+        dataSource.insert(MeterData(id = id, data = data))
+
+        val meterData = dataSource.getMeterDataById(id)
+        assertThat(meterData?.data, `is`(data))
+    }
+
+    @Test
+    fun updateMeterData() = runBlockingTest {
+        val id = 1
+        val data = 14314
+        val newData = 14315
+        val meterData = MeterData(id = id, data = data)
+        dataSource.insert(meterData)
+
+        meterData.data = newData
+        dataSource.update(meterData)
+
+        val meterDataFromDb = dataSource.getMeterDataById(id)
+        assertThat(meterDataFromDb?.data, `is`(newData))
+    }
 }

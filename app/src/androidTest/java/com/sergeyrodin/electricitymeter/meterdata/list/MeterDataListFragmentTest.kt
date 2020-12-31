@@ -217,4 +217,20 @@ class MeterDataListFragmentTest {
         onView(withId(R.id.add_meter_data_fab)).perform(click())
         assertThat(navController.currentDestination?.id, `is`(R.id.addEditMeterDataFragment))
     }
+
+    @Test
+    fun meterDataItemClick_navigationCalled() {
+        val navController = TestNavHostController(getApplicationContext())
+        navController.setGraph(R.navigation.navigation)
+
+        val data = 14314
+        dataSource.testInsert(MeterData(data))
+        val scenario = launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
+        scenario.onFragment{ fragment ->
+            Navigation.setViewNavController(fragment.requireView(), navController)
+        }
+
+        onView(withSubstring(data.toString())).perform(click())
+        assertThat(navController.currentDestination?.id, `is`(R.id.addEditMeterDataFragment))
+    }
 }

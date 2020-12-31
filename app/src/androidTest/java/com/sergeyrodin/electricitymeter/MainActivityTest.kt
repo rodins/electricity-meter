@@ -230,5 +230,23 @@ class MainActivityTest {
         activityScenario.close()
     }
 
+    @Test
+    fun meterDataItemClick_editData_dataDisplayed() = runBlocking {
+        val data1 = 14314
+        val data2 = 14556
+        dataSource.insert(MeterData(data1))
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withSubstring(data1.toString())).perform(click())
+        onView(withId(R.id.meter_data_edit)).perform(replaceText(data2.toString()))
+        onView(withId(R.id.save_meter_data_fab)).perform(click())
+
+        onView(withSubstring(data1.toString())).check(doesNotExist())
+        onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(data2.toString()))))
+
+        activityScenario.close()
+    }
+
 
 }

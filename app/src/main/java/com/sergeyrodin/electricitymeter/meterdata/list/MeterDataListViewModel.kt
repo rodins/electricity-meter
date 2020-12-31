@@ -55,8 +55,8 @@ class MeterDataListViewModel(
         it.isEmpty()
     }
 
-    private val _addMeterDataEvent = MutableLiveData<Event<Unit>>()
-    val addMeterDataEvent: LiveData<Event<Unit>>
+    private val _addMeterDataEvent = MutableLiveData<Event<Int>>()
+    val addMeterDataEvent: LiveData<Event<Int>>
        get() = _addMeterDataEvent
 
     init{
@@ -108,7 +108,7 @@ class MeterDataListViewModel(
         }
     }
 
-    fun onAddMeterData() {
-        _addMeterDataEvent.value = Event(Unit)
+    fun onAddEditMeterData(id: Int) {
+        _addMeterDataEvent.value = Event(id)
     }
 }

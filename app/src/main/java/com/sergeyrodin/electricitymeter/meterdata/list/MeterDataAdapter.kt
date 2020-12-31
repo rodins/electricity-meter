@@ -9,7 +9,7 @@ import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 
-class MeterDataAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
+class MeterDataAdapter(private val clickListener: MeterDataClickListener): RecyclerView.Adapter<MeterDataItemViewHolder>() {
 
     var data = listOf<MeterDataPresentation>()
         set(value) {
@@ -31,6 +31,9 @@ class MeterDataAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
             .getString(R.string.kwh_format, item.diff)
         holder.dailyPriceText.text = holder.itemView.context
             .getString(R.string.price_format, item.price)
+        holder.itemView.setOnClickListener {
+            clickListener.onClick(item.id)
+        }
     }
 
     override fun getItemCount(): Int = data.size
@@ -41,4 +44,8 @@ class MeterDataItemViewHolder(itemView: View): RecyclerView.ViewHolder(itemView)
     val dataText: TextView = itemView.findViewById(R.id.data_text)
     val dailyKwhText: TextView = itemView.findViewById(R.id.daily_kwh_text)
     val dailyPriceText: TextView = itemView.findViewById(R.id.daily_price_text)
+}
+
+class MeterDataClickListener(private val clickListener: (id: Int) -> Unit) {
+    fun onClick(id: Int) = clickListener(id)
 }

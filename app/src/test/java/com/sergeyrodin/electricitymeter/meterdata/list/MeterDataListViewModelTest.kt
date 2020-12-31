@@ -500,12 +500,13 @@ class MeterDataListViewModelTest{
     }
 
     @Test
-    fun onAddMeterDataFab_addMeterDataEventNotNull() {
+    fun onAddMeterDataFab_addMeterDataEventIdEquals() {
+        val id = 1
         subject = MeterDataListViewModel(dataSource)
 
-        subject.onAddMeterData()
+        subject.onAddEditMeterData(id)
 
         val event = subject.addMeterDataEvent.getOrAwaitValue().getContentIfNotHandled()
-        assertThat(event, `is`(not(nullValue())))
+        assertThat(event, `is`(id))
     }
 }

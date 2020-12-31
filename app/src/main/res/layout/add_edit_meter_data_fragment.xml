@@ -16,6 +16,7 @@
 
         <EditText
             android:id="@+id/meter_data_edit"
+            android:text="@{viewModel.data}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"

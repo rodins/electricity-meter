@@ -13,7 +13,12 @@ fun convertMeterDataListToPresentationList(meterData: List<MeterData>) =
             val dailyKw = calculateDailyKwh(prevData, currentData)
             prevData = currentData.data
             val dailyPrice = calculateDailyPrice(dailyKw, currentData, firstData)
-            MeterDataPresentation(currentData.data, currentData.date, dailyKw, dailyPrice)
+            MeterDataPresentation(
+                currentData.id,
+                currentData.data,
+                currentData.date,
+                dailyKw,
+                dailyPrice)
         }
     } else {
         listOf()

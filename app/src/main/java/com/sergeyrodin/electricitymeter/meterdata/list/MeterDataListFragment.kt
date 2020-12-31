@@ -25,14 +25,16 @@ class MeterDataListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val binding = FragmentMeterDataListBinding.inflate(inflater, container, false)
-        val adapter = MeterDataAdapter()
+        val adapter = MeterDataAdapter(MeterDataClickListener { id ->
+            viewModel.onAddEditMeterData(id)
+        })
 
         setupBinding(binding, adapter)
         setDataToAdapter(adapter)
 
-        viewModel.addMeterDataEvent.observe(viewLifecycleOwner, EventObserver{
+        viewModel.addMeterDataEvent.observe(viewLifecycleOwner, EventObserver{ meterDataId ->
             findNavController().navigate(
-                MeterDataListFragmentDirections.actionMeterDataListFragmentToAddEditMeterDataFragment()
+                MeterDataListFragmentDirections.actionMeterDataListFragmentToAddEditMeterDataFragment(meterDataId)
             )
         })
 

@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.databinding.AddEditMeterDataFragmentBinding
@@ -22,10 +23,12 @@ class AddEditMeterDataFragment : Fragment() {
     ): View {
         val binding = AddEditMeterDataFragmentBinding.inflate(inflater, container, false)
         val dataSource = (requireContext().applicationContext as ElectricityMeterApplication).meterDataSource
-        val viewModelFactory = AddEditMeterDataViewModelFactory(dataSource)
+        val args by navArgs<AddEditMeterDataFragmentArgs>()
+        val viewModelFactory = AddEditMeterDataViewModelFactory(dataSource, args.meterDataId)
         viewModel = ViewModelProvider(this, viewModelFactory)
             .get(AddEditMeterDataViewModel::class.java)
 
+        binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
         viewModel.saveMeterDataEvent.observe(viewLifecycleOwner, EventObserver {

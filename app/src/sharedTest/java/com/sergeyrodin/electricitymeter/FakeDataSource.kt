@@ -61,10 +61,10 @@ class FakeDataSource: MeterDataSource {
             it.id >= id
         }
 
-        if(paidDatesRange.size <= 2) {
-            return paidDatesRange
+        return if(paidDatesRange.size <= 2) {
+            paidDatesRange
         } else {
-            return paidDatesRange.subList(0, 2)
+            paidDatesRange.subList(0, 2)
         }
     }
 
@@ -78,6 +78,20 @@ class FakeDataSource: MeterDataSource {
 
     fun  getMeterDataForTest(): List<MeterData> {
         return data
+    }
+
+    override suspend fun getMeterDataById(id: Int): MeterData? {
+        return data.find {
+            it.id == id
+        }?.copy()
+    }
+
+    override suspend fun update(meterData: MeterData) {
+        val oldMeterData = data.find {
+            it.id == meterData.id
+        }
+        val index = data.indexOf(oldMeterData)
+        data[index] = meterData
     }
 
 }

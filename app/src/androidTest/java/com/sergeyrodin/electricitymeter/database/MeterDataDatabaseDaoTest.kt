@@ -211,4 +211,29 @@ class MeterDataDatabaseDaoTest {
         val items = meterDataDatabase.meterDataDatabaseDao.getPaidDates().getOrAwaitValue()
         assertThat(items.size, `is`(0))
     }
+
+    @Test
+    fun getMeterDataById() = runBlockingTest {
+        val id = 1
+        val data = 14314
+        meterDataDatabase.meterDataDatabaseDao.insert(MeterData(id = id, data = data))
+
+        val meterData = meterDataDatabase.meterDataDatabaseDao.getMeterDataById(id)
+        assertThat(meterData?.data, `is`(data))
+    }
+
+    @Test
+    fun updateMeterData() = runBlockingTest {
+        val id = 1
+        val data = 14314
+        val newData = 14315
+        val meterData = MeterData(id = id, data = data)
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData)
+
+        meterData.data = newData
+        meterDataDatabase.meterDataDatabaseDao.update(meterData)
+
+        val meterDataFromDb = meterDataDatabase.meterDataDatabaseDao.getMeterDataById(id)
+        assertThat(meterDataFromDb?.data, `is`(newData))
+    }
 }

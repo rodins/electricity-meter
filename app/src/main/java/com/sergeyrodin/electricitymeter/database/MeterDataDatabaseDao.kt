@@ -1,10 +1,7 @@
 package com.sergeyrodin.electricitymeter.database
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface MeterDataDatabaseDao {
@@ -35,4 +32,10 @@ interface MeterDataDatabaseDao {
 
     @Query("DELETE FROM paid_dates")
     suspend fun deleteAllPaidDates()
+
+    @Query("SELECT * FROM meter_data WHERE id = :id")
+    suspend fun getMeterDataById(id: Int): MeterData?
+
+    @Update
+    suspend fun update(meterData: MeterData)
 }

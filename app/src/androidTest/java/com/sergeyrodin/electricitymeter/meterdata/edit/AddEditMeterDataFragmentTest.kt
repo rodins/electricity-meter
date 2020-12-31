@@ -9,15 +9,19 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
+import androidx.test.espresso.assertion.ViewAssertions.matches
+import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.ServiceLocator
+import com.sergeyrodin.electricitymeter.database.MeterData
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,11 +33,13 @@ class AddEditMeterDataFragmentTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
     private lateinit var dataSource: FakeDataSource
+    private lateinit var noMeterDataIdArgs: Bundle
 
     @Before
     fun initDataSource() {
         dataSource = FakeDataSource()
         ServiceLocator.dataSource = dataSource
+        noMeterDataIdArgs = AddEditMeterDataFragmentArgs().toBundle()
     }
 
     @After
@@ -48,7 +54,7 @@ class AddEditMeterDataFragmentTest {
         navController.setGraph(R.navigation.navigation)
         navController.setCurrentDestination(R.id.addEditMeterDataFragment)
 
-        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(null, R.style.Theme_ElectricityMeter)
+        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(noMeterDataIdArgs, R.style.Theme_ElectricityMeter)
         scenario.onFragment { fragment ->
             Navigation.setViewNavController(fragment.requireView(), navController)
         }
@@ -65,7 +71,7 @@ class AddEditMeterDataFragmentTest {
         navController.setGraph(R.navigation.navigation)
         navController.setCurrentDestination(R.id.addEditMeterDataFragment)
 
-        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(null, R.style.Theme_ElectricityMeter)
+        val scenario = launchFragmentInContainer<AddEditMeterDataFragment>(noMeterDataIdArgs, R.style.Theme_ElectricityMeter)
         scenario.onFragment { fragment ->
             Navigation.setViewNavController(fragment.requireView(), navController)
         }
@@ -75,5 +81,17 @@ class AddEditMeterDataFragmentTest {
 
         val items = dataSource.getMeterDataForTest()
         assertThat(items[0].data, `is`(data))
+    }
+
+    @Test
+    fun meterDataIdArg_meterDataIsDisplayed() {
+        val id = 1
+        val data = 15058
+        dataSource.testInsert(MeterData(id = id, data = data))
+
+        val args = AddEditMeterDataFragmentArgs(id).toBundle()
+        launchFragmentInContainer<AddEditMeterDataFragment>(args, R.style.Theme_ElectricityMeter)
+
+        onView(withText(data.toString())).check(matches(ViewMatchers.isDisplayed()))
     }
 }

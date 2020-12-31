@@ -33,5 +33,9 @@
         <action
             android:id="@+id/action_addEditMeterDataFragment_to_meterDataListFragment"
             app:destination="@id/meterDataListFragment" />
+        <argument
+            android:name="meterDataId"
+            app:argType="integer"
+            android:defaultValue="-1" />
     </fragment>
 </navigation>
