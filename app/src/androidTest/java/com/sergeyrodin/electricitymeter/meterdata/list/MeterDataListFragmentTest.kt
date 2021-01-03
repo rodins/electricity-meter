@@ -91,7 +91,7 @@ class MeterDataListFragmentTest {
         dataSource.testInsert(MeterData(data4))
         val total = 44
         val avg = 14
-        val price = 39.6
+        val price = 73.92
         launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         val context = getApplicationContext<Context>()
@@ -107,7 +107,7 @@ class MeterDataListFragmentTest {
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
         val price1 = 0.0
-        val price2 = 14.4
+        val price2 = 26.88
         launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(price1.toString()))))

@@ -48,7 +48,7 @@ class MeterDataListViewModel(
 
     private fun calculateTotalPrice(meterData: List<MeterData>): Double {
         val totalKwh = getTotalKwh(meterData)
-        return calculateTotalPrice(totalKwh)
+        return com.sergeyrodin.electricitymeter.utils.calculateTotalPrice(totalKwh)
     }
 
     val noItems = Transformations.map(observableData) {
