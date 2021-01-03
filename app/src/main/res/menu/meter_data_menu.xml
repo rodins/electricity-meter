@@ -3,13 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/action_paid"
+        android:icon="@drawable/ic_done"
+        android:title="@string/paid"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/paidListFragment"
         android:icon="@android:drawable/ic_menu_recent_history"
         app:showAsAction="ifRoom"
         android:title="@string/action_history" />
 
-<!--    Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon"> www.flaticon.com</a>-->
-    <item
-        android:id="@+id/action_paid"
-        android:title="@string/paid" />
 </menu>

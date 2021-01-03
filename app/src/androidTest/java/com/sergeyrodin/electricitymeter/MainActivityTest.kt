@@ -78,8 +78,7 @@ class MainActivityTest {
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        openActionBarOverflowOrOptionsMenu(getApplicationContext())
-        onView(withText(R.string.paid)).perform(click())
+        onView(withId(R.id.action_paid)).perform(click())
         onView(withId(R.id.paidListFragment)).perform(click())
         onView(withText(dateToString(date))).check(matches(isDisplayed()))
 
@@ -96,15 +95,12 @@ class MainActivityTest {
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
-        openActionBarOverflowOrOptionsMenu(getApplicationContext())
-        onView(withText(R.string.paid)).perform(click())
-
+        onView(withId(R.id.action_paid)).perform(click())
         onView(withId(R.id.add_meter_data_fab)).perform(click())
         onView(withId(R.id.meter_data_edit)).perform(typeText(data2.toString()))
         onView(withId(R.id.save_meter_data_fab)).perform(click())
 
-        openActionBarOverflowOrOptionsMenu(getApplicationContext())
-        onView(withText(R.string.paid)).perform(click())
+        onView(withId(R.id.action_paid)).perform(click())
         onView(withId(R.id.paidListFragment)).perform(click())
 
         onView(withText(dateToString(date1))).check(matches(isDisplayed()))
