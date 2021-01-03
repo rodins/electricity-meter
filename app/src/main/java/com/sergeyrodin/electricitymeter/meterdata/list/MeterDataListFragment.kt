@@ -20,6 +20,9 @@ class MeterDataListFragment : Fragment() {
             args.paidDateId)
     }
 
+    private var paidMenuItem: MenuItem? = null
+    private var isPaidMenuItemVisible = false
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,6 +45,13 @@ class MeterDataListFragment : Fragment() {
                 MeterDataListFragmentDirections
                     .actionMeterDataListFragmentToAddEditMeterDataFragment(meterDataId, title)
             )
+        })
+
+        viewModel.isPaidButtonVisible.observe(viewLifecycleOwner, { isVisible ->
+            isPaidMenuItemVisible = isVisible
+            paidMenuItem?.let {
+                it.isVisible = isVisible
+            }
         })
 
         setHasOptionsMenu(true)
@@ -69,6 +79,8 @@ class MeterDataListFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         super.onCreateOptionsMenu(menu, inflater)
         inflater.inflate(R.menu.meter_data_menu, menu)
+        paidMenuItem = menu.findItem(R.id.action_paid)
+        paidMenuItem?.isVisible = isPaidMenuItemVisible
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {

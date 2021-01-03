@@ -14,7 +14,6 @@ class MeterDataListViewModel(
     private val dataSource: MeterDataSource,
     private val paidDateId: Int = NO_PAID_DATE_ID
 ) : ViewModel() {
-
     private val observableData = MutableLiveData<List<MeterData>>()
 
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
@@ -58,6 +57,10 @@ class MeterDataListViewModel(
     private val _addMeterDataEvent = MutableLiveData<Event<Int>>()
     val addMeterDataEvent: LiveData<Event<Int>>
        get() = _addMeterDataEvent
+
+    val isPaidButtonVisible = Transformations.map(price) { price ->
+        price > 0
+    }
 
     init{
         viewModelScope.launch {

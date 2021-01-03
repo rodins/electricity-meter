@@ -72,39 +72,45 @@ class MainActivityTest {
 
     @Test
     fun paidClicked_dateEquals() = runBlocking {
-        val data = 14622
-        val date = 1602219377796
-        dataSource.insert(MeterData(data, date = date))
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
         onView(withId(R.id.action_paid)).perform(click())
         onView(withId(R.id.paidListFragment)).perform(click())
-        onView(withText(dateToString(date))).check(matches(isDisplayed()))
+        onView(withText(dateToString(date2))).check(matches(isDisplayed()))
 
         activityScenario.close()
     }
 
     @Test
     fun twoDatesPaid_datesEqual() = runBlocking {
-        val data1 = 14622
+        val data1 = 14314
         val date1 = 1602219377796
-        val data2 = 14638
-        val date2 = System.currentTimeMillis()
+        val data2 = 14509
+        val date2 = 1604123777809
         dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        val data3 = 14638
+        val date3 = System.currentTimeMillis()
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
         onView(withId(R.id.action_paid)).perform(click())
         onView(withId(R.id.add_meter_data_fab)).perform(click())
-        onView(withId(R.id.meter_data_edit)).perform(typeText(data2.toString()))
+        onView(withId(R.id.meter_data_edit)).perform(typeText(data3.toString()))
         onView(withId(R.id.save_meter_data_fab)).perform(click())
 
         onView(withId(R.id.action_paid)).perform(click())
         onView(withId(R.id.paidListFragment)).perform(click())
 
-        onView(withText(dateToString(date1))).check(matches(isDisplayed()))
         onView(withText(dateToString(date2))).check(matches(isDisplayed()))
+        onView(withText(dateToString(date3))).check(matches(isDisplayed()))
 
         activityScenario.close()
     }
@@ -305,6 +311,50 @@ class MainActivityTest {
         onView(withSubstring(data.toString())).perform(click())
 
         onView(withText(R.string.edit_data)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun noItems_paidButtonIsNotDisplayed() = runBlocking {
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.action_paid)).check(doesNotExist())
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun twoItems_paidButtonIsDisplayed() = runBlocking {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.action_paid)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun paidClicked_paidNotVisible() = runBlocking {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.action_paid)).perform(click())
+
+        onView(withId(R.id.action_paid)).check(doesNotExist())
 
         activityScenario.close()
     }

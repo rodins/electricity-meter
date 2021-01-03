@@ -383,4 +383,37 @@ class MeterDataListViewModelTest{
         val event = subject.addMeterDataEvent.getOrAwaitValue().getContentIfNotHandled()
         assertThat(event, `is`(id))
     }
+
+    @Test
+    fun priceNotZero_paidButtonVisibleIsTrue() {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        dataSource.testInsert(MeterData(data1, date = date1))
+        dataSource.testInsert(MeterData(data2, date = date2))
+        subject = MeterDataListViewModel(dataSource)
+
+        val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
+        assertThat(paidVisible, `is`(true))
+    }
+
+    @Test
+    fun priceZero_paidButtonVisibleIsFalse() {
+        val data1 = 14314
+        val date1 = 1602219377796
+        dataSource.testInsert(MeterData(data1, date = date1))
+        subject = MeterDataListViewModel(dataSource)
+
+        val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
+        assertThat(paidVisible, `is`(false))
+    }
+
+    @Test
+    fun noItems_paidButtonVisibleIsFalse() {
+        subject = MeterDataListViewModel(dataSource)
+
+        val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
+        assertThat(paidVisible, `is`(false))
+    }
 }
