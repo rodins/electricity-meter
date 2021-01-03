@@ -9,12 +9,27 @@ import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 
-class PaidListAdapter(private val clickListener: PaidDateClickListener): RecyclerView.Adapter<PaidListAdapter.ViewHolder>() {
+class PaidListAdapter(
+    private val clickListener: PaidDateClickListener,
+    private val longClickListener: PaidDateLongClickListener
+): RecyclerView.Adapter<PaidListAdapter.ViewHolder>() {
 
     var data = listOf<PaidDate>()
         set(value) {
             field = value
             notifyDataSetChanged()
+        }
+
+    var highlightedPosition = -1
+        set(value) {
+            if(value != -1) {
+                field = value
+                notifyItemChanged(value)
+            }else {
+                val position = field
+                field = value
+                notifyItemChanged(position)
+            }
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -29,6 +44,15 @@ class PaidListAdapter(private val clickListener: PaidDateClickListener): Recycle
         holder.textView.setOnClickListener {
             clickListener.onClick(item.id)
         }
+        holder.textView.setOnLongClickListener {
+            longClickListener.onLongClick(position)
+            true
+        }
+        if(highlightedPosition == -1) {
+            holder.textView.setBackgroundResource(R.color.design_default_color_background)
+        }else {
+            holder.textView.setBackgroundResource(R.color.design_default_color_secondary)
+        }
     }
 
     override fun getItemCount() = data.size
@@ -40,4 +64,8 @@ class PaidListAdapter(private val clickListener: PaidDateClickListener): Recycle
 
 class PaidDateClickListener(val clickListener: (id: Int) -> Unit) {
     fun onClick(id: Int) = clickListener(id)
+}
+
+class PaidDateLongClickListener(val clickListener: (position: Int) -> Unit) {
+    fun onLongClick(position: Int) = clickListener(position)
 }

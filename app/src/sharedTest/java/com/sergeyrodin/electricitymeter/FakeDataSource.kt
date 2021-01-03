@@ -73,7 +73,7 @@ class FakeDataSource: MeterDataSource {
     }
 
     override suspend fun deleteAllPaidDates() {
-        TODO("Not yet implemented")
+        paidDates.clear()
     }
 
     fun  getMeterDataForTest(): List<MeterData> {

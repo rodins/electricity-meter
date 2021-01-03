@@ -1,7 +1,5 @@
 package com.sergeyrodin.electricitymeter
 
-import android.content.Context
-import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ActivityScenario
 import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
@@ -14,19 +12,15 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.sergeyrodin.electricitymeter.database.MeterData
-import com.sergeyrodin.electricitymeter.database.MeterDataDatabase
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
-import com.sergeyrodin.electricitymeter.datasource.RoomMeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 import com.sergeyrodin.electricitymeter.utils.DataBindingIdlingResource
 import com.sergeyrodin.electricitymeter.utils.EspressoIdlingResource
 import com.sergeyrodin.electricitymeter.utils.monitorActivity
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.CoreMatchers.not
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 

@@ -1,13 +1,15 @@
 package com.sergeyrodin.electricitymeter.paidlist
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.Event
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import kotlinx.coroutines.launch
 
-class PaidListViewModel(dataSource: MeterDataSource) : ViewModel() {
+class PaidListViewModel(private val dataSource: MeterDataSource) : ViewModel() {
+
+    private val _highlightedPosition = MutableLiveData(-1)
+    val highlightedPosition: LiveData<Int>
+        get() = _highlightedPosition
 
     val paidDates = dataSource.getPaidDates()
 
@@ -20,6 +22,25 @@ class PaidListViewModel(dataSource: MeterDataSource) : ViewModel() {
         get() = _itemClickEvent
 
     fun onItemClick(id: Int) {
-        _itemClickEvent.value = Event(id)
+        if(_highlightedPosition.value == -1) {
+            _itemClickEvent.value = Event(id)
+        }else {
+            _highlightedPosition.value = -1
+        }
+    }
+
+    fun onItemLongClick(position: Int) {
+        _highlightedPosition.value = position
+    }
+
+    fun deleteSelectedPaidDate() {
+        viewModelScope.launch {
+            val position = _highlightedPosition.value
+            position?.let {
+                val paidDate = paidDates.value?.get(position)
+                dataSource.deletePaidDate(paidDate)
+                _highlightedPosition.value = -1
+            }
+        }
     }
 }
