@@ -416,4 +416,23 @@ class MeterDataListViewModelTest{
         val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
         assertThat(paidVisible, `is`(false))
     }
+
+    @Test
+    fun paidDateIdSet_paidButtonVisibleIsFalse() {
+        val id = 1
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        val data3 = 14579
+        val date3 = 1606715777809
+        dataSource.testInsert(MeterData(data1, date = date1))
+        dataSource.testInsert(MeterData(data2, date = date2))
+        dataSource.testInsert(MeterData(data3, date = date3))
+        dataSource.testInsert(PaidDate(id, date2))
+        subject = MeterDataListViewModel(dataSource, id)
+
+        val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
+        assertThat(paidVisible, `is`(false))
+    }
 }

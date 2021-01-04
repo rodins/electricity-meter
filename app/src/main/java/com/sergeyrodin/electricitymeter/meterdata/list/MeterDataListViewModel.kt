@@ -59,7 +59,7 @@ class MeterDataListViewModel(
        get() = _addMeterDataEvent
 
     val isPaidButtonVisible = Transformations.map(price) { price ->
-        price > 0
+        price > 0 && paidDateId == NO_PAID_DATE_ID
     }
 
     init{
