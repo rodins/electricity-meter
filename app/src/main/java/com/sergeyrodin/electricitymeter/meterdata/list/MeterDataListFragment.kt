@@ -26,24 +26,24 @@ class MeterDataListFragment : Fragment() {
     ): View {
         val binding = FragmentMeterDataListBinding.inflate(inflater, container, false)
         val adapter = MeterDataAdapter(MeterDataClickListener { id ->
-            viewModel.onAddEditMeterData(id)
+            viewModel.onEditMeterData(id)
         })
 
         setupBinding(binding, adapter)
         setDataToAdapter(adapter)
 
-        viewModel.addMeterDataEvent.observe(viewLifecycleOwner, EventObserver{ meterDataId ->
-            if(meterDataId == -1) {
-                findNavController().navigate(
-                    MeterDataListFragmentDirections
-                        .actionMeterDataListFragmentToAddMeterDataFragment()
-                )
-            } else {
-                findNavController().navigate(
-                    MeterDataListFragmentDirections
-                        .actionMeterDataListFragmentToAddEditMeterDataFragment(meterDataId)
-                )
-            }
+        viewModel.addMeterDataEvent.observe(viewLifecycleOwner, EventObserver{
+            findNavController().navigate(
+                MeterDataListFragmentDirections
+                    .actionMeterDataListFragmentToAddMeterDataFragment()
+            )
+        })
+
+        viewModel.editMeterDataEvent.observe(viewLifecycleOwner, EventObserver{ meterDataId ->
+            findNavController().navigate(
+                MeterDataListFragmentDirections
+                    .actionMeterDataListFragmentToAddEditMeterDataFragment(meterDataId)
+            )
         })
 
         viewModel.isPaidButtonVisible.observe(viewLifecycleOwner, { isVisible ->

@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/fab_margin"
             android:layout_gravity="bottom|end"
-            android:onClick="@{() -> meterDataListViewModel.onAddEditMeterData(-1)}"
+            android:onClick="@{() -> meterDataListViewModel.onAddMeterData()}"
             app:srcCompat="@drawable/ic_add"
             app:fabSize="normal"
             app:layout_anchorGravity="bottom|right|end"

@@ -6,7 +6,7 @@ import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.hamcrest.CoreMatchers.`is`
+import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -288,13 +288,23 @@ class MeterDataListViewModelTest{
     }
 
     @Test
-    fun onAddMeterDataFab_addMeterDataEventIdEquals() {
+    fun onAddMeterData_addMeterDataEventNotNull() {
+        subject = MeterDataListViewModel(dataSource)
+
+        subject.onAddMeterData()
+
+        val event = subject.addMeterDataEvent.getOrAwaitValue().getContentIfNotHandled()
+        assertThat(event, `is`(not(nullValue())))
+    }
+
+    @Test
+    fun onEditMeterData_editMeterDataEventIdEquals() {
         val id = 1
         subject = MeterDataListViewModel(dataSource)
 
-        subject.onAddEditMeterData(id)
+        subject.onEditMeterData(id)
 
-        val event = subject.addMeterDataEvent.getOrAwaitValue().getContentIfNotHandled()
+        val event = subject.editMeterDataEvent.getOrAwaitValue().getContentIfNotHandled()
         assertThat(event, `is`(id))
     }
 

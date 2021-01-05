@@ -51,9 +51,13 @@ class MeterDataListViewModel(
         it.isEmpty()
     }
 
-    private val _addMeterDataEvent = MutableLiveData<Event<Int>>()
-    val addMeterDataEvent: LiveData<Event<Int>>
-       get() = _addMeterDataEvent
+    private val _addMeterDataEvent = MutableLiveData<Event<Unit>>()
+    val addMeterDataEvent: LiveData<Event<Unit>>
+        get() = _addMeterDataEvent
+
+    private val _editMeterDataEvent = MutableLiveData<Event<Int>>()
+    val editMeterDataEvent: LiveData<Event<Int>>
+       get() = _editMeterDataEvent
 
     val isPaidButtonVisible = Transformations.map(price) { price ->
         price > 0
@@ -91,7 +95,11 @@ class MeterDataListViewModel(
         }
     }
 
-    fun onAddEditMeterData(id: Int) {
-        _addMeterDataEvent.value = Event(id)
+    fun onEditMeterData(id: Int) {
+        _editMeterDataEvent.value = Event(id)
+    }
+
+    fun onAddMeterData() {
+        _addMeterDataEvent.value = Event(Unit)
     }
 }
