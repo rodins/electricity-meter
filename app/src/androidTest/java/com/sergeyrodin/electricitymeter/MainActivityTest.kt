@@ -390,4 +390,35 @@ class MainActivityTest {
         activityScenario.close()
     }
 
+    @Test
+    fun meterDataHistory_titleEquals() = runBlocking {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        val data3 = 14579
+        val date3 = 1606715777809
+        val data4 = 14638
+        val date4 = 1606802177809
+        val data5 = 14971
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insert(MeterData(data3, date = date3))
+        dataSource.insert(MeterData(data4, date = date4))
+        dataSource.insert(MeterData(data5))
+
+        val paidDate = PaidDate(date = date2)
+
+        dataSource.insertPaidDate(paidDate)
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.paidListFragment)).perform(click())
+        onView(withText(dateToString(date2))).perform(click())
+
+        onView(withText(R.string.meter_data_history)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
 }

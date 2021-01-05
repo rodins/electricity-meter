@@ -1,15 +1,18 @@
-package com.sergeyrodin.electricitymeter.meterdata.list
+package com.sergeyrodin.electricitymeter.history
 
 import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.Event
 import com.sergeyrodin.electricitymeter.database.MeterData
-import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataPresentation
+import com.sergeyrodin.electricitymeter.meterdata.list.getAverageKwh
+import com.sergeyrodin.electricitymeter.meterdata.list.getTotalKwh
 import com.sergeyrodin.electricitymeter.utils.convertMeterDataListToPresentationList
 import kotlinx.coroutines.launch
 
-class MeterDataListViewModel(
+class MeterDataHistoryViewModel(
     private val dataSource: MeterDataSource,
+    private val paidDateId: Int
 ) : ViewModel() {
     private val observableData = MutableLiveData<List<MeterData>>()
 
@@ -53,11 +56,8 @@ class MeterDataListViewModel(
 
     private val _addMeterDataEvent = MutableLiveData<Event<Int>>()
     val addMeterDataEvent: LiveData<Event<Int>>
-       get() = _addMeterDataEvent
+        get() = _addMeterDataEvent
 
-    val isPaidButtonVisible = Transformations.map(price) { price ->
-        price > 0
-    }
 
     init{
         viewModelScope.launch {
@@ -66,32 +66,19 @@ class MeterDataListViewModel(
     }
 
     private suspend fun updateMeterData() {
-        val paidDate = dataSource.getLastPaidDate()
-        if (paidDate == null) {
-            updateObservableData()
-        } else {
-            updateObservableData(paidDate.date)
+        updateMeterDataByPaidDateId()
+    }
+
+    private suspend fun updateMeterDataByPaidDateId() {
+        val paidDateRange = dataSource.getPaidDatesRangeById(paidDateId)
+        if (paidDateRange?.size == 2) {
+            updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
+        } else if (paidDateRange?.size == 1) {
+            updateObservableData(paidDateRange[0].date)
         }
     }
 
     private suspend fun updateObservableData(beginDate: Long = 0L, endDate: Long = Long.MAX_VALUE) {
         observableData.value = dataSource.getMeterDataBetweenDates(beginDate, endDate)
-    }
-
-    fun onPaid() {
-        observableData.value?.let { data ->
-            if(data.isNotEmpty()) {
-                val last = data.last()
-                val paidDate = PaidDate(date = last.date)
-                viewModelScope.launch{
-                    dataSource.insertPaidDate(paidDate)
-                    updateObservableData(last.date)
-                }
-            }
-        }
-    }
-
-    fun onAddEditMeterData(id: Int) {
-        _addMeterDataEvent.value = Event(id)
     }
 }

@@ -37,8 +37,6 @@ class PaidListFragment : Fragment() {
             }else {
                 finishActionMode()
             }
-
-
         })
 
         return binding.root
@@ -68,7 +66,7 @@ class PaidListFragment : Fragment() {
 
     private fun observeItemClickEvent() {
         viewModel.itemClickEvent.observe(viewLifecycleOwner, EventObserver { paidDateId ->
-            navigateToMeterDataListFragment(paidDateId)
+            navigateToMeterDataHistoryFragment(paidDateId)
         })
     }
 
@@ -104,9 +102,10 @@ class PaidListFragment : Fragment() {
         actionMode?.finish()
     }
 
-    private fun navigateToMeterDataListFragment(paidDateId: Int) {
+    private fun navigateToMeterDataHistoryFragment(paidDateId: Int) {
         findNavController().navigate(
-            PaidListFragmentDirections.actionPaidListFragmentToMeterDataListFragment(paidDateId)
+            PaidListFragmentDirections
+                .actionPaidListFragmentToMeterDataHistoryFragment(paidDateId)
         )
     }
 }

@@ -5,7 +5,6 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.NavigationUI
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
@@ -13,11 +12,9 @@ import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
 
 class MeterDataListFragment : Fragment() {
-    private val args: MeterDataListFragmentArgs by navArgs()
     private val viewModel by viewModels<MeterDataListViewModel> {
         MeterDataListViewModelFactory(
-            (requireActivity().application as ElectricityMeterApplication).meterDataSource,
-            args.paidDateId)
+            (requireActivity().application as ElectricityMeterApplication).meterDataSource)
     }
 
     private var paidMenuItem: MenuItem? = null

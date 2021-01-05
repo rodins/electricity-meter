@@ -170,39 +170,6 @@ class MeterDataListFragmentTest {
         assertThat(navController.currentDestination?.id, `is`(R.id.paidListFragment))
     }
 
-    @Test
-    fun paidDateIdArgs_filteredMeterDataDisplayed() {
-        val data1 = 14314
-        val date1 = 1602219377796
-        val data2 = 14509
-        val date2 = 1604123777809
-        val data3 = 14579
-        val date3 = 1606715777809
-        val data4 = 14638
-        val date4 = 1606802177809
-        val data5 = 14971
-
-        dataSource.testInsert(MeterData(data1, date = date1))
-        dataSource.testInsert(MeterData(data2, date = date2))
-        dataSource.testInsert(MeterData(data3, date = date3))
-        dataSource.testInsert(MeterData(data4, date = date4))
-        dataSource.testInsert(MeterData(data5))
-
-        val paidDate1 = PaidDate(1, date2)
-        val paidDate2 = PaidDate(2, date4)
-
-        dataSource.testInsert(paidDate1)
-        dataSource.testInsert(paidDate2)
-
-        val args = MeterDataListFragmentArgs(paidDate1.id).toBundle()
-        launchFragmentInContainer<MeterDataListFragment>(args, R.style.Theme_ElectricityMeter)
-
-        onView(withSubstring(data1.toString())).check(doesNotExist())
-        onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
-        onView(withSubstring(data3.toString())).check(matches(isDisplayed()))
-        onView(withSubstring(data4.toString())).check(matches(isDisplayed()))
-        onView(withSubstring(data5.toString())).check(doesNotExist())
-    }
 
     @Test
     fun addMeterDataClick_navigationCalled() {

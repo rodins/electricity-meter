@@ -108,7 +108,7 @@ class PaidListFragmentTest {
 
         onView(withText(dateToString(date))).perform(click())
 
-        assertThat(navController.currentDestination?.id, `is`(R.id.meterDataListFragment))
+        assertThat(navController.currentDestination?.id, `is`(R.id.meterDataHistoryFragment))
     }
 
     @Test

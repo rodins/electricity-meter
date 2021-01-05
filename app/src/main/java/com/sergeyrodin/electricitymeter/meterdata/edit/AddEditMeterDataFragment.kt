@@ -33,7 +33,8 @@ class AddEditMeterDataFragment : Fragment() {
         viewModel.saveMeterDataEvent.observe(viewLifecycleOwner, EventObserver {
             hideKeyboard(requireActivity())
             findNavController().navigate(
-                AddEditMeterDataFragmentDirections.actionAddEditMeterDataFragmentToMeterDataListFragment()
+                AddEditMeterDataFragmentDirections
+                    .actionAddEditMeterDataFragmentToMeterDataListFragment()
             )
         })
 

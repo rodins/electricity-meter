@@ -1,17 +1,17 @@
-package com.sergeyrodin.electricitymeter.meterdata.list
+package com.sergeyrodin.electricitymeter.history
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
-import java.lang.IllegalArgumentException
 
-class MeterDataListViewModelFactory(
-    private val dataSource: MeterDataSource
+class MeterDataHistoryViewModelFactory(
+    private val dataSource: MeterDataSource,
+    private val paidDateId: Int
 ) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        if (modelClass.isAssignableFrom(MeterDataListViewModel::class.java)) {
-            return MeterDataListViewModel(dataSource) as T
+        if (modelClass.isAssignableFrom(MeterDataHistoryViewModel::class.java)) {
+            return MeterDataHistoryViewModel(dataSource, paidDateId) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }
