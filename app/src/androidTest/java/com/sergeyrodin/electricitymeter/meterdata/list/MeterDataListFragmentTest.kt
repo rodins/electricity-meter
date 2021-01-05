@@ -182,7 +182,7 @@ class MeterDataListFragmentTest {
         }
 
         onView(withId(R.id.add_meter_data_fab)).perform(click())
-        assertThat(navController.currentDestination?.id, `is`(R.id.addEditMeterDataFragment))
+        assertThat(navController.currentDestination?.id, `is`(R.id.addMeterDataFragment))
     }
 
     @Test

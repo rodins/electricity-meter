@@ -10,11 +10,10 @@ import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.AddEditMeterDataFragmentBinding
-import com.sergeyrodin.electricitymeter.utils.hideKeyboard
 
-class AddEditMeterDataFragment : Fragment() {
+class EditMeterDataFragment : Fragment() {
 
-    private lateinit var viewModel: AddEditMeterDataViewModel
+    private lateinit var viewModel: EditMeterDataViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -22,25 +21,22 @@ class AddEditMeterDataFragment : Fragment() {
     ): View {
         val binding = AddEditMeterDataFragmentBinding.inflate(inflater, container, false)
         val dataSource = (requireContext().applicationContext as ElectricityMeterApplication).meterDataSource
-        val args by navArgs<AddEditMeterDataFragmentArgs>()
-        val viewModelFactory = AddEditMeterDataViewModelFactory(dataSource, args.meterDataId)
+        val args by navArgs<EditMeterDataFragmentArgs>()
+        val viewModelFactory = EditMeterDataViewModelFactory(dataSource, args.meterDataId)
         viewModel = ViewModelProvider(this, viewModelFactory)
-            .get(AddEditMeterDataViewModel::class.java)
+            .get(EditMeterDataViewModel::class.java)
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
 
         viewModel.saveMeterDataEvent.observe(viewLifecycleOwner, EventObserver {
-            hideKeyboard(requireActivity())
             findNavController().navigate(
-                AddEditMeterDataFragmentDirections
+                EditMeterDataFragmentDirections
                     .actionAddEditMeterDataFragmentToMeterDataListFragment()
             )
         })
 
-        val isItemIdSet = args.meterDataId != -1
-
-        setHasOptionsMenu(isItemIdSet)
+        setHasOptionsMenu(true)
 
         return binding.root
     }

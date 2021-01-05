@@ -4,82 +4,22 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
-import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataListViewModel
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 
-class AddEditMeterDataViewModelTest {
+class EditMeterDataViewModelTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
     private lateinit var dataSource: FakeDataSource
-    private lateinit var subject: AddEditMeterDataViewModel
+    private lateinit var subject: EditMeterDataViewModel
 
     @Before
     fun initViewModel() {
         dataSource = FakeDataSource()
-        subject = AddEditMeterDataViewModel(dataSource)
-    }
-
-    @Test
-    fun onSaveMeterData_saveMeterDataEventNotNull() {
-        val data = 15075
-        subject.onSaveMeterData(data.toString())
-
-        val event = subject.saveMeterDataEvent.getOrAwaitValue().getContentIfNotHandled()
-        assertThat(event, `is`(not(nullValue())))
-    }
-
-    @Test
-    fun onSaveMeterData_meterDataEquals() {
-        val data = 15075
-        subject.onSaveMeterData(data.toString())
-
-        val items = dataSource.getMeterDataForTest()
-        assertThat(items[0].data, `is`(data))
-    }
-
-    @Test
-    fun onSaveEmptyData_meterDataSizeZero() {
-        subject.onSaveMeterData("")
-
-        val items = dataSource.getMeterDataForTest()
-        assertThat(items.size, `is`(0))
-    }
-
-    @Test
-    fun onSaveTextData_meterDataSizeZero() {
-        subject.onSaveMeterData("text")
-
-        val items = dataSource.getMeterDataForTest()
-        assertThat(items.size, `is`(0))
-    }
-
-    @Test
-    fun filterLowerValue() {
-        val data1 = 14509
-        val data2 = 14314
-        dataSource.testInsert(MeterData(data1))
-
-        subject.onSaveMeterData(data2.toString())
-
-        val items = dataSource.getMeterDataForTest()
-        assertThat(items.size, `is`(1))
-        assertThat(items[0].data, `is`(data1))
-    }
-
-    @Test
-    fun filterEqualValue() {
-        val data = 14509
-        dataSource.testInsert(MeterData(data))
-
-        subject.onSaveMeterData(data.toString())
-
-        val items = dataSource.getMeterDataForTest()
-        assertThat(items.size, `is`(1))
     }
 
     @Test
@@ -87,7 +27,7 @@ class AddEditMeterDataViewModelTest {
         val id = 1
         val data = 14509
         dataSource.testInsert(MeterData(id = id, data = data))
-        subject = AddEditMeterDataViewModel(dataSource, id)
+        subject = EditMeterDataViewModel(dataSource, id)
 
         val dataToDisplay = subject.data.getOrAwaitValue()
         assertThat(dataToDisplay, `is`(data.toString()))
@@ -99,7 +39,7 @@ class AddEditMeterDataViewModelTest {
         val data = 14509
         val newData = 14511
         dataSource.testInsert(MeterData(id = id, data = data))
-        subject = AddEditMeterDataViewModel(dataSource, id)
+        subject = EditMeterDataViewModel(dataSource, id)
 
         subject.onSaveMeterData(newData.toString())
 
@@ -127,7 +67,7 @@ class AddEditMeterDataViewModelTest {
         dataSource.testInsert(MeterData(data2, id2, date2))
         dataSource.testInsert(MeterData(data3, id3, date3))
         dataSource.testInsert(MeterData(data4, id4, date4))
-        subject = AddEditMeterDataViewModel(dataSource, id2)
+        subject = EditMeterDataViewModel(dataSource, id2)
 
         subject.onSaveMeterData(newData.toString())
         val items = dataSource.getMeterDataForTest()
@@ -139,7 +79,7 @@ class AddEditMeterDataViewModelTest {
         val id1 = 1
         val data1 = 14314
         dataSource.testInsert(MeterData(data1, id1))
-        subject = AddEditMeterDataViewModel(dataSource, id1)
+        subject = EditMeterDataViewModel(dataSource, id1)
 
         subject.onDeleteMeterData()
 
@@ -165,7 +105,7 @@ class AddEditMeterDataViewModelTest {
         dataSource.testInsert(MeterData(data2, id2, date2))
         dataSource.testInsert(MeterData(data3, id3, date3))
         dataSource.testInsert(MeterData(data4, id4, date4))
-        subject = AddEditMeterDataViewModel(dataSource, id2)
+        subject = EditMeterDataViewModel(dataSource, id2)
 
         subject.onDeleteMeterData()
 

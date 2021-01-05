@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.sergeyrodin.electricitymeter.meterdata.edit.EditMeterDataViewModel" />
+            type="com.sergeyrodin.electricitymeter.meterdata.add.AddMeterDataViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -16,7 +16,6 @@
 
         <EditText
             android:id="@+id/meter_data_edit"
-            android:text="@{viewModel.data}"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
