@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <merge>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/save_meter_data_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="@dimen/fab_margin"
+            android:contentDescription="@string/save_meter_data"
+            app:fabSize="normal"
+            app:layout_anchorGravity="bottom|right|end"
+            app:srcCompat="@drawable/ic_done" />
+    </merge>
+</layout>

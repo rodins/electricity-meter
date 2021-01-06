@@ -14,4 +14,5 @@
     <string name="delete">Delete</string>
     <string name="edit_data">Edit Data</string>
     <string name="meter_data_history">Meter Data History</string>
+    <string name="save_meter_data">Save meter data</string>
 </resources>

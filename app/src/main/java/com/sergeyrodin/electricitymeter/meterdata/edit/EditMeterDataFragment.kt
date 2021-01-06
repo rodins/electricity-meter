@@ -9,7 +9,7 @@ import androidx.navigation.fragment.navArgs
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
-import com.sergeyrodin.electricitymeter.databinding.AddEditMeterDataFragmentBinding
+import com.sergeyrodin.electricitymeter.databinding.EditMeterDataFragmentBinding
 
 class EditMeterDataFragment : Fragment() {
 
@@ -19,7 +19,7 @@ class EditMeterDataFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val binding = AddEditMeterDataFragmentBinding.inflate(inflater, container, false)
+        val binding = EditMeterDataFragmentBinding.inflate(inflater, container, false)
         val dataSource = (requireContext().applicationContext as ElectricityMeterApplication).meterDataSource
         val args by navArgs<EditMeterDataFragmentArgs>()
         val viewModelFactory = EditMeterDataViewModelFactory(dataSource, args.meterDataId)

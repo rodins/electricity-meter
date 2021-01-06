@@ -28,7 +28,7 @@
         android:id="@+id/addEditMeterDataFragment"
         android:name="com.sergeyrodin.electricitymeter.meterdata.edit.EditMeterDataFragment"
         android:label="@string/edit_data"
-        tools:layout="@layout/add_edit_meter_data_fragment">
+        tools:layout="@layout/edit_meter_data_fragment">
         <action
             android:id="@+id/action_addEditMeterDataFragment_to_meterDataListFragment"
             app:destination="@id/meterDataListFragment" />
