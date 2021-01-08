@@ -65,7 +65,7 @@ class MeterDataListFragment : Fragment() {
         binding.apply {
             meterDataListViewModel = viewModel
             lifecycleOwner = viewLifecycleOwner
-            dataList.adapter = adapter
+            meterDataList.dataList.adapter = adapter
         }
     }
 

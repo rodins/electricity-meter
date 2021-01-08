@@ -28,7 +28,7 @@ class MeterDataHistoryFragment : Fragment() {
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
-        binding.dataList.adapter = adapter
+        binding.meterDataList.dataList.adapter = adapter
 
         viewModel.dataToDisplay.observe(viewLifecycleOwner, { meterData ->
             adapter.data = meterData
