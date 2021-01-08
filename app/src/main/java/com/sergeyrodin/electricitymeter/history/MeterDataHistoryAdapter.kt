@@ -8,7 +8,7 @@ import com.sergeyrodin.electricitymeter.meterdata.dateToString
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataItemViewHolder
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataPresentation
 
-class MeterDataHistoryAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
+open class MeterDataHistoryAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
 
     var data = listOf<MeterDataPresentation>()
         set(value) {
@@ -23,13 +23,17 @@ class MeterDataHistoryAdapter: RecyclerView.Adapter<MeterDataItemViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: MeterDataItemViewHolder, position: Int) {
-        val item = data[position]
+        val item = getItem(position)
         holder.dateText.text = dateToString(item.date)
         holder.dataText.text = holder.itemView.context.getString(R.string.kwh_format, item.data)
         holder.dailyKwhText.text = holder.itemView.context
             .getString(R.string.kwh_format, item.diff)
         holder.dailyPriceText.text = holder.itemView.context
             .getString(R.string.price_format, item.price)
+    }
+
+    protected fun getItem(position: Int): MeterDataPresentation {
+        return data[position]
     }
 
     override fun getItemCount(): Int = data.size
