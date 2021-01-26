@@ -99,9 +99,7 @@ class PaidListFragmentTest {
 
     @Test
     fun itemClicked_navigationCalled() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val id = 1
         val date = 1602219377796
@@ -117,9 +115,7 @@ class PaidListFragmentTest {
 
     @Test
     fun itemLongPress_itemDeleted() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date1 = 1602219377796
         val date2 = 1604123777809
@@ -140,9 +136,7 @@ class PaidListFragmentTest {
 
     @Test
     fun itemLongClick_backgroundColorMatches() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date = 1602219377796
         dataSource.testInsert(PaidDate(date = date))
@@ -153,23 +147,13 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .check(
-                matches(
-                    ViewMatchers.hasDescendant(
-                        hasBackgroundColor(R.color.design_default_color_background)
-                    )
-                )
-            )
+        listHasNotHighlightedItem()
+        longClickOnDate(date)
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date)), longClick()
-                    )
-            )
+        listHasHighlightedItem()
+    }
 
+    private fun listHasHighlightedItem() {
         onView(ViewMatchers.withId(R.id.date_items))
             .check(
                 matches(
@@ -182,9 +166,7 @@ class PaidListFragmentTest {
 
     @Test
     fun twoItems_itemLongClick_backgroundColorMatches() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date1 = 1602219377796
         val date2 = 1604123777809
@@ -197,21 +179,19 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date2)), longClick()
-                    )
-            )
+        longClickOnDate(date2)
 
+        dateIsHighlighted(date2)
+    }
+
+    private fun dateIsHighlighted(date: Long) {
         onView(ViewMatchers.withId(R.id.date_items))
             .check(
                 matches(
                     ViewMatchers.hasDescendant(
                         hasBackgroundColorAndText(
                             R.color.design_default_color_secondary,
-                            dateToString(date2)
+                            dateToString(date)
                         )
                     )
                 )
@@ -220,9 +200,7 @@ class PaidListFragmentTest {
 
     @Test
     fun itemLongClick_deleteButtonDisplayed() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date = 1602219377796
         dataSource.testInsert(PaidDate(date = date))
@@ -233,22 +211,14 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date)), longClick()
-                    )
-            )
+        longClickOnDate(date)
 
         onView(ViewMatchers.withId(R.id.action_delete_paid_date)).check(matches(isDisplayed()))
     }
 
     @Test
     fun itemDeleted_deleteButtonNotDisplayed() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date1 = 1602219377796
         val date2 = 1604123777809
@@ -268,9 +238,7 @@ class PaidListFragmentTest {
 
     @Test
     fun clickOnHighlightedItem_itemNotHighlighted() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date = 1602219377796
         dataSource.testInsert(PaidDate(date = date))
@@ -281,22 +249,14 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date)), longClick()
-                    )
-            )
+        longClickOnDate(date)
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date)), click()
-                    )
-            )
+        clickOnDate(date)
 
+        listHasNotHighlightedItem()
+    }
+
+    private fun listHasNotHighlightedItem() {
         onView(ViewMatchers.withId(R.id.date_items))
             .check(
                 matches(
@@ -309,9 +269,7 @@ class PaidListFragmentTest {
 
     @Test
     fun clickOnHighlightedItem_deleteButtonNotDisplayed() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date = 1602219377796
         dataSource.testInsert(PaidDate(date = date))
@@ -322,30 +280,16 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date)), longClick()
-                    )
-            )
+        longClickOnDate(date)
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date)), click()
-                    )
-            )
+        clickOnDate(date)
 
         onView(ViewMatchers.withId(R.id.action_delete_paid_date)).check(matches(not(isDisplayed())))
     }
 
     @Test
     fun clickOnNotHighlightedItem_highlightedItemNotHighlighted() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date1 = 1602219377796
         val date2 = 1604123777809
@@ -358,22 +302,14 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date2)), longClick()
-                    )
-            )
+        longClickOnDate(date2)
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date1)), click()
-                    )
-            )
+        clickOnDate(date1)
 
+        dateIsNotHighlighted(date2)
+    }
+
+    private fun dateIsNotHighlighted(date: Long) {
         onView(ViewMatchers.withId(R.id.date_items))
             .check(
                 matches(
@@ -381,7 +317,7 @@ class PaidListFragmentTest {
                         ViewMatchers.hasDescendant(
                             hasBackgroundColorAndText(
                                 R.color.design_default_color_secondary,
-                                dateToString(date2)
+                                dateToString(date)
                             )
                         )
                     )
@@ -391,9 +327,7 @@ class PaidListFragmentTest {
 
     @Test
     fun clickOnNotHighlightedItem_deleteButtonNotDisplayed() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date1 = 1602219377796
         val date2 = 1604123777809
@@ -406,30 +340,16 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date2)), longClick()
-                    )
-            )
+        longClickOnDate(date2)
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date1)), click()
-                    )
-            )
+        clickOnDate(date1)
 
         onView(ViewMatchers.withId(R.id.action_delete_paid_date)).check(matches(not(isDisplayed())))
     }
 
     @Test
     fun actionMode_clickOnHighlightedItem_navigationNotCalled() {
-        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
-        navController.setGraph(R.navigation.navigation)
-        navController.setCurrentDestination(R.id.paidListFragment)
+        val navController = testNavHostController()
 
         val date1 = 1602219377796
         val date2 = 1604123777809
@@ -442,23 +362,38 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date2)), longClick()
-                    )
-            )
+        longClickOnDate(date2)
 
-        onView(ViewMatchers.withId(R.id.date_items))
-            .perform(
-                RecyclerViewActions
-                    .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date2)), click()
-                    )
-            )
+        clickOnDate(date2)
 
         assertThat(navController.currentDestination?.id, `is`(R.id.paidListFragment))
+    }
+
+    private fun clickOnDate(date: Long) {
+        onView(ViewMatchers.withId(R.id.date_items))
+            .perform(
+                RecyclerViewActions
+                    .actionOnItem<PaidListAdapter.ViewHolder>(
+                        withText(dateToString(date)), click()
+                    )
+            )
+    }
+
+    private fun longClickOnDate(date: Long) {
+        onView(ViewMatchers.withId(R.id.date_items))
+            .perform(
+                RecyclerViewActions
+                    .actionOnItem<PaidListAdapter.ViewHolder>(
+                        withText(dateToString(date)), longClick()
+                    )
+            )
+    }
+
+    private fun testNavHostController(): TestNavHostController {
+        val navController = TestNavHostController(ApplicationProvider.getApplicationContext())
+        navController.setGraph(R.navigation.navigation)
+        navController.setCurrentDestination(R.id.paidListFragment)
+        return navController
     }
 
     private fun hasBackgroundColor(colorRes: Int): Matcher<View> {
