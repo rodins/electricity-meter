@@ -129,7 +129,7 @@ class PaidListFragmentTest {
         }
 
         onView(withText(dateToString(date1))).perform(longClick())
-        onView(ViewMatchers.withId(R.id.action_delete_paid_date)).perform(click())
+        clickDeleteButton()
         onView(withText(dateToString(date1))).check(doesNotExist())
         onView(withText(dateToString(date2))).check(matches(isDisplayed()))
     }
@@ -232,8 +232,12 @@ class PaidListFragmentTest {
         }
 
         onView(withText(dateToString(date1))).perform(longClick())
-        onView(ViewMatchers.withId(R.id.action_delete_paid_date)).perform(click())
+        clickDeleteButton()
         onView(ViewMatchers.withId(R.id.action_delete_paid_date)).check(matches(not(isDisplayed())))
+    }
+
+    private fun clickDeleteButton() {
+        onView(withId(R.id.action_delete_paid_date)).perform(click())
     }
 
     @Test
@@ -387,6 +391,33 @@ class PaidListFragmentTest {
         pressBack()
 
         dateIsNotHighlighted(date)
+    }
+
+    @Test
+    fun dateDeleted_dateHighlightedEquals() {
+        val navController = testNavHostController()
+
+        val date1 = 1602219377796
+        val date2 = 1604123777809
+        val date3 = 1606715777809
+        val date4 = System.currentTimeMillis()
+
+        dataSource.testInsert(PaidDate(date = date1))
+        dataSource.testInsert(PaidDate(date = date2))
+        dataSource.testInsert(PaidDate(date = date3))
+        dataSource.testInsert(PaidDate(date = date4))
+
+        launchFragmentInHiltContainer<PaidListFragment>(
+            null, R.style.Theme_ElectricityMeter
+        ) {
+            Navigation.setViewNavController(requireView(), navController)
+        }
+
+        longClickOnDate(date2)
+        clickDeleteButton()
+
+        longClickOnDate(date3)
+        dateIsHighlighted(date3)
     }
 
     private fun clickOnDate(date: Long) {
