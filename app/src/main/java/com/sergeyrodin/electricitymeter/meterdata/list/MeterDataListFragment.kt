@@ -10,12 +10,11 @@ import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MeterDataListFragment : Fragment() {
-    private val viewModel by viewModels<MeterDataListViewModel> {
-        MeterDataListViewModelFactory(
-            (requireActivity().application as ElectricityMeterApplication).meterDataSource)
-    }
+    private val viewModel by viewModels<MeterDataListViewModel>()
 
     private var paidMenuItem: MenuItem? = null
     private var isPaidMenuItemVisible = false
@@ -70,7 +69,7 @@ class MeterDataListFragment : Fragment() {
     }
 
     private fun setDataToAdapter(adapter: MeterDataAdapter) {
-        viewModel.dataToDisplay.observe(viewLifecycleOwner, { meterData ->
+        viewModel.calculator.dataToDisplay.observe(viewLifecycleOwner, { meterData ->
             adapter.data = meterData
         })
     }

@@ -9,15 +9,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.databinding.MeterDataHistoryFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MeterDataHistoryFragment : Fragment() {
 
     private val args: MeterDataHistoryFragmentArgs by navArgs()
-    private val viewModel by viewModels<MeterDataHistoryViewModel> {
-        MeterDataHistoryViewModelFactory(
-            (requireActivity().application as ElectricityMeterApplication).meterDataSource,
-            args.paidDateId)
-    }
+    private val viewModel by viewModels<MeterDataHistoryViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -26,11 +24,13 @@ class MeterDataHistoryFragment : Fragment() {
         val binding = MeterDataHistoryFragmentBinding.inflate(inflater, container, false)
         val adapter = MeterDataHistoryAdapter()
 
+        viewModel.start(args.paidDateId)
+
         binding.lifecycleOwner = viewLifecycleOwner
         binding.viewModel = viewModel
         binding.meterDataList.dataList.adapter = adapter
 
-        viewModel.dataToDisplay.observe(viewLifecycleOwner, { meterData ->
+        viewModel.calculator.dataToDisplay.observe(viewLifecycleOwner, { meterData ->
             adapter.data = meterData
         })
 

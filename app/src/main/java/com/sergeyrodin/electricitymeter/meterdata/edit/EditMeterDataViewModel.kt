@@ -1,16 +1,19 @@
 package com.sergeyrodin.electricitymeter.meterdata.edit
 
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.SaveMeterDataViewModel
 import kotlinx.coroutines.launch
 
-class EditMeterDataViewModel(
+class EditMeterDataViewModel @ViewModelInject constructor(
     private val dataSource: MeterDataSource,
-    private val meterDataId: Int
+    @Assisted private val savedStateHandle: SavedStateHandle
 ) : SaveMeterDataViewModel() {
     private val _data = MutableLiveData<String>()
     val data: LiveData<String>
@@ -18,7 +21,7 @@ class EditMeterDataViewModel(
 
     private var meterData: MeterData? = null
 
-    init {
+    fun start(meterDataId: Int) {
         viewModelScope.launch {
             meterData = dataSource.getMeterDataById(meterDataId)
             meterData?.let {

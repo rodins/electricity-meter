@@ -1,8 +1,6 @@
 package com.sergeyrodin.electricitymeter.history
 
-import android.os.Bundle
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -12,33 +10,37 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.R
-import com.sergeyrodin.electricitymeter.ServiceLocator
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
-import org.junit.After
+import com.sergeyrodin.electricitymeter.di.MeterDataSourceModule
+import com.sergeyrodin.electricitymeter.launchFragmentInHiltContainer
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 @MediumTest
 @RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
+@UninstallModules(MeterDataSourceModule::class)
 class MeterDataHistoryFragmentTest {
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
-    private lateinit var dataSource: FakeDataSource
-    private lateinit var args: Bundle
+
+    @Inject
+    lateinit var dataSource: FakeDataSource
 
     @Before
     fun initDataSource() {
-        args = Bundle()
-        dataSource = FakeDataSource()
-        ServiceLocator.dataSource = dataSource
-    }
-
-    @After
-    fun clearDataSource() {
-        ServiceLocator.resetDataSource()
+       hiltRule.inject()
     }
 
     @Test
@@ -66,7 +68,7 @@ class MeterDataHistoryFragmentTest {
         dataSource.testInsert(paidDate2)
 
         val args = MeterDataHistoryFragmentArgs(paidDate1.id).toBundle()
-        launchFragmentInContainer<MeterDataHistoryFragment>(args, R.style.Theme_ElectricityMeter)
+        launchFragmentInHiltContainer<MeterDataHistoryFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withSubstring(data1.toString()))
             .check(doesNotExist())

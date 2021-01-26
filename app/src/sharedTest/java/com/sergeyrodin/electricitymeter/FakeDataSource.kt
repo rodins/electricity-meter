@@ -5,12 +5,18 @@ import androidx.lifecycle.MutableLiveData
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class FakeDataSource: MeterDataSource {
+@Singleton
+class FakeDataSource @Inject constructor(): MeterDataSource {
+
     private val data = mutableListOf<MeterData>()
     private val observableData = MutableLiveData<List<MeterData>>()
     private val paidDates = mutableListOf<PaidDate>()
     private val observablePaidDates = MutableLiveData<List<PaidDate>>()
+
+    private var meterDataId = 1
 
     init{
         observableData.value = data
@@ -22,6 +28,9 @@ class FakeDataSource: MeterDataSource {
     }
 
     fun testInsert(meterData: MeterData) {
+        if(meterData.id == 0) {
+            meterData.id = meterDataId++
+        }
         data.add(meterData)
         observableData.value = data
     }

@@ -1,10 +1,12 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
+import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.assertThat
@@ -21,11 +23,13 @@ class MeterDataListViewModelTest{
     var mainCoroutineRule = MainCoroutineRule()
 
     private lateinit var dataSource: FakeDataSource
+    private lateinit var calculator: MeterDataCalculator
     private lateinit var subject: MeterDataListViewModel
 
     @Before
     fun initSubject(){
         dataSource = FakeDataSource()
+        calculator = MeterDataCalculator(dataSource)
     }
 
     @Test
@@ -34,9 +38,9 @@ class MeterDataListViewModelTest{
         val data2 = 14579
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, `is`(data1))
         assertThat(dataToDisplay[1].data, `is`(data2))
     }
@@ -49,8 +53,8 @@ class MeterDataListViewModelTest{
         val diff2 = 16
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
-        subject = MeterDataListViewModel(dataSource)
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
 
         assertThat(dataToDisplay[0].diff, `is`(diff1))
         assertThat(dataToDisplay[1].diff, `is`(diff2))
@@ -67,16 +71,16 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
         dataSource.testInsert(MeterData(data4))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val totalValue = subject.total.getOrAwaitValue()
+        val totalValue = subject.calculator.total.getOrAwaitValue()
         assertThat(totalValue, `is`(total))
     }
 
     @Test
     fun noItems_totalZero() {
-        subject = MeterDataListViewModel(dataSource)
-        val totalValue = subject.total.getOrAwaitValue()
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
+        val totalValue = subject.calculator.total.getOrAwaitValue()
         assertThat(totalValue, `is`(0))
     }
 
@@ -84,9 +88,9 @@ class MeterDataListViewModelTest{
     fun oneItem_totalZero() {
         val data1 = 14638
         dataSource.testInsert(MeterData(data1))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val totalValue = subject.total.getOrAwaitValue()
+        val totalValue = subject.calculator.total.getOrAwaitValue()
         assertThat(totalValue, `is`(0))
     }
 
@@ -101,16 +105,16 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
         dataSource.testInsert(MeterData(data4))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val avgValue = subject.avg.getOrAwaitValue()
+        val avgValue = subject.calculator.avg.getOrAwaitValue()
         assertThat(avgValue, `is`(avg))
     }
 
     @Test
     fun noItems_avgZero() {
-        subject = MeterDataListViewModel(dataSource)
-        val avgValue = subject.avg.getOrAwaitValue()
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
+        val avgValue = subject.calculator.avg.getOrAwaitValue()
         assertThat(avgValue, `is`(0))
     }
 
@@ -118,9 +122,9 @@ class MeterDataListViewModelTest{
     fun oneItem_avgZero() {
         val data1 = 14638
         dataSource.testInsert(MeterData(data1))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val avgValue = subject.avg.getOrAwaitValue()
+        val avgValue = subject.calculator.avg.getOrAwaitValue()
         assertThat(avgValue, `is`(0))
     }
 
@@ -134,17 +138,17 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
         dataSource.testInsert(MeterData(data4))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
         val price = 544.32
 
-        val priceValue = subject.price.getOrAwaitValue()
+        val priceValue = subject.calculator.price.getOrAwaitValue()
         assertThat(priceValue, `is`(price))
     }
 
     @Test
     fun noItems_priceZero() {
-        subject = MeterDataListViewModel(dataSource)
-        val priceValue = subject.price.getOrAwaitValue()
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
+        val priceValue = subject.calculator.price.getOrAwaitValue()
         assertThat(priceValue, `is`(0.0))
     }
 
@@ -152,9 +156,9 @@ class MeterDataListViewModelTest{
     fun oneItem_priceZero() {
         val data1 = 14638
         dataSource.testInsert(MeterData(data1))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val priceValue = subject.price.getOrAwaitValue()
+        val priceValue = subject.calculator.price.getOrAwaitValue()
         assertThat(priceValue, `is`(0.0))
     }
 
@@ -162,9 +166,9 @@ class MeterDataListViewModelTest{
     fun oneItem_dailyPriceZero() {
         val data = 114622
         dataSource.testInsert(MeterData(data))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].price, `is`(0.0))
     }
 
@@ -183,11 +187,11 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2, date = date2))
         dataSource.testInsert(MeterData(data3, date = date3))
         dataSource.testInsert(MeterData(data4, date = date4))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         subject.onPaid()
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, `is`(data4))
     }
 
@@ -200,16 +204,16 @@ class MeterDataListViewModelTest{
         val data3 = 14579
         dataSource.testInsert(MeterData(data1, date = date1))
         dataSource.testInsert(MeterData(data2, date = date2))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         subject.onPaid()
 
         dataSource.testInsert(MeterData(data3))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         subject.onPaid()
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, `is`(data3))
     }
 
@@ -228,21 +232,21 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2, date = date2))
         dataSource.testInsert(MeterData(data3, date = date3))
         dataSource.testInsert(MeterData(data4, date = date4))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         subject.onPaid()
 
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, `is`(data4))
     }
 
     @Test
     fun noItems_eventIsTrue() {
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val noItems = subject.noItems.getOrAwaitValue()
+        val noItems = subject.calculator.noItems.getOrAwaitValue()
         assertThat(noItems, `is`(true))
     }
 
@@ -250,9 +254,9 @@ class MeterDataListViewModelTest{
     fun oneItem_noItemsEventsFalse() {
         val data = 14509
         dataSource.testInsert(MeterData(data))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val noItems = subject.noItems.getOrAwaitValue()
+        val noItems = subject.calculator.noItems.getOrAwaitValue()
         assertThat(noItems, `is`(false))
     }
 
@@ -275,21 +279,21 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data3, date = date3))
         dataSource.testInsert(MeterData(data4, date = date4))
 
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         subject.onPaid()
 
         dataSource.testInsert(MeterData(data5))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, `is`(data4))
         assertThat(dataToDisplay[1].data, `is`(data5))
     }
 
     @Test
     fun onAddMeterData_addMeterDataEventNotNull() {
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         subject.onAddMeterData()
 
@@ -300,7 +304,7 @@ class MeterDataListViewModelTest{
     @Test
     fun onEditMeterData_editMeterDataEventIdEquals() {
         val id = 1
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         subject.onEditMeterData(id)
 
@@ -316,7 +320,7 @@ class MeterDataListViewModelTest{
         val date2 = 1604123777809
         dataSource.testInsert(MeterData(data1, date = date1))
         dataSource.testInsert(MeterData(data2, date = date2))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
         assertThat(paidVisible, `is`(true))
@@ -327,7 +331,7 @@ class MeterDataListViewModelTest{
         val data1 = 14314
         val date1 = 1602219377796
         dataSource.testInsert(MeterData(data1, date = date1))
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
         assertThat(paidVisible, `is`(false))
@@ -335,7 +339,7 @@ class MeterDataListViewModelTest{
 
     @Test
     fun noItems_paidButtonVisibleIsFalse() {
-        subject = MeterDataListViewModel(dataSource)
+        subject = MeterDataListViewModel(calculator, SavedStateHandle())
 
         val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
         assertThat(paidVisible, `is`(false))

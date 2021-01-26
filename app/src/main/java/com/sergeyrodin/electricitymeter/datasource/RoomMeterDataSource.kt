@@ -5,8 +5,11 @@ import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.MeterDataDatabaseDao
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.utils.wrapEspressoIdlingResource
+import javax.inject.Inject
 
-class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): MeterDataSource {
+class RoomMeterDataSource @Inject constructor(
+    private val meterDataDao: MeterDataDatabaseDao
+) : MeterDataSource {
 
     override suspend fun insert(meterData: MeterData) {
         wrapEspressoIdlingResource {
@@ -14,7 +17,10 @@ class RoomMeterDataSource(private val meterDataDao: MeterDataDatabaseDao): Meter
         }
     }
 
-    override suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>? {
+    override suspend fun getMeterDataBetweenDates(
+        beginDate: Long,
+        endDate: Long
+    ): List<MeterData>? {
         wrapEspressoIdlingResource {
             return meterDataDao.getMeterDataBetweenDates(beginDate, endDate)
         }

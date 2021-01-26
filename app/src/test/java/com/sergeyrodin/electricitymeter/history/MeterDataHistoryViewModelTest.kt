@@ -1,11 +1,13 @@
 package com.sergeyrodin.electricitymeter.history
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
+import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers
 import org.junit.Assert.assertThat
@@ -27,6 +29,8 @@ class MeterDataHistoryViewModelTest {
     @Before
     fun initSubject(){
         dataSource = FakeDataSource()
+        val calculator = MeterDataCalculator(dataSource)
+        subject = MeterDataHistoryViewModel(calculator, SavedStateHandle())
     }
 
     @Test
@@ -53,9 +57,9 @@ class MeterDataHistoryViewModelTest {
         dataSource.testInsert(paidDate1)
         dataSource.testInsert(paidDate2)
 
-        subject = MeterDataHistoryViewModel(dataSource, paidDate1.id)
+        subject.start(paidDate1.id)
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay.size, CoreMatchers.`is`(3))
         assertThat(dataToDisplay[0].data, CoreMatchers.`is`(data2))
         assertThat(dataToDisplay[1].data, CoreMatchers.`is`(data3))
@@ -84,9 +88,9 @@ class MeterDataHistoryViewModelTest {
         dataSource.testInsert(paidDate1)
         dataSource.testInsert(paidDate2)
 
-        subject = MeterDataHistoryViewModel(dataSource, paidDate2.id)
+        subject.start(paidDate2.id)
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, CoreMatchers.`is`(data4))
     }
 
@@ -110,9 +114,9 @@ class MeterDataHistoryViewModelTest {
 
         dataSource.testInsert(paidDate1)
 
-        subject = MeterDataHistoryViewModel(dataSource, paidDate1.id)
+        subject.start(paidDate1.id)
 
-        val dataToDisplay = subject.dataToDisplay.getOrAwaitValue()
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay[0].data, CoreMatchers.`is`(data4))
     }
 }

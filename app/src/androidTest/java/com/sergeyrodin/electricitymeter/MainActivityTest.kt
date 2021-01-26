@@ -1,9 +1,7 @@
 package com.sergeyrodin.electricitymeter
 
 import androidx.test.core.app.ActivityScenario
-import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.espresso.Espresso.onView
-import androidx.test.espresso.Espresso.openActionBarOverflowOrOptionsMenu
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
@@ -14,20 +12,33 @@ import androidx.test.filters.LargeTest
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import com.sergeyrodin.electricitymeter.di.TestModule
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 import com.sergeyrodin.electricitymeter.utils.DataBindingIdlingResource
 import com.sergeyrodin.electricitymeter.utils.EspressoIdlingResource
 import com.sergeyrodin.electricitymeter.utils.monitorActivity
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import dagger.hilt.android.testing.UninstallModules
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import javax.inject.Inject
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
+@UninstallModules(TestModule::class)
+@HiltAndroidTest
 class MainActivityTest {
-    private lateinit var dataSource: MeterDataSource
+
+    @get:Rule
+    val hiltRule = HiltAndroidRule(this)
+
+    @Inject
+    lateinit var dataSource: MeterDataSource
 
     private val dataBindingIdlingResource = DataBindingIdlingResource()
 
@@ -44,17 +55,12 @@ class MainActivityTest {
     }
 
     @Before
-    fun initDataSource() {
-        dataSource = ServiceLocator.provideMeterDataSource(getApplicationContext())
+    fun init() {
+        hiltRule.inject()
         runBlocking {
             dataSource.deleteAllMeterData()
             dataSource.deleteAllPaidDates()
         }
-    }
-
-    @After
-    fun clearDatabase() {
-        ServiceLocator.resetDataSource()
     }
 
     @Test

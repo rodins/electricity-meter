@@ -9,13 +9,11 @@ import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.PaidListFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class PaidListFragment : Fragment() {
-    private val viewModel by viewModels<PaidListViewModel> {
-        PaidListViewModelFactory(
-            (requireActivity().application as ElectricityMeterApplication).meterDataSource
-        )
-    }
+    private val viewModel by viewModels<PaidListViewModel>()
 
     private var actionMode: ActionMode? = null
 

@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter.paidlist
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.PaidDate
@@ -27,7 +28,7 @@ class PaidListViewModelTest {
     @Before
     fun init() {
         dataSource = FakeDataSource()
-        subject = PaidListViewModel(dataSource)
+        subject = PaidListViewModel(dataSource, SavedStateHandle())
     }
 
     @Test

@@ -15,7 +15,7 @@
 
         <include android:id="@+id/meter_data_list"
             layout="@layout/meter_data_list"
-            bind:countingViewModel="@{viewModel}" />
+            bind:calculator="@{viewModel.calculator}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

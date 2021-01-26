@@ -1,11 +1,16 @@
 package com.sergeyrodin.electricitymeter.paidlist
 
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.Event
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import kotlinx.coroutines.launch
 
-class PaidListViewModel(private val dataSource: MeterDataSource) : ViewModel() {
+class PaidListViewModel @ViewModelInject constructor(
+    private val dataSource: MeterDataSource,
+    @Assisted private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
     private val _highlightedPosition = MutableLiveData(-1)
     val highlightedPosition: LiveData<Int>
@@ -22,9 +27,9 @@ class PaidListViewModel(private val dataSource: MeterDataSource) : ViewModel() {
         get() = _itemClickEvent
 
     fun onItemClick(id: Int) {
-        if(_highlightedPosition.value == -1) {
+        if (_highlightedPosition.value == -1) {
             _itemClickEvent.value = Event(id)
-        }else {
+        } else {
             _highlightedPosition.value = -1
         }
     }

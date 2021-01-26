@@ -2,8 +2,7 @@ package com.sergeyrodin.electricitymeter
 
 import android.app.Application
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import dagger.hilt.android.HiltAndroidApp
 
-class ElectricityMeterApplication : Application() {
-    val meterDataSource: MeterDataSource
-        get() = ServiceLocator.provideMeterDataSource(this)
-}
+@HiltAndroidApp
+class ElectricityMeterApplication : Application()

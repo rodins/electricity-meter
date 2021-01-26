@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter.meterdata.edit
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.SavedStateHandle
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
@@ -20,6 +21,7 @@ class EditMeterDataViewModelTest {
     @Before
     fun initViewModel() {
         dataSource = FakeDataSource()
+        subject = EditMeterDataViewModel(dataSource, SavedStateHandle())
     }
 
     @Test
@@ -27,7 +29,7 @@ class EditMeterDataViewModelTest {
         val id = 1
         val data = 14509
         dataSource.testInsert(MeterData(id = id, data = data))
-        subject = EditMeterDataViewModel(dataSource, id)
+        subject.start(id)
 
         val dataToDisplay = subject.data.getOrAwaitValue()
         assertThat(dataToDisplay, `is`(data.toString()))
@@ -39,7 +41,7 @@ class EditMeterDataViewModelTest {
         val data = 14509
         val newData = 14511
         dataSource.testInsert(MeterData(id = id, data = data))
-        subject = EditMeterDataViewModel(dataSource, id)
+        subject.start(id)
 
         subject.onSaveMeterData(newData.toString())
 
@@ -67,7 +69,7 @@ class EditMeterDataViewModelTest {
         dataSource.testInsert(MeterData(data2, id2, date2))
         dataSource.testInsert(MeterData(data3, id3, date3))
         dataSource.testInsert(MeterData(data4, id4, date4))
-        subject = EditMeterDataViewModel(dataSource, id2)
+        subject.start(id2)
 
         subject.onSaveMeterData(newData.toString())
         val items = dataSource.getMeterDataForTest()
@@ -79,7 +81,7 @@ class EditMeterDataViewModelTest {
         val id1 = 1
         val data1 = 14314
         dataSource.testInsert(MeterData(data1, id1))
-        subject = EditMeterDataViewModel(dataSource, id1)
+        subject.start(id1)
 
         subject.onDeleteMeterData()
 
@@ -105,7 +107,7 @@ class EditMeterDataViewModelTest {
         dataSource.testInsert(MeterData(data2, id2, date2))
         dataSource.testInsert(MeterData(data3, id3, date3))
         dataSource.testInsert(MeterData(data4, id4, date4))
-        subject = EditMeterDataViewModel(dataSource, id2)
+        subject.start(id2)
 
         subject.onDeleteMeterData()
 

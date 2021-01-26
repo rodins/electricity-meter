@@ -1,27 +1,30 @@
 package com.sergeyrodin.electricitymeter.history
 
+import androidx.hilt.Assisted
+import androidx.hilt.lifecycle.ViewModelInject
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sergeyrodin.electricitymeter.CountingViewModel
-import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
 import kotlinx.coroutines.launch
 
-class MeterDataHistoryViewModel(
-    private val dataSource: MeterDataSource,
-    private val paidDateId: Int
-) : CountingViewModel(dataSource) {
+class MeterDataHistoryViewModel @ViewModelInject constructor(
+    val calculator: MeterDataCalculator,
+    @Assisted private val savedStateHandle: SavedStateHandle
+) : ViewModel() {
 
-    init {
+    fun start(paidDateId: Int) {
         viewModelScope.launch {
-            updateMeterData()
+            updateMeterData(paidDateId)
         }
     }
 
-    override suspend fun updateMeterData() {
-        val paidDateRange = dataSource.getPaidDatesRangeById(paidDateId)
+    private suspend fun updateMeterData(paidDateId: Int) {
+        val paidDateRange = calculator.dataSource.getPaidDatesRangeById(paidDateId)
         if (paidDateRange?.size == 2) {
-            updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
+            calculator.updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
         } else if (paidDateRange?.size == 1) {
-            updateObservableData(paidDateRange[0].date)
+            calculator.updateObservableData(paidDateRange[0].date)
         }
     }
 }

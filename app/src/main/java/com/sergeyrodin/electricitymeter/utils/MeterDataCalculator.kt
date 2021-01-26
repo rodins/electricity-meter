@@ -1,18 +1,17 @@
-package com.sergeyrodin.electricitymeter
+package com.sergeyrodin.electricitymeter.utils
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataPresentation
 import com.sergeyrodin.electricitymeter.meterdata.list.getAverageKwh
 import com.sergeyrodin.electricitymeter.meterdata.list.getTotalKwh
-import com.sergeyrodin.electricitymeter.utils.convertMeterDataListToPresentationList
+import javax.inject.Inject
 
-abstract class CountingViewModel(private val dataSource: MeterDataSource): ViewModel() {
-    protected val observableData = MutableLiveData<List<MeterData>>()
+class MeterDataCalculator @Inject constructor(val dataSource: MeterDataSource) {
+    val observableData = MutableLiveData<List<MeterData>>()
 
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
         Transformations.map(observableData) { meterData ->
@@ -45,16 +44,14 @@ abstract class CountingViewModel(private val dataSource: MeterDataSource): ViewM
 
     private fun calculateTotalPrice(meterData: List<MeterData>): Double {
         val totalKwh = getTotalKwh(meterData)
-        return com.sergeyrodin.electricitymeter.utils.calculateTotalPrice(totalKwh)
+        return calculateTotalPrice(totalKwh)
     }
 
     val noItems = Transformations.map(observableData) {
         it.isEmpty()
     }
 
-    protected abstract suspend fun updateMeterData()
-
-    protected suspend fun updateObservableData(beginDate: Long = 0L, endDate: Long = Long.MAX_VALUE) {
+    suspend fun updateObservableData(beginDate: Long = 0L, endDate: Long = Long.MAX_VALUE) {
         observableData.value = dataSource.getMeterDataBetweenDates(beginDate, endDate)
     }
 }

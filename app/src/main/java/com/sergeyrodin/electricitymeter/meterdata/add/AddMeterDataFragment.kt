@@ -10,14 +10,12 @@ import androidx.navigation.fragment.findNavController
 import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.databinding.AddMeterDataFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class AddMeterDataFragment : Fragment() {
 
-    private val viewModel by viewModels<AddMeterDataViewModel> {
-        AddMeterDataViewModelFactory(
-            (requireContext().applicationContext as ElectricityMeterApplication).meterDataSource
-        )
-    }
+    private val viewModel by viewModels<AddMeterDataViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
