@@ -44,8 +44,12 @@ class PaidListViewModel @ViewModelInject constructor(
             position?.let {
                 val paidDate = paidDates.value?.get(position)
                 dataSource.deletePaidDate(paidDate)
-                _highlightedPosition.value = -1
+                resetHighlightedPosition()
             }
         }
+    }
+
+    fun resetHighlightedPosition() {
+        _highlightedPosition.value = -1
     }
 }

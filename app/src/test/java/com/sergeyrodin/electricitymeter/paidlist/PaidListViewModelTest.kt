@@ -172,4 +172,20 @@ class PaidListViewModelTest {
 
         }
     }
+
+    @Test
+    fun testResetHighlightedPosition() {
+        val id = 1
+        val date = 1602219377796
+        val position = 0
+        val resetPosition = -1
+        dataSource.testInsert(PaidDate(id = id, date = date))
+
+        subject.onItemLongClick(position)
+
+        subject.resetHighlightedPosition()
+
+        val highlighted = subject.highlightedPosition.getOrAwaitValue()
+        assertThat(highlighted, `is`(resetPosition))
+    }
 }

@@ -91,6 +91,7 @@ class PaidListFragment : Fragment() {
 
                 override fun onDestroyActionMode(mode: ActionMode?) {
                     actionMode = null
+                    viewModel.resetHighlightedPosition()
                 }
             })
         }

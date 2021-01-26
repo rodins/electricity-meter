@@ -9,14 +9,14 @@ import androidx.navigation.Navigation
 import androidx.navigation.testing.TestNavHostController
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.longClick
 import androidx.test.espresso.assertion.ViewAssertions.doesNotExist
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withText
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.internal.util.Checks
@@ -367,6 +367,26 @@ class PaidListFragmentTest {
         clickOnDate(date2)
 
         assertThat(navController.currentDestination?.id, `is`(R.id.paidListFragment))
+    }
+
+    @Test
+    fun clickBack_itemNotHighlighted() {
+        val navController = testNavHostController()
+
+        val date = 1602219377796
+        dataSource.testInsert(PaidDate(date = date))
+
+        launchFragmentInHiltContainer<PaidListFragment>(
+            null, R.style.Theme_ElectricityMeter
+        ) {
+            Navigation.setViewNavController(requireView(), navController)
+        }
+
+        longClickOnDate(date)
+
+        pressBack()
+
+        dateIsNotHighlighted(date)
     }
 
     private fun clickOnDate(date: Long) {
