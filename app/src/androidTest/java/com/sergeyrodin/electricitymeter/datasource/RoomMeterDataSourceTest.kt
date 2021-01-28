@@ -43,8 +43,8 @@ class RoomMeterDataSourceTest {
 
         dataSource.insertPaidDate(paidDate)
 
-        val paidDateFromDb = dataSource.getLastPaidDate()
-        assertThat(paidDate.date, `is`(paidDateFromDb?.date))
+        val paidDateFromDb = dataSource.getLastPaidDate().getOrAwaitValue()
+        assertThat(paidDateFromDb.date, `is`(paidDate.date))
     }
 
     @Test
@@ -54,11 +54,11 @@ class RoomMeterDataSourceTest {
 
         dataSource.insertPaidDate(paidDate)
 
-        val paidDateToDelete = dataSource.getLastPaidDate()
+        val paidDateToDelete = dataSource.getLastPaidDate().getOrAwaitValue()
 
         dataSource.deletePaidDate(paidDateToDelete)
 
-        val paidDateDeleted = dataSource.getLastPaidDate()
+        val paidDateDeleted = dataSource.getLastPaidDate().getOrAwaitValue()
         assertThat(paidDateDeleted, `is`(nullValue()))
     }
 
@@ -68,8 +68,8 @@ class RoomMeterDataSourceTest {
         val date = 1602219377796
         dataSource.insert(MeterData(data, date = date))
 
-        val items = dataSource.getMeterDataBetweenDates(date, Long.MAX_VALUE)
-        assertThat(items?.size, `is`(1))
+        val items = dataSource.getObservableData(date, Long.MAX_VALUE).getOrAwaitValue()
+        assertThat(items.size, `is`(1))
     }
 
     @Test
@@ -81,8 +81,8 @@ class RoomMeterDataSourceTest {
         dataSource.insert(MeterData(data1, date = date1))
         dataSource.insert(MeterData(data2, date = date2))
 
-        val items = dataSource.getMeterDataBetweenDates(date1, date2)
-        assertThat(items?.size, `is`(2))
+        val items = dataSource.getObservableData(date1, date2).getOrAwaitValue()
+        assertThat(items.size, `is`(2))
     }
 
     @Test
@@ -100,9 +100,9 @@ class RoomMeterDataSourceTest {
         dataSource.insert(MeterData(data3, date = date3))
         dataSource.insert(MeterData(data4, date = date4))
 
-        val items = dataSource.getMeterDataBetweenDates(date2, date3)
-        assertThat(items?.get(0)?.data, `is`(data2))
-        assertThat(items?.get(1)?.data, `is`(data3))
+        val items = dataSource.getObservableData(date2, date3).getOrAwaitValue()
+        assertThat(items[0].data, `is`(data2))
+        assertThat(items[1].data, `is`(data3))
     }
 
     @Test
@@ -131,8 +131,8 @@ class RoomMeterDataSourceTest {
         dataSource.insertPaidDate(paidDate3)
         dataSource.insertPaidDate(paidDate4)
 
-        val items = dataSource.getPaidDatesRangeById(paidDate2.id)
-        assertThat(items?.size, `is`(2))
+        val items = dataSource.getPaidDatesRangeById(paidDate2.id).getOrAwaitValue()
+        assertThat(items.size, `is`(2))
     }
 
     @Test
@@ -148,8 +148,8 @@ class RoomMeterDataSourceTest {
 
         dataSource.deleteAllMeterData()
 
-        val items = dataSource.getMeterDataBetweenDates(0L, Long.MAX_VALUE)
-        assertThat(items?.size, `is`(0))
+        val items = dataSource.getObservableData(0L, Long.MAX_VALUE).getOrAwaitValue()
+        assertThat(items.size, `is`(0))
     }
 
     @Test
@@ -230,12 +230,43 @@ class RoomMeterDataSourceTest {
 
         dataSource.deleteMeterData(meterData2)
 
-        val items = dataSource.getMeterDataBetweenDates(0L, Long.MAX_VALUE)
-        assertThat(items?.size, `is`(3))
-        items?.let {
-            assertThat(it[0].data, `is`(data1))
-            assertThat(it[1].data, `is`(data3))
-            assertThat(it[2].data, `is`(data4))
-        }
+        val items = dataSource.getObservableData(0L, Long.MAX_VALUE).getOrAwaitValue()
+
+        assertThat(items.size, `is`(3))
+        assertThat(items[0].data, `is`(data1))
+        assertThat(items[1].data, `is`(data3))
+        assertThat(items[2].data, `is`(data4))
+    }
+
+    @Test
+    fun getLastMeterData() = runBlockingTest {
+        val id1 = 1
+        val data1 = 14314
+        val date1 = 1602219377796
+
+        val id2 = 2
+        val data2 = 14509
+        val date2 = 1604123777809
+
+        val id3 = 3
+        val data3 = 14579
+        val date3 = 1606715777809
+
+        val id4 = 4
+        val data4 = 14638
+        val date4 = 1606802177809
+
+        val meterData1 = MeterData(data1, id1, date1)
+        val meterData2 = MeterData(data2, id2, date2)
+        val meterData3 = MeterData(data3, id3, date3)
+        val meterData4 = MeterData(data4, id4, date4)
+
+        dataSource.insert(meterData1)
+        dataSource.insert(meterData2)
+        dataSource.insert(meterData3)
+        dataSource.insert(meterData4)
+
+        val meterData = dataSource.getLastMeterData()
+        assertThat(meterData?.data, `is`(data4))
     }
 }

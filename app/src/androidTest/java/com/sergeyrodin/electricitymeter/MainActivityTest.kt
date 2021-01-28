@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter
 
 import androidx.test.core.app.ActivityScenario
+import androidx.test.espresso.Espresso
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.IdlingRegistry
 import androidx.test.espresso.action.ViewActions.*
@@ -423,6 +424,36 @@ class MainActivityTest {
         onView(withText(dateToString(date2))).perform(click())
 
         onView(withText(R.string.meter_data_history)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun displayMeterDataAfterPaidDateDeleted() = runBlocking {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        val data3 = 14579
+        val date3 = 1606715777809
+        val data4 = 14638
+        val date4 = 1606802177809
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insert(MeterData(data3, date = date3))
+        dataSource.insert(MeterData(data4, date = date4))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.action_paid)).perform(click())
+        onView(withId(R.id.paidListFragment)).perform(click())
+        onView(withText(dateToString(date4))).perform(longClick())
+        onView(withId(R.id.action_delete_paid_date)).perform(click())
+
+        Espresso.pressBack()
+
+        onView(withSubstring(dateToString(date1))).check(matches(isDisplayed()))
 
         activityScenario.close()
     }

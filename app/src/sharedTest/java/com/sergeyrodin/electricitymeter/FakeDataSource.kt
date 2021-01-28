@@ -2,6 +2,7 @@ package com.sergeyrodin.electricitymeter
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
@@ -15,8 +16,12 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
     private val observableData = MutableLiveData<List<MeterData>>()
     private val paidDates = mutableListOf<PaidDate>()
     private val observablePaidDates = MutableLiveData<List<PaidDate>>()
+    private val observablePaidDate: LiveData<PaidDate> = Transformations.map(observablePaidDates) {
+        it.lastOrNull()
+    }
 
     private var meterDataId = 1
+    private var paidDateId = 1
 
     init{
         observableData.value = data
@@ -35,10 +40,14 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
         observableData.value = data
     }
 
-    override suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>? {
-        return data.filter {
+    override fun getObservableData(beginDate: Long, endDate: Long): LiveData<List<MeterData>> {
+        val filteredData = data.filter {
             it.date in beginDate..endDate
         }
+        data.clear()
+        data.addAll(filteredData)
+        observableData.value = data
+        return observableData
     }
 
     override suspend fun insertPaidDate(paidDate: PaidDate) {
@@ -46,12 +55,15 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
     }
 
     fun testInsert(paidDate: PaidDate) {
+        if(paidDate.id == 0) {
+            paidDate.id = paidDateId++
+        }
         paidDates.add(paidDate)
         observablePaidDates.value = paidDates
     }
 
-    override suspend fun getLastPaidDate(): PaidDate? {
-        return paidDates.lastOrNull()
+    override fun getLastPaidDate(): LiveData<PaidDate> {
+        return observablePaidDate
     }
 
     override suspend fun deletePaidDate(paidDate: PaidDate?) {
@@ -59,22 +71,23 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
         observablePaidDates.value = paidDates
     }
 
-    fun testPaidDatesSize() = paidDates.size
-
     override fun getPaidDates(): LiveData<List<PaidDate>> {
         return observablePaidDates
     }
 
-    override suspend fun getPaidDatesRangeById(id: Int): List<PaidDate>? {
+    override fun getPaidDatesRangeById(id: Int): LiveData<List<PaidDate>> {
         val paidDatesRange = paidDates.filter {
             it.id >= id
         }
 
-        return if(paidDatesRange.size <= 2) {
+        val paidDatesRangeLimited = if(paidDatesRange.size <= 2) {
             paidDatesRange
         } else {
             paidDatesRange.subList(0, 2)
         }
+
+        observablePaidDates.value = paidDatesRangeLimited
+        return observablePaidDates
     }
 
     override suspend fun deleteAllMeterData() {
@@ -105,6 +118,10 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
 
     override suspend fun deleteMeterData(meterData: MeterData) {
         data.remove(meterData)
+    }
+
+    override suspend fun getLastMeterData(): MeterData? {
+        return data.lastOrNull()
     }
 
 }

@@ -2,29 +2,39 @@ package com.sergeyrodin.electricitymeter.history
 
 import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
+import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
-import kotlinx.coroutines.launch
 
 class MeterDataHistoryViewModel @ViewModelInject constructor(
-    val calculator: MeterDataCalculator,
+    private val dataSource: MeterDataSource,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    fun start(paidDateId: Int) {
-        viewModelScope.launch {
-            updateMeterData(paidDateId)
-        }
+    private val paidDateInput = MutableLiveData<Int>()
+
+    private val observablePaidDatesRange = Transformations
+        .switchMap(paidDateInput) { paidDateId ->
+            dataSource.getPaidDatesRangeById(paidDateId)
     }
 
-    private suspend fun updateMeterData(paidDateId: Int) {
-        val paidDateRange = calculator.dataSource.getPaidDatesRangeById(paidDateId)
-        if (paidDateRange?.size == 2) {
-            calculator.updateObservableData(paidDateRange[0].date, paidDateRange[1].date)
-        } else if (paidDateRange?.size == 1) {
-            calculator.updateObservableData(paidDateRange[0].date)
+    private val observableData = Transformations.switchMap(observablePaidDatesRange) { paidDatesRange ->
+        getObservableMeterData(paidDatesRange)
+    }
+
+    val calculator = MeterDataCalculator(observableData)
+
+    fun start(paidDateId: Int) {
+        paidDateInput.value = paidDateId
+    }
+
+    private fun getObservableMeterData(paidDateRange: List<PaidDate>) : LiveData<List<MeterData>> {
+        return if (paidDateRange.size == 2) {
+            dataSource.getObservableData(paidDateRange[0].date, paidDateRange[1].date)
+        } else {
+            dataSource.getObservableData(paidDateRange[0].date)
         }
     }
 }

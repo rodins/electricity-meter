@@ -4,12 +4,14 @@ import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.Event
+import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
 import kotlinx.coroutines.launch
 
 class MeterDataListViewModel @ViewModelInject constructor(
-    val calculator: MeterDataCalculator,
+    private val dataSource: MeterDataSource,
     @Assisted private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
@@ -21,33 +23,34 @@ class MeterDataListViewModel @ViewModelInject constructor(
     val editMeterDataEvent: LiveData<Event<Int>>
        get() = _editMeterDataEvent
 
+    private val observablePaidDate = dataSource.getLastPaidDate()
+
+    private val observableData: LiveData<List<MeterData>> = Transformations
+        .switchMap(observablePaidDate) {
+            updateMeterData(it)
+    }
+
+    private fun updateMeterData(paidDate: PaidDate?): LiveData<List<MeterData>> {
+        return if (paidDate == null) {
+            dataSource.getObservableData()
+        } else {
+            dataSource.getObservableData(paidDate.date)
+        }
+    }
+
+    val calculator = MeterDataCalculator(observableData)
+
     val isPaidButtonVisible = Transformations.map(calculator.price) { price ->
         price > 0
     }
 
-    init {
-        viewModelScope.launch {
-            updateMeterData()
-        }
-    }
-
-    private suspend fun updateMeterData() {
-        val paidDate = calculator.dataSource.getLastPaidDate()
-        if (paidDate == null) {
-            calculator.updateObservableData()
-        } else {
-            calculator.updateObservableData(paidDate.date)
-        }
-    }
-
     fun onPaid() {
-        calculator.observableData.value?.let { data ->
+        observableData.value?.let { data ->
             if(data.isNotEmpty()) {
                 val last = data.last()
                 val paidDate = PaidDate(date = last.date)
                 viewModelScope.launch{
-                    calculator.dataSource.insertPaidDate(paidDate)
-                    calculator.updateObservableData(last.date)
+                    dataSource.insertPaidDate(paidDate)
                 }
             }
         }

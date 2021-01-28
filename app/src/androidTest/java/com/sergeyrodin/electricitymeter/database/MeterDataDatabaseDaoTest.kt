@@ -42,8 +42,8 @@ class MeterDataDatabaseDaoTest {
 
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate)
 
-        val paidDateFromDb = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate()
-        assertThat(paidDateFromDb?.date, `is`(date))
+        val paidDateFromDb = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate().getOrAwaitValue()
+        assertThat(paidDateFromDb.date, `is`(date))
     }
 
     @Test
@@ -53,11 +53,11 @@ class MeterDataDatabaseDaoTest {
 
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate)
 
-        val paidDateToDelete = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate()
+        val paidDateToDelete = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate().getOrAwaitValue()
 
         meterDataDatabase.meterDataDatabaseDao.deletePaidDate(paidDateToDelete)
 
-        val paidDateFromDb = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate()
+        val paidDateFromDb = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate().getOrAwaitValue()
         assertThat(paidDateFromDb, `is`(nullValue()))
     }
 
@@ -67,7 +67,8 @@ class MeterDataDatabaseDaoTest {
         val date = 1602219377796
         meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data, date = date))
 
-        val items = meterDataDatabase.meterDataDatabaseDao.getMeterDataBetweenDates(date, Long.MAX_VALUE)
+        val items = meterDataDatabase.meterDataDatabaseDao
+            .getMeterDataBetweenDates(date, Long.MAX_VALUE).getOrAwaitValue()
         assertThat(items?.size, `is`(1))
     }
 
@@ -80,7 +81,8 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data1, date = date1))
         meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data2, date = date2))
 
-        val items = meterDataDatabase.meterDataDatabaseDao.getMeterDataBetweenDates(date1, date2)
+        val items = meterDataDatabase.meterDataDatabaseDao
+            .getMeterDataBetweenDates(date1, date2).getOrAwaitValue()
         assertThat(items?.size, `is`(2))
     }
 
@@ -99,7 +101,8 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data3, date = date3))
         meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data4, date = date4))
 
-        val items = meterDataDatabase.meterDataDatabaseDao.getMeterDataBetweenDates(date2, date3)
+        val items = meterDataDatabase.meterDataDatabaseDao
+            .getMeterDataBetweenDates(date2, date3).getOrAwaitValue()
         assertThat(items?.get(0)?.data, `is`(data2))
         assertThat(items?.get(1)?.data, `is`(data3))
     }
@@ -120,8 +123,8 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(PaidDate(date = date1))
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(PaidDate(date = date2))
 
-        val paidDate = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate()
-        assertThat(paidDate?.date, `is`(date2))
+        val paidDate = meterDataDatabase.meterDataDatabaseDao.getLastPaidDate().getOrAwaitValue()
+        assertThat(paidDate.date, `is`(date2))
     }
 
     @Test
@@ -141,10 +144,11 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate3)
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate4)
 
-        val paidDates = meterDataDatabase.meterDataDatabaseDao.getPaidDatesRangeById(paidDate2.id)
-        assertThat(paidDates?.size, `is`(2))
-        assertThat(paidDates?.get(0)?.date, `is`(date2))
-        assertThat(paidDates?.get(1)?.date, `is`(date3))
+        val paidDates = meterDataDatabase.meterDataDatabaseDao
+            .getPaidDatesRangeById(paidDate2.id).getOrAwaitValue()
+        assertThat(paidDates.size, `is`(2))
+        assertThat(paidDates[0].date, `is`(date2))
+        assertThat(paidDates[1].date, `is`(date3))
     }
 
     @Test
@@ -164,9 +168,10 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate3)
         meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate4)
 
-        val paidDates = meterDataDatabase.meterDataDatabaseDao.getPaidDatesRangeById(paidDate4.id)
-        assertThat(paidDates?.size, `is`(1))
-        assertThat(paidDates?.get(0)?.date, `is`(date4))
+        val paidDates = meterDataDatabase.meterDataDatabaseDao
+            .getPaidDatesRangeById(paidDate4.id).getOrAwaitValue()
+        assertThat(paidDates.size, `is`(1))
+        assertThat(paidDates[0].date, `is`(date4))
     }
 
     @Test
@@ -182,7 +187,8 @@ class MeterDataDatabaseDaoTest {
 
         meterDataDatabase.meterDataDatabaseDao.deleteAllMeterData()
 
-        val items = meterDataDatabase.meterDataDatabaseDao.getMeterDataBetweenDates(0L, Long.MAX_VALUE)
+        val items = meterDataDatabase.meterDataDatabaseDao
+            .getMeterDataBetweenDates(0L, Long.MAX_VALUE).getOrAwaitValue()
         assertThat(items?.size, `is`(0))
     }
 
@@ -264,12 +270,45 @@ class MeterDataDatabaseDaoTest {
 
         meterDataDatabase.meterDataDatabaseDao.deleteMeterData(meterData2)
 
-        val items = meterDataDatabase.meterDataDatabaseDao.getMeterDataBetweenDates(0L, Long.MAX_VALUE)
+        val items = meterDataDatabase.meterDataDatabaseDao
+            .getMeterDataBetweenDates(0L, Long.MAX_VALUE).getOrAwaitValue()
         assertThat(items?.size, `is`(3))
         items?.let {
             Assert.assertThat(it[0].data, `is`(data1))
             Assert.assertThat(it[1].data, `is`(data3))
             Assert.assertThat(it[2].data, `is`(data4))
         }
+    }
+
+    @Test
+    fun getLastMeterDataTest() = runBlockingTest {
+        val id1 = 1
+        val data1 = 14314
+        val date1 = 1602219377796
+
+        val id2 = 2
+        val data2 = 14509
+        val date2 = 1604123777809
+
+        val id3 = 3
+        val data3 = 14579
+        val date3 = 1606715777809
+
+        val id4 = 4
+        val data4 = 14638
+        val date4 = 1606802177809
+
+        val meterData1 = MeterData(data1, id1, date1)
+        val meterData2 = MeterData(data2, id2, date2)
+        val meterData3 = MeterData(data3, id3, date3)
+        val meterData4 = MeterData(data4, id4, date4)
+
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData1)
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData2)
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData3)
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData4)
+
+        val lastMeterData = meterDataDatabase.meterDataDatabaseDao.getLastMeterData()
+        assertThat(lastMeterData?.data, `is`(data4))
     }
 }

@@ -6,15 +6,16 @@ import com.sergeyrodin.electricitymeter.database.PaidDate
 
 interface MeterDataSource {
     suspend fun insert(meterData: MeterData)
-    suspend fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): List<MeterData>?
+    fun getObservableData(beginDate: Long = 0L, endDate: Long = Long.MAX_VALUE): LiveData<List<MeterData>>
     suspend fun insertPaidDate(paidDate: PaidDate)
-    suspend fun getLastPaidDate(): PaidDate?
+    fun getLastPaidDate(): LiveData<PaidDate>
     suspend fun deletePaidDate(paidDate: PaidDate?)
     fun getPaidDates(): LiveData<List<PaidDate>>
-    suspend fun getPaidDatesRangeById(id: Int): List<PaidDate>?
+    fun getPaidDatesRangeById(id: Int): LiveData<List<PaidDate>>
     suspend fun deleteAllMeterData()
     suspend fun deleteAllPaidDates()
     suspend fun getMeterDataById(id: Int): MeterData?
     suspend fun update(meterData: MeterData)
     suspend fun deleteMeterData(meterData: MeterData)
+    suspend fun getLastMeterData(): MeterData?
 }

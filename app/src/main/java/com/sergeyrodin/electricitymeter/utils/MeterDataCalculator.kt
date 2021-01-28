@@ -10,8 +10,7 @@ import com.sergeyrodin.electricitymeter.meterdata.list.getAverageKwh
 import com.sergeyrodin.electricitymeter.meterdata.list.getTotalKwh
 import javax.inject.Inject
 
-class MeterDataCalculator @Inject constructor(val dataSource: MeterDataSource) {
-    val observableData = MutableLiveData<List<MeterData>>()
+class MeterDataCalculator (observableData: LiveData<List<MeterData>>) {
 
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
         Transformations.map(observableData) { meterData ->
@@ -49,9 +48,5 @@ class MeterDataCalculator @Inject constructor(val dataSource: MeterDataSource) {
 
     val noItems = Transformations.map(observableData) {
         it.isEmpty()
-    }
-
-    suspend fun updateObservableData(beginDate: Long = 0L, endDate: Long = Long.MAX_VALUE) {
-        observableData.value = dataSource.getMeterDataBetweenDates(beginDate, endDate)
     }
 }

@@ -29,8 +29,7 @@ class MeterDataHistoryViewModelTest {
     @Before
     fun initSubject(){
         dataSource = FakeDataSource()
-        val calculator = MeterDataCalculator(dataSource)
-        subject = MeterDataHistoryViewModel(calculator, SavedStateHandle())
+        subject = MeterDataHistoryViewModel(dataSource, SavedStateHandle())
     }
 
     @Test
