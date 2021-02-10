@@ -413,11 +413,11 @@ class PaidListFragmentTest {
             Navigation.setViewNavController(requireView(), navController)
         }
 
-        longClickOnDate(date2)
+        longClickOnDate(date1)
         clickDeleteButton()
 
-        longClickOnDate(date3)
-        dateIsHighlighted(date3)
+        longClickOnDate(date2)
+        dateIsHighlighted(date2)
     }
 
     private fun clickOnDate(date: Long) {

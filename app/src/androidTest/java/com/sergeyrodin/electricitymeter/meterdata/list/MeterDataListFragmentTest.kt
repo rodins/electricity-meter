@@ -81,7 +81,7 @@ class MeterDataListFragmentTest {
     }
 
     @Test
-    fun fewItems_totalAvgPriceDisplayed() {
+    fun fewItems_totalAvgPricePrognosisDisplayed() {
         val data1 = 14594
         val data2 = 14611
         val data3 = 14622
@@ -93,10 +93,11 @@ class MeterDataListFragmentTest {
         val total = 44
         val avg = 14
         val price = 73.92
+        val prognosis = 705.6
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
         val context = getApplicationContext<Context>()
-        val totalValue = context.resources.getString(R.string.total_format, total, avg, price)
+        val totalValue = context.resources.getString(R.string.total_format, total, avg, price, prognosis)
 
         onView(withText(totalValue)).check(matches(isDisplayed()))
     }
@@ -197,4 +198,5 @@ class MeterDataListFragmentTest {
         onView(withSubstring(data.toString())).perform(click())
         assertThat(navController.currentDestination?.id, `is`(R.id.addEditMeterDataFragment))
     }
+
 }

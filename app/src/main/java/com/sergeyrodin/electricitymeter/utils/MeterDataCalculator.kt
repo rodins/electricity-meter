@@ -1,14 +1,13 @@
 package com.sergeyrodin.electricitymeter.utils
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.sergeyrodin.electricitymeter.database.MeterData
-import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataPresentation
 import com.sergeyrodin.electricitymeter.meterdata.list.getAverageKwh
 import com.sergeyrodin.electricitymeter.meterdata.list.getTotalKwh
-import javax.inject.Inject
+
+private const val PROGNOSIS_DAYS_NUMBER = 30
 
 class MeterDataCalculator (observableData: LiveData<List<MeterData>>) {
 
@@ -39,6 +38,11 @@ class MeterDataCalculator (observableData: LiveData<List<MeterData>>) {
         } else {
             calculateTotalPrice(meterData)
         }
+    }
+
+    val prognosis = Transformations.map(avg) { average ->
+        val prognosisKwh = average * PROGNOSIS_DAYS_NUMBER
+        calculateTotalPrice(prognosisKwh)
     }
 
     private fun calculateTotalPrice(meterData: List<MeterData>): Double {

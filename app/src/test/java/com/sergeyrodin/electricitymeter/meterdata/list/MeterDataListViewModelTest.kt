@@ -310,4 +310,20 @@ class MeterDataListViewModelTest{
         val paidVisible = subject.isPaidButtonVisible.getOrAwaitValue()
         assertThat(paidVisible, `is`(false))
     }
+
+    @Test
+    fun fewItems_prognosisEquals() {
+        val data1 = 14594
+        val data2 = 14611
+        val data3 = 14622
+        val data4 = 14638
+        val prognosis = 705.6 // avg * 30 * kwhPrice
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+
+        val prognosisValue = subject.calculator.prognosis.getOrAwaitValue()
+        assertThat(prognosisValue, `is`(prognosis))
+    }
 }

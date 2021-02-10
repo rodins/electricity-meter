@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
-            android:text="@{@string/total_format(calculator.total, calculator.avg, calculator.price)}"
+            android:text="@{@string/total_format(calculator.total, calculator.avg, calculator.price, calculator.prognosis)}"
             android:textSize="24sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.553"
