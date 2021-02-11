@@ -9,11 +9,15 @@ import com.sergeyrodin.electricitymeter.meterdata.list.getTotalKwh
 
 private const val PROGNOSIS_DAYS_NUMBER = 30
 
-class MeterDataCalculator (observableData: LiveData<List<MeterData>>) {
+class MeterDataCalculator (observableData: LiveData<List<MeterData>>, reversed: Boolean = false) {
 
     val dataToDisplay: LiveData<List<MeterDataPresentation>> =
         Transformations.map(observableData) { meterData ->
-            convertMeterDataListToPresentationList(meterData)
+            if(reversed) {
+                convertMeterDataListToPresentationListReversed(meterData)
+            } else {
+                convertMeterDataListToPresentationList(meterData)
+            }
         }
 
     val total: LiveData<Int> = Transformations.map(observableData) { meterData ->

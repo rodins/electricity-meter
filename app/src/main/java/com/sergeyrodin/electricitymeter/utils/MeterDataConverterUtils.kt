@@ -21,3 +21,7 @@ fun convertMeterDataListToPresentationList(meterData: List<MeterData>) =
     } else {
         listOf()
     }
+
+fun convertMeterDataListToPresentationListReversed(meterData: List<MeterData>): List<MeterDataPresentation> {
+    return convertMeterDataListToPresentationList(meterData).reversed()
+}

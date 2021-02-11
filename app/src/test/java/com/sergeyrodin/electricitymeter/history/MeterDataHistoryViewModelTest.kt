@@ -10,6 +10,7 @@ import com.sergeyrodin.electricitymeter.getOrAwaitValue
 import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers
+import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
@@ -59,10 +60,10 @@ class MeterDataHistoryViewModelTest {
         subject.start(paidDate1.id)
 
         val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay.size, CoreMatchers.`is`(3))
-        assertThat(dataToDisplay[0].data, CoreMatchers.`is`(data2))
-        assertThat(dataToDisplay[1].data, CoreMatchers.`is`(data3))
-        assertThat(dataToDisplay[2].data, CoreMatchers.`is`(data4))
+        assertThat(dataToDisplay.size, `is`(3))
+        assertThat(dataToDisplay[0].data, `is`(data2))
+        assertThat(dataToDisplay[1].data, `is`(data3))
+        assertThat(dataToDisplay[2].data, `is`(data4))
     }
 
     @Test
@@ -90,7 +91,7 @@ class MeterDataHistoryViewModelTest {
         subject.start(paidDate2.id)
 
         val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay[0].data, CoreMatchers.`is`(data4))
+        assertThat(dataToDisplay[0].data, `is`(data4))
     }
 
     @Test
@@ -116,6 +117,6 @@ class MeterDataHistoryViewModelTest {
         subject.start(paidDate1.id)
 
         val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay[0].data, CoreMatchers.`is`(data4))
+        assertThat(dataToDisplay[0].data, `is`(data4))
     }
 }

@@ -38,8 +38,8 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2))
 
         val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay[0].data, `is`(data1))
-        assertThat(dataToDisplay[1].data, `is`(data2))
+        assertThat(dataToDisplay[0].data, `is`(data2))
+        assertThat(dataToDisplay[1].data, `is`(data1))
     }
 
     @Test
@@ -53,8 +53,8 @@ class MeterDataListViewModelTest{
 
         val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
 
-        assertThat(dataToDisplay[0].diff, `is`(diff1))
-        assertThat(dataToDisplay[1].diff, `is`(diff2))
+        assertThat(dataToDisplay[0].diff, `is`(diff2))
+        assertThat(dataToDisplay[1].diff, `is`(diff1))
     }
 
     @Test
@@ -199,12 +199,14 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data2, date = date2))
 
         val dataToDisplay1 = subject.calculator.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay1[0].data, `is`(data1))
+        assertThat(dataToDisplay1[0].data, `is`(data2))
+        assertThat(dataToDisplay1.size, `is`(2))
 
         subject.onPaid()
 
         val dataToDisplay2 = subject.calculator.dataToDisplay.getOrAwaitValue()
         assertThat(dataToDisplay2[0].data, `is`(data2))
+        assertThat(dataToDisplay2.size, `is`(1))
 
         dataSource.testInsert(MeterData(data3))
 
@@ -260,8 +262,8 @@ class MeterDataListViewModelTest{
         dataSource.testInsert(MeterData(data5))
 
         val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
-        assertThat(dataToDisplay[0].data, `is`(data4))
-        assertThat(dataToDisplay[1].data, `is`(data5))
+        assertThat(dataToDisplay[0].data, `is`(data5))
+        assertThat(dataToDisplay[1].data, `is`(data4))
     }
 
     @Test

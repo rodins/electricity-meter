@@ -390,6 +390,11 @@ class PaidListFragmentTest {
 
         pressBack()
 
+        dateIsHighlighted(date)
+        onView(withId(R.id.action_delete_paid_date)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.action_delete_paid_date)).check(matches(not(isDisplayed())))
+        onView(withId(R.id.action_delete_paid_date)).check(matches(not(isDisplayed())))
+
         dateIsNotHighlighted(date)
     }
 

@@ -38,7 +38,7 @@ class MeterDataListViewModel @ViewModelInject constructor(
         }
     }
 
-    val calculator = MeterDataCalculator(observableData)
+    val calculator = MeterDataCalculator(observableData, reversed = true)
 
     val isPaidButtonVisible = Transformations.map(calculator.price) { price ->
         price > 0

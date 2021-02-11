@@ -87,3 +87,7 @@ fun DataBindingIdlingResource.monitorFragment(fragmentScenario: FragmentScenario
         this.activity = it.requireActivity()
     }
 }
+
+fun DataBindingIdlingResource.monitorFragment(fragment: Fragment) {
+    this.activity = fragment.requireActivity()
+}
