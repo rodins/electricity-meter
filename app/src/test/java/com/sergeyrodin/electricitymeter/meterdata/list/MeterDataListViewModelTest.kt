@@ -6,12 +6,16 @@ import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
+import com.sergeyrodin.electricitymeter.utils.dateToLong
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+
+private const val YEAR = 2021
+private const val MONTH = 1
 
 class MeterDataListViewModelTest{
     @get:Rule
@@ -316,16 +320,26 @@ class MeterDataListViewModelTest{
     @Test
     fun fewItems_prognosisEquals() {
         val data1 = 14594
+        val date1 = dateToLong(YEAR, MONTH,19, 9, 0)
+
         val data2 = 14611
+        val date2 = dateToLong(YEAR, MONTH,20, 8, 10)
+
         val data3 = 14622
+        val date3 = dateToLong(YEAR, MONTH,22, 9, 5)
+
         val data4 = 14638
-        val prognosis = 705.6 // avg * 30 * kwhPrice
-        dataSource.testInsert(MeterData(data1))
-        dataSource.testInsert(MeterData(data2))
-        dataSource.testInsert(MeterData(data3))
-        dataSource.testInsert(MeterData(data4))
+        val date4 = dateToLong(YEAR, MONTH,23, 8, 30)
+
+        val prognosis = 559.44
+
+        dataSource.testInsert(MeterData(data1, 1, date1))
+        dataSource.testInsert(MeterData(data2, 2, date2))
+        dataSource.testInsert(MeterData(data3, 3, date3))
+        dataSource.testInsert(MeterData(data4, 4, date4))
 
         val prognosisValue = subject.calculator.prognosis.getOrAwaitValue()
         assertThat(prognosisValue, `is`(prognosis))
     }
+
 }

@@ -2,7 +2,7 @@ package com.sergeyrodin.electricitymeter.meterdata.list
 
 import com.sergeyrodin.electricitymeter.database.MeterData
 
-fun calculateDailyKwh(
+fun calculateDiffKwh(
     prevData: Int,
     data: MeterData
 ): Int {

@@ -44,9 +44,8 @@ class MeterDataCalculator (observableData: LiveData<List<MeterData>>, reversed: 
         }
     }
 
-    val prognosis = Transformations.map(avg) { average ->
-        val prognosisKwh = average * PROGNOSIS_DAYS_NUMBER
-        calculateTotalPrice(prognosisKwh)
+    val prognosis = Transformations.map(observableData) { meterData ->
+        calculatePrognosisByDates(meterData)
     }
 
     private fun calculateTotalPrice(meterData: List<MeterData>): Double {

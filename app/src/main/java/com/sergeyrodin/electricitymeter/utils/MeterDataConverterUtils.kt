@@ -2,13 +2,13 @@ package com.sergeyrodin.electricitymeter.utils
 
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataPresentation
-import com.sergeyrodin.electricitymeter.meterdata.list.calculateDailyKwh
+import com.sergeyrodin.electricitymeter.meterdata.list.calculateDiffKwh
 
 fun convertMeterDataListToPresentationList(meterData: List<MeterData>) =
     if (meterData.isNotEmpty()) {
         var prevData = -1
         meterData.map { currentData ->
-            val dailyKw = calculateDailyKwh(prevData, currentData)
+            val dailyKw = calculateDiffKwh(prevData, currentData)
             prevData = currentData.data
             val dailyPrice = calculateDailyPrice(dailyKw)
             MeterDataPresentation(
