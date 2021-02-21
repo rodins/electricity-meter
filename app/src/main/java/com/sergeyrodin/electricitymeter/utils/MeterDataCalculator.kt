@@ -4,10 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataPresentation
-import com.sergeyrodin.electricitymeter.meterdata.list.getAverageKwh
-import com.sergeyrodin.electricitymeter.meterdata.list.getTotalKwh
-
-private const val PROGNOSIS_DAYS_NUMBER = 30
 
 class MeterDataCalculator (observableData: LiveData<List<MeterData>>, reversed: Boolean = false) {
 
@@ -29,11 +25,7 @@ class MeterDataCalculator (observableData: LiveData<List<MeterData>>, reversed: 
     }
 
     val avg: LiveData<Int> = Transformations.map(observableData) { meterData ->
-        if (meterData.size < 2) {
-            0
-        } else {
-            getAverageKwh(meterData)
-        }
+        calculateAvgByDates(meterData)
     }
 
     val price: LiveData<Double> = Transformations.map(observableData) { meterData ->

@@ -41,7 +41,11 @@ fun calculatePrognosisByDates(meterData: List<MeterData>): Double {
 }
 
 private fun calculatePrognosisKwPerMonth(kwPerHour: Double): Double {
-    return kwPerHour * HOURS_IN_DAY * PROGNOSIS_DAYS_IN_MONTH
+    return calculateKwPerDay(kwPerHour) * PROGNOSIS_DAYS_IN_MONTH
+}
+
+private fun calculateKwPerDay(kwPerHour: Double): Double {
+    return kwPerHour * HOURS_IN_DAY
 }
 
 private fun calculateKwPerHour(diffData: Int, diffHours: Long): Double {
@@ -61,4 +65,33 @@ private fun calculateDiffData(
     meterData1: MeterData
 ): Int {
     return meterData2.data - meterData1.data
+}
+
+fun calculateAvgByDates(meterData: List<MeterData>): Int {
+    if(meterData.isNotEmpty()) {
+        val meterData1 = meterData.first()
+        val meterData2 = meterData.last()
+
+        val diffData = calculateDiffData(meterData2, meterData1)
+        val diffHours = calculateDiffHours(meterData2, meterData1)
+        if(diffHours == 0L) {
+            return calculateAvgNoDates(meterData, diffData)
+        }
+
+        val kwPerHour = calculateKwPerHour(diffData, diffHours)
+        val kwPerDay = calculateKwPerDay(kwPerHour)
+        return kwPerDay.toInt()
+    }
+    return 0
+}
+
+private fun calculateAvgNoDates(
+    meterData: List<MeterData>,
+    diffData: Int
+): Int {
+    return if (meterData.size == 2) {
+        diffData
+    } else {
+        diffData / meterData.size
+    }
 }

@@ -1,6 +1,5 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
-import androidx.hilt.Assisted
 import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.Event
@@ -11,8 +10,7 @@ import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
 import kotlinx.coroutines.launch
 
 class MeterDataListViewModel @ViewModelInject constructor(
-    private val dataSource: MeterDataSource,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    private val dataSource: MeterDataSource
 ) : ViewModel() {
 
     private val _addMeterDataEvent = MutableLiveData<Event<Unit>>()

@@ -1,7 +1,6 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.SavedStateHandle
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
@@ -31,7 +30,7 @@ class MeterDataListViewModelTest{
     @Before
     fun initSubject(){
         dataSource = FakeDataSource()
-        subject = MeterDataListViewModel(dataSource, SavedStateHandle())
+        subject = MeterDataListViewModel(dataSource)
     }
 
     @Test
@@ -79,7 +78,7 @@ class MeterDataListViewModelTest{
 
     @Test
     fun noItems_totalZero() {
-        subject = MeterDataListViewModel(dataSource, SavedStateHandle())
+        subject = MeterDataListViewModel(dataSource)
         val totalValue = subject.calculator.total.getOrAwaitValue()
         assertThat(totalValue, `is`(0))
     }
@@ -99,7 +98,7 @@ class MeterDataListViewModelTest{
         val data2 = 14611
         val data3 = 14622
         val data4 = 14638
-        val avg = 14
+        val avg = 11
         dataSource.testInsert(MeterData(data1))
         dataSource.testInsert(MeterData(data2))
         dataSource.testInsert(MeterData(data3))
@@ -111,7 +110,7 @@ class MeterDataListViewModelTest{
 
     @Test
     fun noItems_avgZero() {
-        subject = MeterDataListViewModel(dataSource, SavedStateHandle())
+        subject = MeterDataListViewModel(dataSource)
         val avgValue = subject.calculator.avg.getOrAwaitValue()
         assertThat(avgValue, `is`(0))
     }
@@ -144,7 +143,7 @@ class MeterDataListViewModelTest{
 
     @Test
     fun noItems_priceZero() {
-        subject = MeterDataListViewModel(dataSource, SavedStateHandle())
+        subject = MeterDataListViewModel(dataSource)
         val priceValue = subject.calculator.price.getOrAwaitValue()
         assertThat(priceValue, `is`(0.0))
     }

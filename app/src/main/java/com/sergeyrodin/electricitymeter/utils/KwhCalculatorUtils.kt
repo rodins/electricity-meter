@@ -1,4 +1,4 @@
-package com.sergeyrodin.electricitymeter.meterdata.list
+package com.sergeyrodin.electricitymeter.utils
 
 import com.sergeyrodin.electricitymeter.database.MeterData
 
@@ -13,10 +13,4 @@ fun getTotalKwh(meterData: List<MeterData>): Int {
     val first = meterData.first()
     val last = meterData.last()
     return last.data - first.data
-}
-
-fun getAverageKwh(meterData: List<MeterData>): Int {
-    val total = getTotalKwh(meterData)
-    val numberOfItems = meterData.size - 1
-    return total / numberOfItems
 }

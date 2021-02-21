@@ -2,7 +2,6 @@ package com.sergeyrodin.electricitymeter.utils
 
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataPresentation
-import com.sergeyrodin.electricitymeter.meterdata.list.calculateDiffKwh
 
 fun convertMeterDataListToPresentationList(meterData: List<MeterData>) =
     if (meterData.isNotEmpty()) {
