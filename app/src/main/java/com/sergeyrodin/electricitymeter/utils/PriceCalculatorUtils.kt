@@ -78,9 +78,7 @@ fun calculateAvgByDates(meterData: List<MeterData>): Int {
             return calculateAvgNoDates(meterData, diffData)
         }
 
-        val kwPerHour = calculateKwPerHour(diffData, diffHours)
-        val kwPerDay = calculateKwPerDay(kwPerHour)
-        return kwPerDay.toInt()
+        return calculateDailyKw(diffData, diffHours)
     }
     return 0
 }
@@ -94,4 +92,20 @@ private fun calculateAvgNoDates(
     } else {
         diffData / meterData.size
     }
+}
+
+fun calculateDailyKwByDates(meterData1: MeterData, meterData2: MeterData) : Int {
+    val diffData = calculateDiffData(meterData2, meterData1)
+    val diffHours = calculateDiffHours(meterData2, meterData1)
+    if(diffHours == 0L) {
+        return diffData
+    }
+
+    return calculateDailyKw(diffData, diffHours)
+}
+
+private fun calculateDailyKw(diffData: Int, diffHours: Long): Int {
+    val kwPerHour = calculateKwPerHour(diffData, diffHours)
+    val kwPerDay = calculateKwPerDay(kwPerHour)
+    return kwPerDay.toInt()
 }

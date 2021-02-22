@@ -1,15 +1,12 @@
 package com.sergeyrodin.electricitymeter.history
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.SavedStateHandle
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
-import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import org.hamcrest.CoreMatchers
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Before
@@ -30,7 +27,7 @@ class MeterDataHistoryViewModelTest {
     @Before
     fun initSubject(){
         dataSource = FakeDataSource()
-        subject = MeterDataHistoryViewModel(dataSource, SavedStateHandle())
+        subject = MeterDataHistoryViewModel(dataSource)
     }
 
     @Test

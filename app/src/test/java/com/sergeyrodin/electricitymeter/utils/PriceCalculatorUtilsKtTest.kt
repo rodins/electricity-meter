@@ -248,4 +248,70 @@ class PriceCalculatorUtilsKtTest {
         val avg = calculateAvgByDates(items)
         assertThat(avg, `is`(expected))
     }
+
+    @Test
+    fun dailyKwByDates_dayDiff_dailyKwEquals() {
+        val date1 = dateToLong(YEAR, MONTH,19, 9, 0)
+        val data1 = 15142
+        val meterData1 = MeterData(data1, 1, date1)
+
+        val date2 = dateToLong(YEAR, MONTH,20, 8, 10)
+        val data2 = 15169
+        val meterData2 = MeterData(data2, 2, date2)
+
+        val expected = 28
+
+        val dailyKw = calculateDailyKwByDates(meterData1, meterData2)
+
+        assertThat(dailyKw, `is`(expected))
+    }
+
+    @Test
+    fun dailyKwByDates_noDates_deilyKwEquals() {
+        val data1 = 15142
+        val meterData1 = MeterData(data1)
+
+        val data2 = 15169
+        val meterData2 = MeterData(data2)
+
+        val expected = 27
+
+        val dailyKw = calculateDailyKwByDates(meterData1, meterData2)
+
+        assertThat(dailyKw, `is`(expected))
+    }
+
+    @Test
+    fun dailyKwByDates_twoHoursDiff_dailyKwEquals() {
+        val date1 = dateToLong(YEAR, MONTH,19, 9, 0)
+        val data1 = 15142
+        val meterData1 = MeterData(data1, 1, date1)
+
+        val date2 = dateToLong(YEAR, MONTH,19, 11, 10)
+        val data2 = 15145
+        val meterData2 = MeterData(data2, 2, date2)
+
+        val expected = 36
+
+        val dailyKw = calculateDailyKwByDates(meterData1, meterData2)
+
+        assertThat(dailyKw, `is`(expected))
+    }
+
+    @Test
+    fun dailyKwByDates_threeDays_dailyKwEquals() {
+        val date1 = dateToLong(YEAR, MONTH,19, 9, 0)
+        val data1 = 15142
+        val meterData1 = MeterData(data1, 1, date1)
+
+        val date2 = dateToLong(YEAR, MONTH,22, 8, 10)
+        val data2 = 15223
+        val meterData2 = MeterData(data2, 2, date2)
+
+        val expected = 27
+
+        val dailyKw = calculateDailyKwByDates(meterData1, meterData2)
+
+        assertThat(dailyKw, `is`(expected))
+    }
 }

@@ -5,10 +5,10 @@ import com.sergeyrodin.electricitymeter.meterdata.list.MeterDataPresentation
 
 fun convertMeterDataListToPresentationList(meterData: List<MeterData>) =
     if (meterData.isNotEmpty()) {
-        var prevData = -1
+        var prevData: MeterData? = null
         meterData.map { currentData ->
-            val dailyKw = calculateDiffKwh(prevData, currentData)
-            prevData = currentData.data
+            val dailyKw = prevData?.let { calculateDailyKwByDates(it, currentData) } ?: 0
+            prevData = currentData
             val dailyPrice = calculateDailyPrice(dailyKw)
             MeterDataPresentation(
                 currentData.id,

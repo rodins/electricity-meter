@@ -9,8 +9,7 @@ import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
 
 class MeterDataHistoryViewModel @ViewModelInject constructor(
-    private val dataSource: MeterDataSource,
-    @Assisted private val savedStateHandle: SavedStateHandle
+    private val dataSource: MeterDataSource
 ) : ViewModel() {
 
     private val paidDateInput = MutableLiveData<Int>()
