@@ -1,14 +1,18 @@
 package com.sergeyrodin.electricitymeter.history
 
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
-class MeterDataHistoryViewModel @ViewModelInject constructor(
+@HiltViewModel
+class MeterDataHistoryViewModel @Inject constructor(
     private val dataSource: MeterDataSource
 ) : ViewModel() {
 

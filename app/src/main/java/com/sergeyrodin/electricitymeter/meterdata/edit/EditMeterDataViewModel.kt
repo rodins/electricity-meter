@@ -1,19 +1,18 @@
 package com.sergeyrodin.electricitymeter.meterdata.edit
 
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.meterdata.SaveMeterDataViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class EditMeterDataViewModel @ViewModelInject constructor(
-    private val dataSource: MeterDataSource,
-    @Assisted private val savedStateHandle: SavedStateHandle
+@HiltViewModel
+class EditMeterDataViewModel @Inject constructor(
+    private val dataSource: MeterDataSource
 ) : SaveMeterDataViewModel() {
     private val _data = MutableLiveData<String>()
     val data: LiveData<String>

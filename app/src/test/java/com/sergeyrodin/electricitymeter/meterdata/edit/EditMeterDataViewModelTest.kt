@@ -1,7 +1,6 @@
 package com.sergeyrodin.electricitymeter.meterdata.edit
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import androidx.lifecycle.SavedStateHandle
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
@@ -21,7 +20,7 @@ class EditMeterDataViewModelTest {
     @Before
     fun initViewModel() {
         dataSource = FakeDataSource()
-        subject = EditMeterDataViewModel(dataSource, SavedStateHandle())
+        subject = EditMeterDataViewModel(dataSource)
     }
 
     @Test

@@ -1,15 +1,15 @@
 package com.sergeyrodin.electricitymeter.paidlist
 
-import androidx.hilt.Assisted
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.Event
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PaidListViewModel @ViewModelInject constructor(
-    private val dataSource: MeterDataSource,
-    @Assisted private val savedStateHandle: SavedStateHandle
+@HiltViewModel
+class PaidListViewModel @Inject constructor(
+    private val dataSource: MeterDataSource
 ) : ViewModel() {
 
     private val _highlightedPosition = MutableLiveData(-1)

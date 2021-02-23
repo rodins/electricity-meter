@@ -1,15 +1,17 @@
 package com.sergeyrodin.electricitymeter.meterdata.list
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.Event
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.utils.MeterDataCalculator
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MeterDataListViewModel @ViewModelInject constructor(
+@HiltViewModel
+class MeterDataListViewModel @Inject constructor(
     private val dataSource: MeterDataSource
 ) : ViewModel() {
 

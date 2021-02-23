@@ -19,6 +19,7 @@ import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.di.MeterDataSourceModule
 import com.sergeyrodin.electricitymeter.launchFragmentInHiltContainer
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
+import com.sergeyrodin.electricitymeter.utils.dateToLong
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -29,6 +30,9 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
+
+private const val YEAR = 2021
+private const val MONTH = 1
 
 @MediumTest
 @RunWith(AndroidJUnit4::class)
@@ -82,18 +86,30 @@ class MeterDataListFragmentTest {
 
     @Test
     fun fewItems_totalAvgPricePrognosisDisplayed() {
-        val data1 = 14594
-        val data2 = 14611
-        val data3 = 14622
-        val data4 = 14638
-        dataSource.testInsert(MeterData(data1))
-        dataSource.testInsert(MeterData(data2))
-        dataSource.testInsert(MeterData(data3))
-        dataSource.testInsert(MeterData(data4))
-        val total = 44
-        val avg = 14
-        val price = 73.92
-        val prognosis = 705.6
+        val date1 = dateToLong(YEAR, MONTH,19, 9, 0)
+        val data1 = 15142
+        val meterData1 = MeterData(data1, 1, date1)
+
+        val date2 = dateToLong(YEAR, MONTH,20, 8, 10)
+        val data2 = 15169
+        val meterData2 = MeterData(data2, 2, date2)
+
+        val date3 = dateToLong(YEAR, MONTH,22, 9, 5)
+        val data3 = 15195
+        val meterData3 = MeterData(data3, 3, date3)
+
+        val date4 = dateToLong(YEAR, MONTH,23, 8, 30)
+        val data4 = 15223
+        val meterData4 = MeterData(data4, 4, date4)
+
+        dataSource.testInsert(meterData1)
+        dataSource.testInsert(meterData2)
+        dataSource.testInsert(meterData3)
+        dataSource.testInsert(meterData4)
+        val total = 81
+        val avg = 20
+        val price = 136.08
+        val prognosis = 1029.84
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
         val context = getApplicationContext<Context>()
