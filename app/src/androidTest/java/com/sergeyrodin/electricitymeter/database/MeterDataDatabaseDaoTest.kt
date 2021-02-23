@@ -69,7 +69,7 @@ class MeterDataDatabaseDaoTest {
 
         val items = meterDataDatabase.meterDataDatabaseDao
             .getMeterDataBetweenDates(date, Long.MAX_VALUE).getOrAwaitValue()
-        assertThat(items?.size, `is`(1))
+        assertThat(items.size, `is`(1))
     }
 
     @Test
@@ -83,7 +83,7 @@ class MeterDataDatabaseDaoTest {
 
         val items = meterDataDatabase.meterDataDatabaseDao
             .getMeterDataBetweenDates(date1, date2).getOrAwaitValue()
-        assertThat(items?.size, `is`(2))
+        assertThat(items.size, `is`(2))
     }
 
     @Test
@@ -103,8 +103,8 @@ class MeterDataDatabaseDaoTest {
 
         val items = meterDataDatabase.meterDataDatabaseDao
             .getMeterDataBetweenDates(date2, date3).getOrAwaitValue()
-        assertThat(items?.get(0)?.data, `is`(data2))
-        assertThat(items?.get(1)?.data, `is`(data3))
+        assertThat(items[0].data, `is`(data2))
+        assertThat(items[1].data, `is`(data3))
     }
 
     @Test
@@ -189,7 +189,7 @@ class MeterDataDatabaseDaoTest {
 
         val items = meterDataDatabase.meterDataDatabaseDao
             .getMeterDataBetweenDates(0L, Long.MAX_VALUE).getOrAwaitValue()
-        assertThat(items?.size, `is`(0))
+        assertThat(items.size, `is`(0))
     }
 
     @Test
@@ -272,12 +272,10 @@ class MeterDataDatabaseDaoTest {
 
         val items = meterDataDatabase.meterDataDatabaseDao
             .getMeterDataBetweenDates(0L, Long.MAX_VALUE).getOrAwaitValue()
-        assertThat(items?.size, `is`(3))
-        items?.let {
-            Assert.assertThat(it[0].data, `is`(data1))
-            Assert.assertThat(it[1].data, `is`(data3))
-            Assert.assertThat(it[2].data, `is`(data4))
-        }
+        assertThat(items.size, `is`(3))
+        Assert.assertThat(items[0].data, `is`(data1))
+        Assert.assertThat(items[1].data, `is`(data3))
+        Assert.assertThat(items[2].data, `is`(data4))
     }
 
     @Test

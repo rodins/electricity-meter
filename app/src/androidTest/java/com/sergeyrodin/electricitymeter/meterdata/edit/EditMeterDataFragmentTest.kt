@@ -69,7 +69,7 @@ class EditMeterDataFragmentTest {
         navController.setGraph(R.navigation.navigation)
         navController.setCurrentDestination(R.id.addEditMeterDataFragment)
 
-        val scenario = launchFragmentInHiltContainer<EditMeterDataFragment>(
+        launchFragmentInHiltContainer<EditMeterDataFragment>(
             args,
             R.style.Theme_ElectricityMeter
         ) {
