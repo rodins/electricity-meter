@@ -3,6 +3,7 @@ package com.sergeyrodin.electricitymeter.datasource
 import androidx.lifecycle.LiveData
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 
 interface MeterDataSource {
     suspend fun insert(meterData: MeterData)
@@ -18,4 +19,8 @@ interface MeterDataSource {
     suspend fun update(meterData: MeterData)
     suspend fun deleteMeterData(meterData: MeterData)
     suspend fun getLastMeterData(): MeterData?
+    suspend fun insertPrice(price: Price)
+    fun getObservablePrice(): LiveData<Price>
+    fun getObservablePriceCount(): LiveData<Int>
+    suspend fun deletePrice()
 }

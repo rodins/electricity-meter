@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.MeterDataDatabaseDao
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.utils.wrapEspressoIdlingResource
 import javax.inject.Inject
 
@@ -89,6 +90,30 @@ class RoomMeterDataSource @Inject constructor(
     override suspend fun getLastMeterData(): MeterData? {
         wrapEspressoIdlingResource {
             return meterDataDao.getLastMeterData()
+        }
+    }
+
+    override suspend fun insertPrice(price: Price) {
+        wrapEspressoIdlingResource {
+            meterDataDao.insertPrice(price)
+        }
+    }
+
+    override fun getObservablePrice(): LiveData<Price> {
+        wrapEspressoIdlingResource {
+            return meterDataDao.getObservablePrice()
+        }
+    }
+
+    override fun getObservablePriceCount(): LiveData<Int> {
+        wrapEspressoIdlingResource {
+            return meterDataDao.getObservablePriceCount()
+        }
+    }
+
+    override suspend fun deletePrice() {
+        wrapEspressoIdlingResource {
+            meterDataDao.deletePrice()
         }
     }
 }

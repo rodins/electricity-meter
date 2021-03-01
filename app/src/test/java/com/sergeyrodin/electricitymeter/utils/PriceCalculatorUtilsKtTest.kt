@@ -7,13 +7,14 @@ import org.junit.Test
 
 private const val YEAR = 2021
 private const val MONTH = 1
+private const val PRICE_KWH = 1.68
 
 class PriceCalculatorUtilsKtTest {
 
     @Test
     fun prognosisByDates_noItems_prognosisZero() {
         val items = listOf<MeterData>()
-        val prognosis = calculatePrognosisByDates(items)
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(0.0))
     }
 
@@ -31,7 +32,7 @@ class PriceCalculatorUtilsKtTest {
 
         val expected = 1419.6
 
-        val prognosis = calculatePrognosisByDates(items)
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
     }
 
@@ -57,7 +58,7 @@ class PriceCalculatorUtilsKtTest {
 
         val expected = 1029.84
 
-        val prognosis = calculatePrognosisByDates(items)
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
     }
 
@@ -73,7 +74,7 @@ class PriceCalculatorUtilsKtTest {
 
         val expected = 0.0
 
-        val prognosis = calculatePrognosisByDates(items)
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
     }
 
@@ -86,7 +87,7 @@ class PriceCalculatorUtilsKtTest {
 
         val expected = 0.0
 
-        val prognosis = calculatePrognosisByDates(items)
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
     }
 
@@ -104,7 +105,7 @@ class PriceCalculatorUtilsKtTest {
 
         val expected = 1209.6
 
-        val prognosis = calculatePrognosisByDates(items)
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
     }
 
@@ -122,7 +123,7 @@ class PriceCalculatorUtilsKtTest {
 
         val expected = 0.0
 
-        val prognosis = calculatePrognosisByDates(items)
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
     }
 

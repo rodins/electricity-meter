@@ -38,11 +38,22 @@ class MeterDataListViewModel @Inject constructor(
         }
     }
 
-    val calculator = MeterDataCalculator(observableData, reversed = true)
+    private val observablePrice = dataSource.getObservablePrice()
+    private val observablePriceCount = dataSource.getObservablePriceCount()
+
+    val calculator = MeterDataCalculator(observableData, observablePrice, observablePriceCount, reversed = true)
 
     val isPaidButtonVisible = Transformations.map(calculator.price) { price ->
         price > 0
     }
+
+    val setPriceButtonVisible = observablePriceCount.map { count ->
+        count == 0
+    }
+
+    private val _setPriceEvent = MutableLiveData<Event<Unit>>()
+    val setPriceEvent: LiveData<Event<Unit>>
+        get() = _setPriceEvent
 
     fun onPaid() {
         observableData.value?.let { data ->
@@ -62,5 +73,9 @@ class MeterDataListViewModel @Inject constructor(
 
     fun onAddMeterData() {
         _addMeterDataEvent.value = Event(Unit)
+    }
+
+    fun onSetPrice() {
+        _setPriceEvent.value = Event(Unit)
     }
 }

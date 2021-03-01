@@ -16,6 +16,7 @@ import androidx.test.filters.MediumTest
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.di.MeterDataSourceModule
 import com.sergeyrodin.electricitymeter.launchFragmentInHiltContainer
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
@@ -52,6 +53,7 @@ class MeterDataListFragmentTest {
     @Before
     fun initDataSource() {
         hiltRule.inject()
+        dataSource.insertPriceBlocking(Price(1, 1.68))
     }
 
     @Test
@@ -213,6 +215,61 @@ class MeterDataListFragmentTest {
 
         onView(withSubstring(data.toString())).perform(click())
         assertThat(navController.currentDestination?.id, `is`(R.id.addEditMeterDataFragment))
+    }
+
+    @Test
+    fun priceClick_navigationCalled() {
+        val navController = TestNavHostController(getApplicationContext())
+        navController.setGraph(R.navigation.navigation)
+
+        launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter) {
+            val menuItem = ActionMenuItem(
+                getApplicationContext(),
+                0,
+                R.id.priceFragment,
+                0,
+                0,
+                null)
+
+            Navigation.setViewNavController(requireView(), navController)
+            onOptionsItemSelected(menuItem)
+        }
+
+        assertThat(navController.currentDestination?.id, `is`(R.id.priceFragment))
+    }
+
+    @Test
+    fun noPriceSet_setPriceButtonDisplayed() {
+        dataSource.deletePriceBlocking()
+
+        launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+
+        onView(withId(R.id.set_price_button)).check(matches(isDisplayed()))
+    }
+
+    @Test
+    fun priceSet_setPriceButtonIsNotDisplayed() {
+        dataSource.insertPriceBlocking(Price(1, 1.68))
+
+        launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
+
+        onView(withId(R.id.set_price_button)).check(matches(not(isDisplayed())))
+    }
+
+    @Test
+    fun noPriceSet_setPriceButtonClick_navigationCalled() {
+        dataSource.deletePriceBlocking()
+
+        val navController = TestNavHostController(getApplicationContext())
+        navController.setGraph(R.navigation.navigation)
+
+        launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter) {
+            Navigation.setViewNavController(requireView(), navController)
+        }
+
+        onView(withId(R.id.set_price_button)).perform(click())
+
+        assertThat(navController.currentDestination?.id, `is`(R.id.priceFragment))
     }
 
 }

@@ -12,6 +12,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import com.sergeyrodin.electricitymeter.di.TestModule
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
@@ -59,6 +60,7 @@ class MainActivityTest {
     fun init() {
         hiltRule.inject()
         runBlocking {
+            dataSource.insertPrice(Price(1, 1.68))
             dataSource.deleteAllMeterData()
             dataSource.deleteAllPaidDates()
         }
@@ -454,6 +456,70 @@ class MainActivityTest {
         Espresso.pressBack()
 
         onView(withSubstring(dateToString(date1))).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun noPriceSet_setPrice_priceEquals() = runBlocking {
+        dataSource.deletePrice()
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.priceFragment)).perform(click())
+        onView(withId(R.id.price_edit)).perform(typeText("2"))
+        onView(withId(R.id.save_price_fab)).perform(click())
+
+        onView(withSubstring("390")).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun priceSet_updatePrice_priceEquals() = runBlocking {
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.priceFragment)).perform(click())
+        onView(withId(R.id.price_edit)).perform(replaceText("2"))
+        onView(withId(R.id.save_price_fab)).perform(click())
+
+        onView(withSubstring("390")).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun setPriceButtonClick_setPrice_priceEquals() = runBlocking {
+        dataSource.deletePrice()
+
+        val data1 = 14314
+        val date1 = 1602219377796
+        val data2 = 14509
+        val date2 = 1604123777809
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.set_price_button)).perform(click())
+        onView(withId(R.id.price_edit)).perform(typeText("2"))
+        onView(withId(R.id.save_price_fab)).perform(click())
+
+        onView(withSubstring("390")).check(matches(isDisplayed()))
 
         activityScenario.close()
     }

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,9 +24,14 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
     private var meterDataId = 1
     private var paidDateId = 1
 
+    private val prices = mutableListOf<Price>()
+    private val observablePrice = MutableLiveData<Price>()
+    private val observablePriceCount = MutableLiveData<Int>()
+
     init{
         observableData.value = data
         observablePaidDates.value = paidDates
+        observablePriceCount.value = 0
     }
 
     override suspend fun insert(meterData: MeterData) {
@@ -124,4 +130,42 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
         return data.lastOrNull()
     }
 
+    override suspend fun insertPrice(price: Price) {
+        insertPriceBlocking(price)
+    }
+
+    fun insertPriceBlocking(price: Price) {
+        if(prices.isEmpty()) {
+            prices.add(price)
+        } else {
+            prices.set(price.id - 1, price)
+        }
+        observablePrice.value = prices.first()
+        observablePriceCount.value = prices.size
+    }
+
+    override fun getObservablePrice(): LiveData<Price> {
+        return observablePrice
+    }
+
+    fun getPriceBlocking(): Price? {
+        if(prices.isNotEmpty()) {
+            return prices.first()
+        }
+        return null
+    }
+
+    override fun getObservablePriceCount(): LiveData<Int> {
+        return observablePriceCount
+    }
+
+    override suspend fun deletePrice() {
+        TODO("Not yet implemented")
+    }
+
+    fun deletePriceBlocking() {
+        prices.clear()
+        observablePrice.value = null
+        observablePriceCount.value = 0
+    }
 }

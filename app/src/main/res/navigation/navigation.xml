@@ -54,4 +54,9 @@
             android:id="@+id/action_addMeterDataFragment_to_meterDataListFragment"
             app:destination="@id/meterDataListFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/priceFragment"
+        android:name="com.sergeyrodin.electricitymeter.price.PriceFragment"
+        android:label="settings_fragment"
+        tools:layout="@layout/price_fragment" />
 </navigation>

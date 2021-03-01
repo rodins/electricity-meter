@@ -44,4 +44,16 @@ interface MeterDataDatabaseDao {
 
     @Query("SELECT * FROM meter_data ORDER BY id DESC LIMIT 1")
     suspend fun getLastMeterData(): MeterData?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertPrice(price: Price)
+
+    @Query("SELECT * FROM prices LIMIT 1")
+    fun getObservablePrice(): LiveData<Price>
+
+    @Query("SELECT count(*) FROM prices")
+    fun getObservablePriceCount(): LiveData<Int>
+
+    @Query("DELETE FROM prices")
+    suspend fun deletePrice()
 }

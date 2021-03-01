@@ -15,4 +15,8 @@
     <string name="edit_data">Edit Data</string>
     <string name="meter_data_history">Meter Data History</string>
     <string name="save_meter_data">Save meter data</string>
+    <string name="settings">Settings</string>
+    <string name="save_price">Save price</string>
+    <string name="price">Price</string>
+    <string name="set_price">Set kwh price first</string>
 </resources>

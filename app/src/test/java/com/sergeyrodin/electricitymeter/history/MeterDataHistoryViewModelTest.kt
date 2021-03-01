@@ -5,6 +5,7 @@ import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.`is`
@@ -25,8 +26,9 @@ class MeterDataHistoryViewModelTest {
     private lateinit var subject: MeterDataHistoryViewModel
 
     @Before
-    fun initSubject(){
+    fun initSubject() {
         dataSource = FakeDataSource()
+        dataSource.insertPriceBlocking(Price(1, 1.68))
         subject = MeterDataHistoryViewModel(dataSource)
     }
 

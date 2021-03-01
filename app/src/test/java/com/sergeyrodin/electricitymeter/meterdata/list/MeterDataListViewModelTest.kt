@@ -4,14 +4,17 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
 import com.sergeyrodin.electricitymeter.utils.dateToLong
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.assertThat
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.TimeoutException
 
 private const val YEAR = 2021
 private const val MONTH = 1
@@ -30,6 +33,7 @@ class MeterDataListViewModelTest{
     @Before
     fun initSubject(){
         dataSource = FakeDataSource()
+        dataSource.insertPriceBlocking(Price(1, 1.68))
         subject = MeterDataListViewModel(dataSource)
     }
 
@@ -339,6 +343,107 @@ class MeterDataListViewModelTest{
 
         val prognosisValue = subject.calculator.prognosis.getOrAwaitValue()
         assertThat(prognosisValue, `is`(prognosis))
+    }
+
+    @Test
+    fun priceChanged_totalPriceEquals() {
+        val price1 = 1.68
+        val price2 = 2.0
+        val data1 = 14314
+        val data2 = 14509
+        val data3 = 14579
+        val data4 = 14638
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+        dataSource.insertPriceBlocking(Price(1, price1))
+
+        val totalPrice1 = 544.32
+        val totalPrice2 = 648.0
+
+        val priceValue1 = subject.calculator.price.getOrAwaitValue()
+        assertThat(priceValue1, `is`(totalPrice1))
+
+        dataSource.insertPriceBlocking(Price(1, price2))
+
+        val priceValue2 = subject.calculator.price.getOrAwaitValue()
+        assertThat(priceValue2, `is`(totalPrice2))
+    }
+
+    @Test
+    fun noPriceSet_totalPriceZero() {
+        dataSource.deletePriceBlocking()
+
+        val data1 = 14314
+        val data2 = 14509
+        val data3 = 14579
+        val data4 = 14638
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+
+        val totalPrice = subject.calculator.price.getOrAwaitValue()
+        assertThat(totalPrice, `is`(0.0))
+    }
+
+    @Test
+    fun noPriceSet_prognosisZero() {
+        dataSource.deletePriceBlocking()
+
+        val data1 = 14314
+        val data2 = 14509
+        val data3 = 14579
+        val data4 = 14638
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+
+        val prognosis = subject.calculator.prognosis.getOrAwaitValue()
+        assertThat(prognosis, `is`(0.0))
+    }
+
+    @Test
+    fun noPriceSet_dataToDisplaySizeZero() {
+        dataSource.deletePriceBlocking()
+
+        val data1 = 14314
+        val data2 = 14509
+        val data3 = 14579
+        val data4 = 14638
+        dataSource.testInsert(MeterData(data1))
+        dataSource.testInsert(MeterData(data2))
+        dataSource.testInsert(MeterData(data3))
+        dataSource.testInsert(MeterData(data4))
+
+        val dataToDisplay = subject.calculator.dataToDisplay.getOrAwaitValue()
+        assertThat(dataToDisplay.size, `is`(0))
+    }
+
+    @Test
+    fun noPriceSet_setPriceButtonVisibleTrue() {
+        dataSource.deletePriceBlocking()
+
+        val setPrice = subject.setPriceButtonVisible.getOrAwaitValue()
+        assertThat(setPrice, `is`(true))
+    }
+
+    @Test
+    fun priceSet_setPriceButtonVisibleFalse() {
+        dataSource.insertPriceBlocking(Price(1, 1.68))
+
+        val setPrice = subject.setPriceButtonVisible.getOrAwaitValue()
+        assertThat(setPrice, `is`(false))
+    }
+
+    @Test
+    fun onSetPriceButton_setPriceEventNotNull() {
+        subject.onSetPrice()
+
+        val event = subject.setPriceEvent.getOrAwaitValue().getContentIfNotHandled()
+        assertThat(event, `is`(not(nullValue())))
     }
 
 }

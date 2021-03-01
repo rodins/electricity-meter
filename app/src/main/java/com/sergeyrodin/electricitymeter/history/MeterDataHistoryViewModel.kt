@@ -27,7 +27,10 @@ class MeterDataHistoryViewModel @Inject constructor(
         getObservableMeterData(paidDatesRange)
     }
 
-    val calculator = MeterDataCalculator(observableData)
+    private val observablePrice = dataSource.getObservablePrice()
+    private val observablePriceCount = dataSource.getObservablePriceCount()
+
+    val calculator = MeterDataCalculator(observableData, observablePrice, observablePriceCount)
 
     fun start(paidDateId: Int) {
         paidDateInput.value = paidDateId

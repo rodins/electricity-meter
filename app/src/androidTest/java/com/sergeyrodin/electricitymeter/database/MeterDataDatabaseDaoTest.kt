@@ -309,4 +309,51 @@ class MeterDataDatabaseDaoTest {
         val lastMeterData = meterDataDatabase.meterDataDatabaseDao.getLastMeterData()
         assertThat(lastMeterData?.data, `is`(data4))
     }
+
+    @Test
+    fun savePrice_priceEquals() = runBlockingTest {
+        val price = Price(price = 1.68)
+        meterDataDatabase.meterDataDatabaseDao.insertPrice(price)
+
+        val priceFromDb = meterDataDatabase.meterDataDatabaseDao.getObservablePrice().getOrAwaitValue()
+        assertThat(priceFromDb.price, `is`(price.price))
+    }
+
+    @Test
+    fun updatePrice_priceEquals() = runBlockingTest {
+        val price1 = Price(1, 1.68)
+        val price2 = Price(1, 2.0)
+
+        meterDataDatabase.meterDataDatabaseDao.insertPrice(price1)
+        meterDataDatabase.meterDataDatabaseDao.insertPrice(price2)
+
+        val priceFromDb = meterDataDatabase.meterDataDatabaseDao.getObservablePrice().getOrAwaitValue()
+        assertThat(priceFromDb.price, `is`(price2.price))
+    }
+
+    @Test
+    fun noPriceSet_priceCountZero() {
+        val priceCount = meterDataDatabase.meterDataDatabaseDao.getObservablePriceCount().getOrAwaitValue()
+        assertThat(priceCount, `is`(0))
+    }
+
+    @Test
+    fun priceSet_priceCountEquals() = runBlockingTest {
+        val price1 = Price(1, 1.68)
+        meterDataDatabase.meterDataDatabaseDao.insertPrice(price1)
+
+        val priceCount = meterDataDatabase.meterDataDatabaseDao.getObservablePriceCount().getOrAwaitValue()
+        assertThat(priceCount, `is`(1))
+    }
+
+    @Test
+    fun priceSet_deletePrices_priceCountZero() = runBlockingTest {
+         val price1 = Price(1, 1.68)
+        meterDataDatabase.meterDataDatabaseDao.insertPrice(price1)
+
+        meterDataDatabase.meterDataDatabaseDao.deletePrice()
+
+        val priceCount = meterDataDatabase.meterDataDatabaseDao.getObservablePriceCount().getOrAwaitValue()
+        assertThat(priceCount, `is`(0))
+    }
 }

@@ -3,27 +3,27 @@ package com.sergeyrodin.electricitymeter.utils
 import com.sergeyrodin.electricitymeter.database.MeterData
 import java.util.concurrent.TimeUnit
 
-private const val PRICE_KWH = 1.68
 private const val HOURS_IN_DAY = 24
 private const val PROGNOSIS_DAYS_IN_MONTH = 30
 
 fun calculateDailyPrice(
     dailyKw: Int,
+    priceKwh: Double
 ): Double {
     var price = 0.0
     if (dailyKw > 0) {
-        price = calculatePrice(dailyKw)
+        price = calculatePrice(dailyKw, priceKwh)
     }
     return price
 }
 
-private fun calculatePrice(kwh: Int) = (PRICE_KWH.toBigDecimal() * kwh.toBigDecimal()).toDouble()
+private fun calculatePrice(kwh: Int, price: Double) = (price.toBigDecimal() * kwh.toBigDecimal()).toDouble()
 
-fun calculateTotalPrice(totalKwh: Int): Double {
-    return calculatePrice(totalKwh)
+fun calculateTotalPrice(totalKwh: Int, priceKwh: Double): Double {
+    return calculatePrice(totalKwh, priceKwh)
 }
 
-fun calculatePrognosisByDates(meterData: List<MeterData>): Double {
+fun calculatePrognosisByDates(meterData: List<MeterData>, priceKwh: Double): Double {
     if(meterData.isNotEmpty()) {
         val meterData1 = meterData.first()
         val meterData2 = meterData.last()
@@ -35,7 +35,7 @@ fun calculatePrognosisByDates(meterData: List<MeterData>): Double {
         }
         val kwPerHour = calculateKwPerHour(diffData, diffHours)
         val prognosisKwPerMonth = calculatePrognosisKwPerMonth(kwPerHour)
-        return calculatePrice(prognosisKwPerMonth.toInt())
+        return calculatePrice(prognosisKwPerMonth.toInt(), priceKwh)
     }
     return 0.0
 }

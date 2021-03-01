@@ -12,6 +12,7 @@ import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.di.MeterDataSourceModule
 import com.sergeyrodin.electricitymeter.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -40,7 +41,8 @@ class MeterDataHistoryFragmentTest {
 
     @Before
     fun initDataSource() {
-       hiltRule.inject()
+        hiltRule.inject()
+        dataSource.insertPriceBlocking(Price(1, 1.68))
     }
 
     @Test

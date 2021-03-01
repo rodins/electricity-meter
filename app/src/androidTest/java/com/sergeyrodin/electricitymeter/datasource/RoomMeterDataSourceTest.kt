@@ -8,6 +8,7 @@ import androidx.test.filters.SmallTest
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.MeterDataDatabase
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
@@ -268,5 +269,31 @@ class RoomMeterDataSourceTest {
 
         val meterData = dataSource.getLastMeterData()
         assertThat(meterData?.data, `is`(data4))
+    }
+
+    @Test
+    fun savePrice_priceEquals() = runBlockingTest {
+        val price = Price(1, 1.68)
+        dataSource.insertPrice(price)
+
+        val priceFromDb = dataSource.getObservablePrice().getOrAwaitValue()
+        assertThat(priceFromDb.price, `is`(price.price))
+    }
+
+    @Test
+    fun noPriceSet_priceCountZero() {
+        val priceCount = dataSource.getObservablePriceCount().getOrAwaitValue()
+        assertThat(priceCount, `is`(0))
+    }
+
+    @Test
+    fun deletePrice_priceCountZero() = runBlockingTest {
+        val price = Price(1, 1.68)
+        dataSource.insertPrice(price)
+
+        dataSource.deletePrice()
+
+        val priceCount = dataSource.getObservablePriceCount().getOrAwaitValue()
+        assertThat(priceCount, `is`(0))
     }
 }

@@ -6,7 +6,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.NavigationUI
-import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.FragmentMeterDataListBinding
@@ -52,6 +51,10 @@ class MeterDataListFragment : Fragment() {
             }
         })
 
+        viewModel.setPriceEvent.observe(viewLifecycleOwner, EventObserver {
+            findNavController().navigate(R.id.priceFragment)
+        })
+
         setHasOptionsMenu(true)
 
         return binding.root
@@ -85,7 +88,7 @@ class MeterDataListFragment : Fragment() {
         if(item.itemId == R.id.action_paid) {
             viewModel.onPaid()
             return true
-        }else {
+        } else {
             return NavigationUI.onNavDestinationSelected(item, findNavController())
                     || super.onOptionsItemSelected(item)
         }
