@@ -12,6 +12,9 @@ interface MeterDataDatabaseDao {
     @Insert
     suspend fun insertPaidDate(paidDate: PaidDate)
 
+    @Insert
+    fun insertPaidDateBlocking(paidDate: PaidDate)
+
     @Query("SELECT * FROM paid_dates ORDER BY id DESC LIMIT 1")
     fun getLastPaidDate(): LiveData<PaidDate>
 
@@ -23,6 +26,9 @@ interface MeterDataDatabaseDao {
 
     @Query("SELECT * FROM paid_dates")
     fun getPaidDates(): LiveData<List<PaidDate>>
+
+    @Query("SELECT * FROM paid_dates WHERE id =:id")
+    fun getPaidDateByIdBlocking(id: Int): PaidDate?
 
     @Query("SELECT * FROM paid_dates WHERE id >= :id LIMIT 2")
     fun getPaidDatesRangeById(id: Int): LiveData<List<PaidDate>>
@@ -36,6 +42,9 @@ interface MeterDataDatabaseDao {
     @Query("SELECT * FROM meter_data WHERE id = :id")
     suspend fun getMeterDataById(id: Int): MeterData?
 
+    @Query("SELECT * FROM meter_data WHERE id = :id")
+    fun getMeterDataByIdBlocking(id: Int): MeterData?
+
     @Update
     suspend fun update(meterData: MeterData)
 
@@ -48,11 +57,17 @@ interface MeterDataDatabaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertPrice(price: Price)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertPriceBlocking(price: Price)
+
     @Query("SELECT * FROM prices LIMIT 1")
     fun getObservablePrice(): LiveData<Price>
 
     @Query("SELECT count(*) FROM prices")
     fun getObservablePriceCount(): LiveData<Int>
+
+    @Query("SELECT * FROM prices WHERE id = :id")
+    fun getPriceByIdBlocking(id: Int): Price?
 
     @Query("DELETE FROM prices")
     suspend fun deletePrice()
