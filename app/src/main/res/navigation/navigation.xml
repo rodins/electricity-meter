@@ -57,6 +57,6 @@
     <fragment
         android:id="@+id/priceFragment"
         android:name="com.sergeyrodin.electricitymeter.price.PriceFragment"
-        android:label="settings_fragment"
+        android:label="@string/set_kwh_price"
         tools:layout="@layout/price_fragment" />
 </navigation>
