@@ -128,6 +128,19 @@ class MeterDataDatabaseDaoTest {
     }
 
     @Test
+    fun getPaidDatesRangeOnePaidDate() = runBlockingTest {
+        val date1 = 1602219377796
+        val paidDate1 = PaidDate(1, date1)
+
+        meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate1)
+
+        val paidDates = meterDataDatabase.meterDataDatabaseDao
+            .getPaidDatesRangeById(paidDate1.id).getOrAwaitValue()
+        assertThat(paidDates.size, `is`(1))
+        assertThat(paidDates[0].date, `is`(date1))
+    }
+
+    @Test
     fun getPaidDatesRange() = runBlockingTest {
         val date1 = 1602219377796
         val date2 = 1604123777809
@@ -146,9 +159,10 @@ class MeterDataDatabaseDaoTest {
 
         val paidDates = meterDataDatabase.meterDataDatabaseDao
             .getPaidDatesRangeById(paidDate2.id).getOrAwaitValue()
+
         assertThat(paidDates.size, `is`(2))
         assertThat(paidDates[0].date, `is`(date2))
-        assertThat(paidDates[1].date, `is`(date3))
+        assertThat(paidDates[1].date, `is`(date1))
     }
 
     @Test
@@ -170,8 +184,32 @@ class MeterDataDatabaseDaoTest {
 
         val paidDates = meterDataDatabase.meterDataDatabaseDao
             .getPaidDatesRangeById(paidDate4.id).getOrAwaitValue()
-        assertThat(paidDates.size, `is`(1))
+        assertThat(paidDates.size, `is`(2))
         assertThat(paidDates[0].date, `is`(date4))
+        assertThat(paidDates[1].date, `is`(date3))
+    }
+
+    @Test
+    fun getPaidDatesRangeFirstElement() = runBlockingTest {
+        val date1 = 1602219377796
+        val date2 = 1604123777809
+        val date3 = 1606715777809
+        val date4 = 1606802177809
+
+        val paidDate1 = PaidDate(1, date1)
+        val paidDate2 = PaidDate(2, date2)
+        val paidDate3 = PaidDate(3, date3)
+        val paidDate4 = PaidDate(4, date4)
+
+        meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate1)
+        meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate2)
+        meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate3)
+        meterDataDatabase.meterDataDatabaseDao.insertPaidDate(paidDate4)
+
+        val paidDates = meterDataDatabase.meterDataDatabaseDao
+            .getPaidDatesRangeById(paidDate1.id).getOrAwaitValue()
+        assertThat(paidDates.size, `is`(1))
+        assertThat(paidDates[0].date, `is`(date1))
     }
 
     @Test

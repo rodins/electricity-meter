@@ -73,13 +73,13 @@ class MeterDataHistoryFragmentTest {
         launchFragmentInHiltContainer<MeterDataHistoryFragment>(args, R.style.Theme_ElectricityMeter)
 
         onView(withSubstring(data1.toString()))
-            .check(doesNotExist())
+            .check(matches(isDisplayed()))
         onView(withSubstring(data2.toString()))
             .check(matches(isDisplayed()))
         onView(withSubstring(data3.toString()))
-            .check(matches(isDisplayed()))
+            .check(doesNotExist())
         onView(withSubstring(data4.toString()))
-            .check(matches(isDisplayed()))
+            .check(doesNotExist())
         onView(withSubstring(data5.toString()))
             .check(doesNotExist())
     }

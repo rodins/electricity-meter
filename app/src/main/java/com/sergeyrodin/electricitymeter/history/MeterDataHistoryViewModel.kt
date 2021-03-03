@@ -37,10 +37,12 @@ class MeterDataHistoryViewModel @Inject constructor(
     }
 
     private fun getObservableMeterData(paidDateRange: List<PaidDate>) : LiveData<List<MeterData>> {
+        val endDate = paidDateRange[0].date
         return if (paidDateRange.size == 2) {
-            dataSource.getObservableData(paidDateRange[0].date, paidDateRange[1].date)
+            val beginDate = paidDateRange[1].date
+            dataSource.getObservableData(beginDate, endDate)
         } else {
-            dataSource.getObservableData(paidDateRange[0].date)
+            dataSource.getObservableData(endDate = endDate)
         }
     }
 }

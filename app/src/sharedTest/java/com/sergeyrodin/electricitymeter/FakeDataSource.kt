@@ -83,8 +83,8 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
 
     override fun getPaidDatesRangeById(id: Int): LiveData<List<PaidDate>> {
         val paidDatesRange = paidDates.filter {
-            it.id >= id
-        }
+            it.id <= id
+        }.reversed()
 
         val paidDatesRangeLimited = if(paidDatesRange.size <= 2) {
             paidDatesRange

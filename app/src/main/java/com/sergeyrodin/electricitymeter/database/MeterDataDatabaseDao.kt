@@ -30,7 +30,7 @@ interface MeterDataDatabaseDao {
     @Query("SELECT * FROM paid_dates WHERE id =:id")
     fun getPaidDateByIdBlocking(id: Int): PaidDate?
 
-    @Query("SELECT * FROM paid_dates WHERE id >= :id LIMIT 2")
+    @Query("SELECT * FROM paid_dates WHERE id <= :id ORDER BY id DESC LIMIT 2")
     fun getPaidDatesRangeById(id: Int): LiveData<List<PaidDate>>
 
     @Query("DELETE FROM meter_data")

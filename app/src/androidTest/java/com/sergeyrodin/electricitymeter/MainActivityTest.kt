@@ -18,6 +18,7 @@ import com.sergeyrodin.electricitymeter.di.TestModule
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 import com.sergeyrodin.electricitymeter.utils.DataBindingIdlingResource
 import com.sergeyrodin.electricitymeter.utils.EspressoIdlingResource
+import com.sergeyrodin.electricitymeter.utils.dateToLong
 import com.sergeyrodin.electricitymeter.utils.monitorActivity
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
@@ -87,6 +88,7 @@ class MainActivityTest {
         val date2 = 1604123777809
         dataSource.insert(MeterData(data1, date = date1))
         dataSource.insert(MeterData(data2, date = date2))
+
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
@@ -153,10 +155,10 @@ class MainActivityTest {
         onView(withId(R.id.paidListFragment)).perform(click())
         onView(withText(dateToString(date2))).perform(click())
 
-        onView(withSubstring(data1.toString())).check(doesNotExist())
+        onView(withSubstring(data1.toString())).check(matches(isDisplayed()))
         onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
-        onView(withSubstring(data3.toString())).check(matches(isDisplayed()))
-        onView(withSubstring(data4.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data3.toString())).check(doesNotExist())
+        onView(withSubstring(data4.toString())).check(doesNotExist())
         onView(withSubstring(data5.toString())).check(doesNotExist())
 
         activityScenario.close()
@@ -189,11 +191,11 @@ class MainActivityTest {
         onView(withId(R.id.paidListFragment)).perform(click())
         onView(withText(dateToString(date2))).perform(click())
 
-        onView(withSubstring(data1.toString())).check(doesNotExist())
+        onView(withSubstring(data1.toString())).check(matches(isDisplayed()))
         onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
-        onView(withSubstring(data3.toString())).check(matches(isDisplayed()))
-        onView(withSubstring(data4.toString())).check(matches(isDisplayed()))
-        onView(withSubstring(data5.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data3.toString())).check(doesNotExist())
+        onView(withSubstring(data4.toString())).check(doesNotExist())
+        onView(withSubstring(data5.toString())).check(doesNotExist())
 
         activityScenario.close()
     }
@@ -520,6 +522,28 @@ class MainActivityTest {
         onView(withId(R.id.save_price_fab)).perform(click())
 
         onView(withSubstring("390")).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun firstMonthPaidDateClick_historyDisplayed() = runBlocking {
+        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val data2 = 15123
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.action_paid)).perform(click())
+        onView(withId(R.id.paidListFragment)).perform(click())
+        onView(withText(dateToString(date2))).perform(click())
+
+        onView(withSubstring(data1.toString())).check(matches(isDisplayed()))
+        onView(withSubstring(data2.toString())).check(matches(isDisplayed()))
 
         activityScenario.close()
     }
