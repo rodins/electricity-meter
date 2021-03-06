@@ -22,7 +22,7 @@ interface MeterDataDatabaseDao {
     suspend fun deletePaidDate(paidDate: PaidDate?)
 
     @Query("SELECT * FROM meter_data WHERE date BETWEEN :beginDate AND :endDate")
-    fun getMeterDataBetweenDates(beginDate: Long, endDate: Long): LiveData<List<MeterData>>
+    fun getObservableMeterDataBetweenDates(beginDate: Long, endDate: Long): LiveData<List<MeterData>>
 
     @Query("SELECT * FROM paid_dates")
     fun getPaidDates(): LiveData<List<PaidDate>>
@@ -71,4 +71,13 @@ interface MeterDataDatabaseDao {
 
     @Query("DELETE FROM prices")
     suspend fun deletePrice()
+
+    @Query("SELECT * FROM meter_data WHERE date = :date")
+    suspend fun getMeterDataByDate(date: Long): MeterData?
+
+    @Query("SELECT * FROM meter_data LIMIT 1")
+    suspend fun getFirstMeterData(): MeterData?
+
+    @Query("SELECT * FROM prices LIMIT 1")
+    suspend fun getPrice(): Price?
 }

@@ -10,3 +10,8 @@ fun dateToTextView(textView: TextView, date: Long?) {
         textView.text = dateToString(date)
     }
 }
+
+@BindingAdapter("price")
+fun priceToTextView(textView: TextView, price: Double?) {
+    textView.text = price?.toString()
+}

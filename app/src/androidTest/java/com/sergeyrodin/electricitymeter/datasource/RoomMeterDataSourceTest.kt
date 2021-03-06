@@ -10,11 +10,12 @@ import com.sergeyrodin.electricitymeter.database.MeterDataDatabase
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
+import com.sergeyrodin.electricitymeter.utils.dateToLong
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.nullValue
-import org.junit.Assert.*
+import org.junit.Assert.assertThat
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -295,5 +296,41 @@ class RoomMeterDataSourceTest {
 
         val priceCount = dataSource.getObservablePriceCount().getOrAwaitValue()
         assertThat(priceCount, `is`(0))
+    }
+
+    @Test
+    fun getMeterDataByDate() = runBlockingTest {
+        val date = dateToLong(2020, 12, 1, 9, 0)
+        val data = 14704
+        dataSource.insert(MeterData(data, date = date))
+
+        val meterData = dataSource.getMeterDataByDate(date)
+        assertThat(meterData?.date, `is`(date))
+    }
+
+    @Test
+    fun getFirstMeterData() = runBlockingTest {
+        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val data1 = 14704
+        val meterData1 = MeterData(data1, date = date1)
+
+        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val data2 = 15123
+        val meterData2 = MeterData(data2, date = date2)
+
+        dataSource.insert(meterData1)
+        dataSource.insert(meterData2)
+
+        val firstMeterData = dataSource.getFirstMeterData()
+        assertThat(firstMeterData?.data, `is`(meterData1.data))
+    }
+
+    @Test
+    fun getPrice_priceEquals() = runBlockingTest {
+        val price = Price(1, 1.68)
+        dataSource.insertPrice(price)
+
+        val priceFromDb = dataSource.getPrice()
+        assertThat(priceFromDb?.price, `is`(price.price))
     }
 }

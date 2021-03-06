@@ -6,6 +6,7 @@ import androidx.test.core.app.ApplicationProvider.getApplicationContext
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.SmallTest
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
+import com.sergeyrodin.electricitymeter.utils.dateToLong
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runBlockingTest
 import org.hamcrest.CoreMatchers.`is`
@@ -68,7 +69,7 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data, date = date))
 
         val items = meterDataDatabase.meterDataDatabaseDao
-            .getMeterDataBetweenDates(date, Long.MAX_VALUE).getOrAwaitValue()
+            .getObservableMeterDataBetweenDates(date, Long.MAX_VALUE).getOrAwaitValue()
         assertThat(items.size, `is`(1))
     }
 
@@ -82,7 +83,7 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data2, date = date2))
 
         val items = meterDataDatabase.meterDataDatabaseDao
-            .getMeterDataBetweenDates(date1, date2).getOrAwaitValue()
+            .getObservableMeterDataBetweenDates(date1, date2).getOrAwaitValue()
         assertThat(items.size, `is`(2))
     }
 
@@ -102,7 +103,7 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data4, date = date4))
 
         val items = meterDataDatabase.meterDataDatabaseDao
-            .getMeterDataBetweenDates(date2, date3).getOrAwaitValue()
+            .getObservableMeterDataBetweenDates(date2, date3).getOrAwaitValue()
         assertThat(items[0].data, `is`(data2))
         assertThat(items[1].data, `is`(data3))
     }
@@ -226,7 +227,7 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.deleteAllMeterData()
 
         val items = meterDataDatabase.meterDataDatabaseDao
-            .getMeterDataBetweenDates(0L, Long.MAX_VALUE).getOrAwaitValue()
+            .getObservableMeterDataBetweenDates(0L, Long.MAX_VALUE).getOrAwaitValue()
         assertThat(items.size, `is`(0))
     }
 
@@ -309,7 +310,7 @@ class MeterDataDatabaseDaoTest {
         meterDataDatabase.meterDataDatabaseDao.deleteMeterData(meterData2)
 
         val items = meterDataDatabase.meterDataDatabaseDao
-            .getMeterDataBetweenDates(0L, Long.MAX_VALUE).getOrAwaitValue()
+            .getObservableMeterDataBetweenDates(0L, Long.MAX_VALUE).getOrAwaitValue()
         assertThat(items.size, `is`(3))
         Assert.assertThat(items[0].data, `is`(data1))
         Assert.assertThat(items[1].data, `is`(data3))
@@ -349,7 +350,7 @@ class MeterDataDatabaseDaoTest {
     }
 
     @Test
-    fun savePrice_priceEquals() = runBlockingTest {
+    fun savePrice_getOBservablePrice_priceEquals() = runBlockingTest {
         val price = Price(price = 1.68)
         meterDataDatabase.meterDataDatabaseDao.insertPrice(price)
 
@@ -393,5 +394,41 @@ class MeterDataDatabaseDaoTest {
 
         val priceCount = meterDataDatabase.meterDataDatabaseDao.getObservablePriceCount().getOrAwaitValue()
         assertThat(priceCount, `is`(0))
+    }
+
+    @Test
+    fun getMeterDataByDate() = runBlockingTest {
+        val date = dateToLong(2020, 12, 1, 9, 0)
+        val data = 14704
+        meterDataDatabase.meterDataDatabaseDao.insert(MeterData(data, date = date))
+
+        val meterData = meterDataDatabase.meterDataDatabaseDao.getMeterDataByDate(date)
+        assertThat(meterData?.date, `is`(date))
+    }
+
+    @Test
+    fun getFirstMeterData() = runBlockingTest {
+        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val data1 = 14704
+        val meterData1 = MeterData(data1, date = date1)
+
+        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val data2 = 15123
+        val meterData2 = MeterData(data2, date = date2)
+
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData1)
+        meterDataDatabase.meterDataDatabaseDao.insert(meterData2)
+
+        val firstMeterData = meterDataDatabase.meterDataDatabaseDao.getFirstMeterData()
+        assertThat(firstMeterData?.data, `is`(meterData1.data))
+    }
+
+    @Test
+    fun getPrice_priceEquals() = runBlockingTest {
+        val price = Price(price = 1.68)
+        meterDataDatabase.meterDataDatabaseDao.insertPrice(price)
+
+        val priceFromDb = meterDataDatabase.meterDataDatabaseDao.getPrice()
+        assertThat(priceFromDb?.price, `is`(price.price))
     }
 }

@@ -3,8 +3,11 @@ package com.sergeyrodin.electricitymeter.paidlist
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.MainCoroutineRule
+import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
+import com.sergeyrodin.electricitymeter.utils.dateToLong
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
@@ -28,6 +31,7 @@ class PaidListViewModelTest {
     @Before
     fun init() {
         dataSource = FakeDataSource()
+        dataSource.testInsert(MeterData(14704))
         subject = PaidListViewModel(dataSource)
     }
 
@@ -51,7 +55,7 @@ class PaidListViewModelTest {
         val date = 1602219377796
         dataSource.testInsert(PaidDate(date = date))
 
-        val items = subject.paidDates.getOrAwaitValue()
+        val items = subject.pricePaidDates.getOrAwaitValue()
         assertThat(items[0].date, `is`(date))
     }
 
@@ -64,7 +68,7 @@ class PaidListViewModelTest {
         dataSource.testInsert(PaidDate(date = date2))
         dataSource.testInsert(PaidDate(date = date3))
 
-        val items = subject.paidDates.getOrAwaitValue()
+        val items = subject.pricePaidDates.getOrAwaitValue()
         assertThat(items.size, `is`(3))
     }
 
@@ -99,7 +103,7 @@ class PaidListViewModelTest {
         subject.onItemLongClick(position)
         subject.deleteSelectedPaidDate()
 
-        val items = subject.paidDates.getOrAwaitValue()
+        val items = subject.pricePaidDates.getOrAwaitValue()
         assertThat(items.size, `is`(2))
         assertThat(items[0].date, `is`(date1))
         assertThat(items[1].date, `is`(date3))
@@ -187,5 +191,51 @@ class PaidListViewModelTest {
 
         val highlighted = subject.highlightedPosition.getOrAwaitValue()
         assertThat(highlighted, `is`(resetPosition))
+    }
+
+    @Test
+    fun onePaidDate_totalPriceEquals() {
+        val price = Price(1, 1.68)
+        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val data2 = 15123
+        val totalPrice = 703.92
+        dataSource.insertPriceBlocking(price)
+        dataSource.testInsert(MeterData(data1, date = date1))
+        dataSource.testInsert(MeterData(data2, date = date2))
+        dataSource.testInsert(PaidDate(1, date2))
+
+        val items = subject.pricePaidDates.getOrAwaitValue()
+        assertThat(items[0].price, `is`(totalPrice))
+    }
+
+    @Test
+    fun twoPaidDates_totalPriceEquals() {
+        val price = Price(1, 1.68)
+        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val data2 = 15123
+        val date3 = dateToLong(2021, 2, 1, 9, 0)
+        val data3 = 15359
+        val totalPrice1 = 703.92
+        val totalPrice2 = 396.48
+        dataSource.insertPriceBlocking(price)
+        dataSource.testInsert(MeterData(data1, date = date1))
+        dataSource.testInsert(MeterData(data2, date = date2))
+        dataSource.testInsert(MeterData(data3, date = date3))
+        dataSource.testInsert(PaidDate(1, date2))
+        dataSource.testInsert(PaidDate(2, date3))
+
+        val items = subject.pricePaidDates.getOrAwaitValue()
+        assertThat(items[0].price, `is`(totalPrice1))
+        assertThat(items[1].price, `is`(totalPrice2))
+    }
+
+    @Test
+    fun noPaidDates_itemsEmpty() {
+        val items = subject.pricePaidDates.getOrAwaitValue()
+        assertThat(items.isEmpty(), `is`(true))
     }
 }

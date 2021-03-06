@@ -548,4 +548,25 @@ class MainActivityTest {
         activityScenario.close()
     }
 
+    @Test
+    fun displayPriceInPaidDate() = runBlocking {
+        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val data2 = 15123
+        val price = 703.92
+        dataSource.insert(MeterData(data1, date = date1))
+        dataSource.insert(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.action_paid)).perform(click())
+        onView(withId(R.id.paidListFragment)).perform(click())
+
+        onView(withText(price.toString())).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
 }

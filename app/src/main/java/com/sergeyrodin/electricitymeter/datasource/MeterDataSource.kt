@@ -23,4 +23,7 @@ interface MeterDataSource {
     fun getObservablePrice(): LiveData<Price>
     fun getObservablePriceCount(): LiveData<Int>
     suspend fun deletePrice()
+    suspend fun getMeterDataByDate(date: Long): MeterData?
+    suspend fun getFirstMeterData(): MeterData?
+    suspend fun getPrice(): Price?
 }

@@ -5,7 +5,6 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.sergeyrodin.electricitymeter.ElectricityMeterApplication
 import com.sergeyrodin.electricitymeter.EventObserver
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.databinding.PaidListFragmentBinding
@@ -57,7 +56,7 @@ class PaidListFragment : Fragment() {
     }
 
     private fun setDataToAdapter(adapter: PaidListAdapter) {
-        viewModel.paidDates.observe(viewLifecycleOwner, {
+        viewModel.pricePaidDates.observe(viewLifecycleOwner, {
             adapter.data = it
         })
     }

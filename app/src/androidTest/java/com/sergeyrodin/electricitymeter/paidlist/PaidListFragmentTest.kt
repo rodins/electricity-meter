@@ -20,10 +20,13 @@ import androidx.test.filters.MediumTest
 import androidx.test.internal.util.Checks
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.R
+import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
+import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.di.MeterDataSourceModule
 import com.sergeyrodin.electricitymeter.launchFragmentInHiltContainer
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
+import com.sergeyrodin.electricitymeter.utils.dateToLong
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
@@ -57,6 +60,8 @@ class PaidListFragmentTest {
     @Before
     fun initDataSource() {
         hiltRule.inject()
+        dataSource.insertPriceBlocking(Price(1, 1.68))
+        dataSource.testInsert(MeterData(14704))
     }
 
     @Test
@@ -87,6 +92,7 @@ class PaidListFragmentTest {
     fun twoItems_datesDisplayed() {
         val date1 = 1602219377796
         val date2 = 1604123777809
+
         dataSource.testInsert(PaidDate(date = date1))
         dataSource.testInsert(PaidDate(date = date2))
         launchFragmentInHiltContainer<PaidListFragment>(null, R.style.Theme_ElectricityMeter)
@@ -315,16 +321,14 @@ class PaidListFragmentTest {
         onView(withId(R.id.date_items))
             .check(
                 matches(
-                    not(
                         hasDescendant(
                             hasBackgroundColorAndText(
-                                R.color.design_default_color_secondary,
+                                R.color.design_default_color_background,
                                 dateToString(date)
                             )
                         )
                     )
                 )
-            )
     }
 
     @Test
@@ -403,7 +407,9 @@ class PaidListFragmentTest {
             .perform(
                 RecyclerViewActions
                     .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date)), click()
+                        hasDescendant(
+                            withText(dateToString(date))
+                        ), click()
                     )
             )
     }
@@ -413,7 +419,9 @@ class PaidListFragmentTest {
             .perform(
                 RecyclerViewActions
                     .actionOnItem<PaidListAdapter.ViewHolder>(
-                        withText(dateToString(date)), longClick()
+                        hasDescendant(
+                            withText(dateToString(date))
+                        ), longClick()
                     )
             )
     }
@@ -460,10 +468,33 @@ class PaidListFragmentTest {
                 val expectedColor =
                     ColorDrawable(ContextCompat.getColor(item.context, colorRes)).color
 
-                val dateTextView = item as TextView
+                val dateTextView = item.findViewById<TextView>(R.id.date_text)
                 val actualText = dateTextView.text.toString()
                 return actualColor == expectedColor && text == actualText
             }
         }
+    }
+
+    @Test
+    fun paidDatePriceDisplayed() {
+        val navController = testNavHostController()
+
+        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val data2 = 15123
+        val totalPrice = 703.92
+
+        dataSource.testInsert(MeterData(data1, date = date1))
+        dataSource.testInsert(MeterData(data2, date = date2))
+        dataSource.testInsert(PaidDate(1, date2))
+
+        launchFragmentInHiltContainer<PaidListFragment>(
+            null, R.style.Theme_ElectricityMeter
+        ) {
+            Navigation.setViewNavController(requireView(), navController)
+        }
+
+        onView(withText(totalPrice.toString())).check(matches(isDisplayed()))
     }
 }

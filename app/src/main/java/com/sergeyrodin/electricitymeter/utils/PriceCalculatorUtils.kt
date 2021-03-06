@@ -17,7 +17,7 @@ fun calculateDailyPrice(
     return price
 }
 
-private fun calculatePrice(kwh: Int, price: Double) = (price.toBigDecimal() * kwh.toBigDecimal()).toDouble()
+fun calculatePrice(kwh: Int, price: Double) = (price.toBigDecimal() * kwh.toBigDecimal()).toDouble()
 
 fun calculateTotalPrice(totalKwh: Int, priceKwh: Double): Double {
     return calculatePrice(totalKwh, priceKwh)

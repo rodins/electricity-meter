@@ -168,4 +168,18 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
         observablePrice.value = null
         observablePriceCount.value = 0
     }
+
+    override suspend fun getMeterDataByDate(date: Long): MeterData? {
+        return data.find {
+            it.date == date
+        }
+    }
+
+    override suspend fun getFirstMeterData(): MeterData? {
+        return data.first()
+    }
+
+    override suspend fun getPrice(): Price? {
+        return getPriceBlocking()
+    }
 }
