@@ -18,7 +18,8 @@
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="horizontal"
-        android:onClick="@{ () -> paidDateClickListener.onClick(pricePaidDate.id)}">
+        android:onClick="@{ () -> paidDateClickListener.onClick(pricePaidDate.id)}"
+        app:highlighted="@{pricePaidDate.isHighlighted}">
 
         <TextView
             android:id="@+id/date_text"

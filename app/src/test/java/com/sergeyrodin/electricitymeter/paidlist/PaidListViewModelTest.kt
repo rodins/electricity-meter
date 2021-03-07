@@ -86,8 +86,17 @@ class PaidListViewModelTest {
         val position = 1
         subject.onItemLongClick(position)
 
-        val highlighted = subject.highlightedPosition.getOrAwaitValue()
+        val highlighted = subject.positionEvent.getOrAwaitValue()
         assertThat(highlighted, `is`(position))
+    }
+
+    @Test
+    fun onItemClick_actionModeTrue() {
+        val position = 1
+        subject.onItemLongClick(position)
+
+        val actionMode = subject.actionModeEvent.getOrAwaitValue()
+        assertThat(actionMode, `is`(true))
     }
 
     @Test
@@ -110,21 +119,20 @@ class PaidListViewModelTest {
     }
 
     @Test
-    fun deletePaidDate_positionReset() {
+    fun deletePaidDate_actionModeFalse() {
         val date1 = 1602219377796
         val position = 0
-        val resetPosition = -1
         dataSource.testInsert(PaidDate(date = date1))
 
         subject.onItemLongClick(position)
         subject.deleteSelectedPaidDate()
 
-        val highlighted = subject.highlightedPosition.getOrAwaitValue()
-        assertThat(highlighted, `is`(resetPosition))
+        val actionMode = subject.actionModeEvent.getOrAwaitValue()
+        assertThat(actionMode, `is`(false))
     }
 
     @Test
-    fun itemClick_positionReset() {
+    fun itemClick_actionModeEventIsFalse() {
         val id = 1
         val date = 1602219377796
         val position = 0
@@ -134,8 +142,8 @@ class PaidListViewModelTest {
         subject.onItemLongClick(position)
         subject.onItemClick(id)
 
-        val highlighted = subject.highlightedPosition.getOrAwaitValue()
-        assertThat(highlighted, `is`(resetPosition))
+        val actionMode = subject.actionModeEvent.getOrAwaitValue()
+        assertThat(actionMode, `is`(false))
     }
 
     @Test
@@ -182,15 +190,14 @@ class PaidListViewModelTest {
         val id = 1
         val date = 1602219377796
         val position = 0
-        val resetPosition = -1
         dataSource.testInsert(PaidDate(id = id, date = date))
 
         subject.onItemLongClick(position)
 
-        subject.resetHighlightedPosition()
+        subject.onDestroyActionMode()
 
-        val highlighted = subject.highlightedPosition.getOrAwaitValue()
-        assertThat(highlighted, `is`(resetPosition))
+        val highlighted = subject.positionEvent.getOrAwaitValue()
+        assertThat(highlighted, `is`(position))
     }
 
     @Test

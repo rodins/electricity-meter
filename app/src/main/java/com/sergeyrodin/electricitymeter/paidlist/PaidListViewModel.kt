@@ -14,9 +14,9 @@ class PaidListViewModel @Inject constructor(
     private val dataSource: MeterDataSource
 ) : ViewModel() {
 
-    private val _highlightedPosition = MutableLiveData(-1)
-    val highlightedPosition: LiveData<Int>
-        get() = _highlightedPosition
+    private val _positionEvent = MutableLiveData<Int>()
+    val positionEvent: LiveData<Int>
+        get() = _positionEvent
 
     private val paidDates = dataSource.getPaidDates()
 
@@ -101,30 +101,63 @@ class PaidListViewModel @Inject constructor(
     val itemClickEvent: LiveData<Event<Int>>
         get() = _itemClickEvent
 
+    private val _actionModeEvent = MutableLiveData<Boolean>()
+    val actionModeEvent: LiveData<Boolean>
+        get() = _actionModeEvent
+
     fun onItemClick(id: Int) {
-        if (_highlightedPosition.value == -1) {
-            _itemClickEvent.value = Event(id)
+        if (_actionModeEvent.value == true) {
+            deactivateActionMode()
         } else {
-            _highlightedPosition.value = -1
+            _itemClickEvent.value = Event(id)
         }
     }
 
+    private fun setPricePaidDateHighlightModeByPosition(
+        position: Int,
+        isHighlighted: Boolean
+    ) {
+        pricePaidDates.value?.get(position)?.isHighlighted = isHighlighted
+    }
+
+    private fun deactivateActionMode() {
+        _actionModeEvent.value = false
+    }
+
     fun onItemLongClick(position: Int) {
-        _highlightedPosition.value = position
+        highlightPaidDate(position)
+    }
+
+    private fun highlightPaidDate(position: Int) {
+        setPricePaidDateHighlightModeByPosition(position, true)
+        notifyItemChanged(position)
+        activateActionMode()
+    }
+
+    private fun notifyItemChanged(position: Int) {
+        _positionEvent.value = position
+    }
+
+    private fun activateActionMode() {
+        _actionModeEvent.value = true
     }
 
     fun deleteSelectedPaidDate() {
         viewModelScope.launch {
-            val position = _highlightedPosition.value
+            val position = _positionEvent.value
             position?.let {
-                val paidDate = paidDates.value?.get(position)
+                val paidDate = paidDates.value?.get(it)
                 dataSource.deletePaidDate(paidDate)
-                resetHighlightedPosition()
+                deactivateActionMode()
             }
         }
     }
 
-    fun resetHighlightedPosition() {
-        _highlightedPosition.value = -1
+    fun onDestroyActionMode() {
+        val position = _positionEvent.value
+        position?.let {
+            setPricePaidDateHighlightModeByPosition(it, false)
+            notifyItemChanged(it)
+        }
     }
 }

@@ -27,9 +27,12 @@ class PaidListFragment : Fragment() {
         setDataToAdapter(adapter)
         observeItemClickEvent()
 
-        viewModel.highlightedPosition.observe(viewLifecycleOwner, { highlightedPosition ->
-            adapter.highlightedPosition = highlightedPosition
-            if(highlightedPosition != -1) {
+        viewModel.positionEvent.observe(viewLifecycleOwner, { position ->
+            adapter.notifyItemChanged(position)
+        })
+
+        viewModel.actionModeEvent.observe(viewLifecycleOwner, { isActionMode ->
+            if(isActionMode) {
                 startActionMode()
             }else {
                 finishActionMode()
@@ -90,7 +93,7 @@ class PaidListFragment : Fragment() {
 
                 override fun onDestroyActionMode(mode: ActionMode?) {
                     actionMode = null
-                    viewModel.resetHighlightedPosition()
+                    viewModel.onDestroyActionMode()
                 }
             })
         }

@@ -17,18 +17,6 @@ class PaidListAdapter(
             notifyDataSetChanged()
         }
 
-    var highlightedPosition = -1
-        set(value) {
-            if(value != -1) {
-                field = value
-                notifyItemChanged(value)
-            }else {
-                val position = field
-                field = value
-                notifyItemChanged(position)
-            }
-        }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = PaidDateItemBinding.inflate(inflater, parent, false)
@@ -36,7 +24,7 @@ class PaidListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.bind(data[position], clickListener, longClickListener, position, highlightedPosition)
+        holder.bind(data[position], clickListener, longClickListener, position)
     }
 
     override fun getItemCount() = data.size
@@ -47,20 +35,13 @@ class PaidListAdapter(
             pricePaidDate: PricePaidDate,
             clickListener: PaidDateClickListener,
             longClickListener: PaidDateLongClickListener,
-            position: Int,
-            highlightedPosition: Int
+            position: Int
         ) {
             binding.pricePaidDate = pricePaidDate
             binding.paidDateClickListener = clickListener
             binding.paidDateLayout.setOnLongClickListener {
                 longClickListener.onLongClick(position)
                 true
-            }
-
-            if(highlightedPosition == -1) {
-                 binding.paidDateLayout.setBackgroundResource(R.color.design_default_color_background)
-            }else {
-                 binding.paidDateLayout.setBackgroundResource(R.color.design_default_color_secondary)
             }
 
             binding.executePendingBindings()
