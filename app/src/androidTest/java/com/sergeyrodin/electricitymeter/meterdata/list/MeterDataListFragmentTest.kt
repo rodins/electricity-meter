@@ -30,10 +30,11 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 import javax.inject.Inject
 
 private const val YEAR = 2021
-private const val MONTH = 1
+private const val MONTH = Calendar.JANUARY
 
 @MediumTest
 @RunWith(AndroidJUnit4::class)
@@ -111,7 +112,7 @@ class MeterDataListFragmentTest {
         val total = 81
         val avg = 20
         val price = 136.08
-        val prognosis = 1029.84
+        val prognosis = 1065.12
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
         val context = getApplicationContext<Context>()

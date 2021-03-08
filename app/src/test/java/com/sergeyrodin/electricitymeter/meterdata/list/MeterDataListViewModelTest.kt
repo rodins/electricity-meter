@@ -14,10 +14,11 @@ import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.*
 import java.util.concurrent.TimeoutException
 
 private const val YEAR = 2021
-private const val MONTH = 1
+private const val MONTH = Calendar.JANUARY
 
 class MeterDataListViewModelTest{
     @get:Rule
@@ -334,12 +335,80 @@ class MeterDataListViewModelTest{
         val data4 = 14638
         val date4 = dateToLong(YEAR, MONTH,23, 8, 30)
 
-        val prognosis = 559.44
+        val prognosis = 577.92
 
         dataSource.testInsert(MeterData(data1, 1, date1))
         dataSource.testInsert(MeterData(data2, 2, date2))
         dataSource.testInsert(MeterData(data3, 3, date3))
         dataSource.testInsert(MeterData(data4, 4, date4))
+
+        val prognosisValue = subject.calculator.prognosis.getOrAwaitValue()
+        assertThat(prognosisValue, `is`(prognosis))
+    }
+
+    @Test
+    fun prognosisNovemberEquals() {
+        val data1 = 14314
+        val date1 = dateToLong(2020, Calendar.NOVEMBER,1, 9, 0)
+
+        val data2 = 14322
+        val date2 = dateToLong(2020, Calendar.NOVEMBER,2, 9, 0)
+
+        val prognosis = 403.2
+
+        dataSource.testInsert(MeterData(data1, 1, date1))
+        dataSource.testInsert(MeterData(data2, 2, date2))
+
+        val prognosisValue = subject.calculator.prognosis.getOrAwaitValue()
+        assertThat(prognosisValue, `is`(prognosis))
+    }
+
+    @Test
+    fun prognosisDecemberEquals() {
+        val data1 = 14735
+        val date1 = dateToLong(2020, Calendar.DECEMBER,9, 9, 0)
+
+        val data2 = 14757
+        val date2 = dateToLong(2020, Calendar.DECEMBER,10, 9, 0)
+
+        val prognosis = 1145.76
+
+        dataSource.testInsert(MeterData(data1, 1, date1))
+        dataSource.testInsert(MeterData(data2, 2, date2))
+
+        val prognosisValue = subject.calculator.prognosis.getOrAwaitValue()
+        assertThat(prognosisValue, `is`(prognosis))
+    }
+
+    @Test
+    fun prognosisFebruaryEquals() {
+        val data1 = 15359
+        val date1 = dateToLong(2021, Calendar.FEBRUARY,1, 9, 0)
+
+        val data2 = 15380
+        val date2 = dateToLong(2021, Calendar.FEBRUARY,2, 9, 0)
+
+        val prognosis = 987.84
+
+        dataSource.testInsert(MeterData(data1, 1, date1))
+        dataSource.testInsert(MeterData(data2, 2, date2))
+
+        val prognosisValue = subject.calculator.prognosis.getOrAwaitValue()
+        assertThat(prognosisValue, `is`(prognosis))
+    }
+
+    @Test
+    fun prognosisLeapFebruaryEquals() {
+        val data1 = 13476
+        val date1 = dateToLong(2020, Calendar.FEBRUARY,2, 9, 0)
+
+        val data2 = 13490
+        val date2 = dateToLong(2020, Calendar.FEBRUARY,3, 9, 0)
+
+        val prognosis = 682.08
+
+        dataSource.testInsert(MeterData(data1, 1, date1))
+        dataSource.testInsert(MeterData(data2, 2, date2))
 
         val prognosisValue = subject.calculator.prognosis.getOrAwaitValue()
         assertThat(prognosisValue, `is`(prognosis))

@@ -4,9 +4,10 @@ import com.sergeyrodin.electricitymeter.database.MeterData
 import org.hamcrest.CoreMatchers.`is`
 import org.junit.Assert.assertThat
 import org.junit.Test
+import java.util.*
 
 private const val YEAR = 2021
-private const val MONTH = 1
+private const val MONTH = Calendar.JANUARY
 private const val PRICE_KWH = 1.68
 
 class PriceCalculatorUtilsKtTest {
@@ -30,7 +31,7 @@ class PriceCalculatorUtilsKtTest {
 
         val items = listOf(meterData1, meterData2)
 
-        val expected = 1419.6
+        val expected = 1466.64
 
         val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
@@ -56,7 +57,7 @@ class PriceCalculatorUtilsKtTest {
 
         val items = listOf(meterData1, meterData2, meterData3, meterData4)
 
-        val expected = 1029.84
+        val expected = 1065.12
 
         val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
@@ -103,7 +104,7 @@ class PriceCalculatorUtilsKtTest {
 
         val items = listOf(meterData1, meterData2)
 
-        val expected = 1209.6
+        val expected = 1249.92
 
         val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))
@@ -122,6 +123,42 @@ class PriceCalculatorUtilsKtTest {
         val items = listOf(meterData1, meterData2)
 
         val expected = 0.0
+
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
+        assertThat(prognosis, `is`(expected))
+    }
+
+    @Test
+    fun prognosisByDates_janToFeb_prognosisEquals() {
+        val date1 = dateToLong(YEAR, Calendar.JANUARY,31, 9, 0)
+        val data1 = 15142
+        val meterData1 = MeterData(data1, 1, date1)
+
+        val date2 = dateToLong(YEAR, Calendar.FEBRUARY,1, 9, 0)
+        val data2 = 15152
+        val meterData2 = MeterData(data2, 2, date2)
+
+        val items = listOf(meterData1, meterData2)
+
+        val expected = 520.8
+
+        val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
+        assertThat(prognosis, `is`(expected))
+    }
+
+    @Test
+    fun prognosisByDates_febToMar_prognosisEquals() {
+        val date1 = dateToLong(YEAR, Calendar.FEBRUARY,28, 9, 0)
+        val data1 = 15142
+        val meterData1 = MeterData(data1, 1, date1)
+
+        val date2 = dateToLong(YEAR, Calendar.MARCH,1, 9, 0)
+        val data2 = 15152
+        val meterData2 = MeterData(data2, 2, date2)
+
+        val items = listOf(meterData1, meterData2)
+
+        val expected = 470.4
 
         val prognosis = calculatePrognosisByDates(items, PRICE_KWH)
         assertThat(prognosis, `is`(expected))

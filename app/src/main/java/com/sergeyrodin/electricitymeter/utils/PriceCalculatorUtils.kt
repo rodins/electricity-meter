@@ -1,6 +1,7 @@
 package com.sergeyrodin.electricitymeter.utils
 
 import com.sergeyrodin.electricitymeter.database.MeterData
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 private const val HOURS_IN_DAY = 24
@@ -34,14 +35,23 @@ fun calculatePrognosisByDates(meterData: List<MeterData>, priceKwh: Double): Dou
             return 0.0
         }
         val kwPerHour = calculateKwPerHour(diffData, diffHours)
-        val prognosisKwPerMonth = calculatePrognosisKwPerMonth(kwPerHour)
+        val numberOfDays = getNumberOfDaysInCurrentMonth(meterData1.date)
+        val prognosisKwPerMonth = calculatePrognosisKwPerMonth(kwPerHour, numberOfDays)
         return calculatePrice(prognosisKwPerMonth.toInt(), priceKwh)
     }
     return 0.0
 }
 
-private fun calculatePrognosisKwPerMonth(kwPerHour: Double): Double {
-    return calculateKwPerDay(kwPerHour) * PROGNOSIS_DAYS_IN_MONTH
+private fun getNumberOfDaysInCurrentMonth(date: Long): Int {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = date
+    return calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+}
+
+private fun calculatePrognosisKwPerMonth(kwPerHour: Double,
+                                         numberOfDays: Int
+): Double {
+    return calculateKwPerDay(kwPerHour) * numberOfDays
 }
 
 private fun calculateKwPerDay(kwPerHour: Double): Double {
