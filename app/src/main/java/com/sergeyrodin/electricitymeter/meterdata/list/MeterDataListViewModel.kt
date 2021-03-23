@@ -23,7 +23,7 @@ class MeterDataListViewModel @Inject constructor(
     val editMeterDataEvent: LiveData<Event<Int>>
        get() = _editMeterDataEvent
 
-    private val observablePaidDate = dataSource.getLastPaidDate()
+    private val observablePaidDate = dataSource.getLastObservablePaidDate()
 
     private val observableData: LiveData<List<MeterData>> = Transformations
         .switchMap(observablePaidDate) {
@@ -32,13 +32,13 @@ class MeterDataListViewModel @Inject constructor(
 
     private fun updateMeterData(paidDate: PaidDate?): LiveData<List<MeterData>> {
         return if (paidDate == null) {
-            dataSource.getObservableData()
+            dataSource.getObservableMeterDataByDates()
         } else {
-            dataSource.getObservableData(paidDate.date)
+            dataSource.getObservableMeterDataByDates(paidDate.date)
         }
     }
 
-    private val observablePrice = dataSource.getObservablePrice()
+    private val observablePrice = dataSource.getLastObservablePrice()
     private val observablePriceCount = dataSource.getObservablePriceCount()
 
     val calculator = MeterDataCalculator(observableData, observablePrice, observablePriceCount, reversed = true)
@@ -58,9 +58,10 @@ class MeterDataListViewModel @Inject constructor(
     fun onPaid() {
         observableData.value?.let { data ->
             if(data.isNotEmpty()) {
-                val last = data.last()
-                val paidDate = PaidDate(date = last.date)
-                viewModelScope.launch{
+                val lastDate = data.last().date
+                val priceId = observablePrice.value?.id?:0
+                val paidDate = PaidDate(date = lastDate, priceId = priceId)
+                viewModelScope.launch {
                     dataSource.insertPaidDate(paidDate)
                 }
             }

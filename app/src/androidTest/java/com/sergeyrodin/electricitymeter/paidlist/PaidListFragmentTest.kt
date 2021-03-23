@@ -19,6 +19,7 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import androidx.test.internal.util.Checks
 import com.sergeyrodin.electricitymeter.FakeDataSource
+import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.R
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
@@ -27,9 +28,11 @@ import com.sergeyrodin.electricitymeter.di.MeterDataSourceModule
 import com.sergeyrodin.electricitymeter.launchFragmentInHiltContainer
 import com.sergeyrodin.electricitymeter.meterdata.dateToString
 import com.sergeyrodin.electricitymeter.utils.dateToLong
+import com.sergeyrodin.electricitymeter.utils.hasBackgroundColor
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import dagger.hilt.android.testing.UninstallModules
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.`is`
 import org.hamcrest.CoreMatchers.not
 import org.hamcrest.Description
@@ -42,6 +45,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
+private val PRICE = Price(1, 1.68)
+
 @MediumTest
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
@@ -50,6 +55,10 @@ class PaidListFragmentTest {
 
     @get:Rule
     val hiltRule = HiltAndroidRule(this)
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    val coroutineRule = MainCoroutineRule()
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -60,8 +69,8 @@ class PaidListFragmentTest {
     @Before
     fun initDataSource() {
         hiltRule.inject()
-        dataSource.insertPriceBlocking(Price(1, 1.68))
-        dataSource.testInsert(MeterData(14704))
+        dataSource.insertPriceBlocking(PRICE)
+        dataSource.insertMeterDataBlocking(MeterData(14704))
     }
 
     @Test
@@ -73,7 +82,7 @@ class PaidListFragmentTest {
     @Test
     fun oneItem_noDataTextNotDisplayed() {
         val date = 1602219377796L
-        dataSource.testInsert(PaidDate(date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date, priceId = PRICE.id))
         launchFragmentInHiltContainer<PaidListFragment>(null, R.style.Theme_ElectricityMeter)
 
         onView(withText(R.string.no_items)).check(matches(not(isDisplayed())))
@@ -82,7 +91,7 @@ class PaidListFragmentTest {
     @Test
     fun oneItem_dateDisplayed() {
         val date = 1602219377796L
-        dataSource.testInsert(PaidDate(date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date, priceId = PRICE.id))
         launchFragmentInHiltContainer<PaidListFragment>(null, R.style.Theme_ElectricityMeter)
 
         onView(withText(dateToString(date))).check(matches(isDisplayed()))
@@ -93,8 +102,8 @@ class PaidListFragmentTest {
         val date1 = 1602219377796
         val date2 = 1604123777809
 
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
         launchFragmentInHiltContainer<PaidListFragment>(null, R.style.Theme_ElectricityMeter)
 
         onView(withText(dateToString(date1))).check(matches(isDisplayed()))
@@ -107,7 +116,7 @@ class PaidListFragmentTest {
 
         val id = 1
         val date = 1602219377796
-        dataSource.testInsert(PaidDate(id, date))
+        dataSource.insertPaidDateBlocking(PaidDate(id, date, PRICE.id))
         launchFragmentInHiltContainer<PaidListFragment>(null, R.style.Theme_ElectricityMeter) {
             Navigation.setViewNavController(requireView(), navController)
         }
@@ -123,8 +132,8 @@ class PaidListFragmentTest {
 
         val date1 = 1602219377796
         val date2 = 1604123777809
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -143,7 +152,7 @@ class PaidListFragmentTest {
         val navController = testNavHostController()
 
         val date = 1602219377796
-        dataSource.testInsert(PaidDate(date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -174,8 +183,8 @@ class PaidListFragmentTest {
 
         val date1 = 1602219377796
         val date2 = 1604123777809
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -207,7 +216,7 @@ class PaidListFragmentTest {
         val navController = testNavHostController()
 
         val date = 1602219377796
-        dataSource.testInsert(PaidDate(date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -226,8 +235,8 @@ class PaidListFragmentTest {
 
         val date1 = 1602219377796
         val date2 = 1604123777809
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -249,7 +258,7 @@ class PaidListFragmentTest {
         val navController = testNavHostController()
 
         val date = 1602219377796
-        dataSource.testInsert(PaidDate(date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -280,7 +289,7 @@ class PaidListFragmentTest {
         val navController = testNavHostController()
 
         val date = 1602219377796
-        dataSource.testInsert(PaidDate(date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -301,8 +310,8 @@ class PaidListFragmentTest {
 
         val date1 = 1602219377796
         val date2 = 1604123777809
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -337,8 +346,8 @@ class PaidListFragmentTest {
 
         val date1 = 1602219377796
         val date2 = 1604123777809
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -359,8 +368,8 @@ class PaidListFragmentTest {
 
         val date1 = 1602219377796
         val date2 = 1604123777809
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -384,10 +393,10 @@ class PaidListFragmentTest {
         val date3 = 1606715777809
         val date4 = System.currentTimeMillis()
 
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
-        dataSource.testInsert(PaidDate(date = date3))
-        dataSource.testInsert(PaidDate(date = date4))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date3, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date4, priceId = PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter
@@ -433,27 +442,6 @@ class PaidListFragmentTest {
         return navController
     }
 
-    private fun hasBackgroundColor(colorRes: Int): Matcher<View> {
-        Checks.checkNotNull(colorRes)
-        return object : TypeSafeMatcher<View>() {
-
-            override fun describeTo(description: Description?) {
-                description?.appendText("background color: $colorRes")
-            }
-
-            override fun matchesSafely(item: View?): Boolean {
-                if (item?.background == null) {
-                    return false
-                }
-                val actualColor = (item.background as ColorDrawable).color
-                val expectedColor =
-                    ColorDrawable(ContextCompat.getColor(item.context, colorRes)).color
-                return actualColor == expectedColor
-            }
-
-        }
-    }
-
     private fun hasBackgroundColorAndText(colorRes: Int, text: String): Matcher<View> {
         return object : TypeSafeMatcher<View>() {
 
@@ -485,9 +473,9 @@ class PaidListFragmentTest {
         val data2 = 15123
         val totalPrice = 703.92
 
-        dataSource.testInsert(MeterData(data1, date = date1))
-        dataSource.testInsert(MeterData(data2, date = date2))
-        dataSource.testInsert(PaidDate(1, date2))
+        dataSource.insertMeterDataBlocking(MeterData(data1, date = date1))
+        dataSource.insertMeterDataBlocking(MeterData(data2, date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(1, date2, PRICE.id))
 
         launchFragmentInHiltContainer<PaidListFragment>(
             null, R.style.Theme_ElectricityMeter

@@ -1,9 +1,6 @@
 package com.sergeyrodin.electricitymeter.history
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Transformations
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.datasource.MeterDataSource
@@ -20,14 +17,23 @@ class MeterDataHistoryViewModel @Inject constructor(
 
     private val observablePaidDatesRange = Transformations
         .switchMap(paidDateInput) { paidDateId ->
-            dataSource.getPaidDatesRangeById(paidDateId)
+            dataSource.getObservablePaidDatesRangeById(paidDateId)
+        }
+
+    private val observableData =
+        Transformations.switchMap(observablePaidDatesRange) { paidDatesRange ->
+            getObservableMeterData(paidDatesRange)
+        }
+
+    private val observablePrice = observablePaidDatesRange.switchMap { paidDates ->
+        val priceId = paidDates[0].priceId
+        if(priceId == 0) {
+            dataSource.getFirstObservablePrice()
+        }else {
+            dataSource.getObservablePriceById(priceId)
+        }
     }
 
-    private val observableData = Transformations.switchMap(observablePaidDatesRange) { paidDatesRange ->
-        getObservableMeterData(paidDatesRange)
-    }
-
-    private val observablePrice = dataSource.getObservablePrice()
     private val observablePriceCount = dataSource.getObservablePriceCount()
 
     val calculator = MeterDataCalculator(observableData, observablePrice, observablePriceCount)
@@ -36,13 +42,13 @@ class MeterDataHistoryViewModel @Inject constructor(
         paidDateInput.value = paidDateId
     }
 
-    private fun getObservableMeterData(paidDateRange: List<PaidDate>) : LiveData<List<MeterData>> {
+    private fun getObservableMeterData(paidDateRange: List<PaidDate>): LiveData<List<MeterData>> {
         val endDate = paidDateRange[0].date
         return if (paidDateRange.size == 2) {
             val beginDate = paidDateRange[1].date
-            dataSource.getObservableData(beginDate, endDate)
+            dataSource.getObservableMeterDataByDates(beginDate, endDate)
         } else {
-            dataSource.getObservableData(endDate = endDate)
+            dataSource.getObservableMeterDataByDates(endDate = endDate)
         }
     }
 }

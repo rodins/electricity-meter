@@ -1,4 +1,4 @@
-package com.sergeyrodin.electricitymeter.price
+package com.sergeyrodin.electricitymeter.prices.price
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.navigation.Navigation
@@ -7,13 +7,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.typeText
-import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.MediumTest
 import com.sergeyrodin.electricitymeter.FakeDataSource
 import com.sergeyrodin.electricitymeter.R
-import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.di.MeterDataSourceModule
 import com.sergeyrodin.electricitymeter.launchFragmentInHiltContainer
 import dagger.hilt.android.testing.HiltAndroidRule
@@ -60,16 +58,6 @@ class PriceFragmentTest {
         onView(withId(R.id.price_edit)).perform(typeText("1.68"))
         onView(withId(R.id.save_price_fab)).perform(click())
 
-        assertThat(navController.currentDestination?.id, `is`(R.id.meterDataListFragment))
-    }
-
-    @Test
-    fun priceSet_priceDisplayed() {
-        val price = 1.68
-        dataSource.insertPriceBlocking(Price(1, price))
-
-        launchFragmentInHiltContainer<PriceFragment>(null,  R.style.Theme_ElectricityMeter)
-
-        onView(withText(price.toString())).check(matches(isDisplayed()))
+        assertThat(navController.currentDestination?.id, `is`(R.id.priceListFragment))
     }
 }

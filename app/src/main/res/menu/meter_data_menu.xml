@@ -15,9 +15,9 @@
         android:title="@string/action_history" />
 
     <item
-        android:id="@+id/priceFragment"
+        android:id="@+id/priceListFragment"
         android:icon="@android:drawable/ic_menu_preferences"
         app:showAsAction="ifRoom"
-        android:title="@string/price" />
+        android:title="@string/prices" />
 
 </menu>

@@ -2,8 +2,10 @@ package com.sergeyrodin.electricitymeter.meterdata.add
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sergeyrodin.electricitymeter.FakeDataSource
+import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 import org.junit.Assert
@@ -12,6 +14,11 @@ import org.junit.Rule
 import org.junit.Test
 
 class AddMeterDataViewModelTest {
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
+
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
 
@@ -62,7 +69,7 @@ class AddMeterDataViewModelTest {
     fun filterLowerValue() {
         val data1 = 14509
         val data2 = 14314
-        dataSource.testInsert(MeterData(data1))
+        dataSource.insertMeterDataBlocking(MeterData(data1))
 
         subject.onSaveMeterData(data2.toString())
 
@@ -74,7 +81,7 @@ class AddMeterDataViewModelTest {
     @Test
     fun filterEqualValue() {
         val data = 14509
-        dataSource.testInsert(MeterData(data))
+        dataSource.insertMeterDataBlocking(MeterData(data))
 
         subject.onSaveMeterData(data.toString())
 

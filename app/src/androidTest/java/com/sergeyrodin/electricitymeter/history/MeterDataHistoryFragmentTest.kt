@@ -24,6 +24,8 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import javax.inject.Inject
 
+private val PRICE = Price(1, 1.68)
+
 @MediumTest
 @RunWith(AndroidJUnit4::class)
 @HiltAndroidTest
@@ -42,7 +44,7 @@ class MeterDataHistoryFragmentTest {
     @Before
     fun initDataSource() {
         hiltRule.inject()
-        dataSource.insertPriceBlocking(Price(1, 1.68))
+        dataSource.insertPriceBlocking(PRICE)
     }
 
     @Test
@@ -57,17 +59,17 @@ class MeterDataHistoryFragmentTest {
         val date4 = 1606802177809
         val data5 = 14971
 
-        dataSource.testInsert(MeterData(data1, date = date1))
-        dataSource.testInsert(MeterData(data2, date = date2))
-        dataSource.testInsert(MeterData(data3, date = date3))
-        dataSource.testInsert(MeterData(data4, date = date4))
-        dataSource.testInsert(MeterData(data5))
+        dataSource.insertMeterDataBlocking(MeterData(data1, date = date1))
+        dataSource.insertMeterDataBlocking(MeterData(data2, date = date2))
+        dataSource.insertMeterDataBlocking(MeterData(data3, date = date3))
+        dataSource.insertMeterDataBlocking(MeterData(data4, date = date4))
+        dataSource.insertMeterDataBlocking(MeterData(data5))
 
-        val paidDate1 = PaidDate(1, date2)
-        val paidDate2 = PaidDate(2, date4)
+        val paidDate1 = PaidDate(1, date2, PRICE.id)
+        val paidDate2 = PaidDate(2, date4, PRICE.id)
 
-        dataSource.testInsert(paidDate1)
-        dataSource.testInsert(paidDate2)
+        dataSource.insertPaidDateBlocking(paidDate1)
+        dataSource.insertPaidDateBlocking(paidDate2)
 
         val args = MeterDataHistoryFragmentArgs(paidDate1.id).toBundle()
         launchFragmentInHiltContainer<MeterDataHistoryFragment>(args, R.style.Theme_ElectricityMeter)

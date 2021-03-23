@@ -67,7 +67,7 @@ class MeterDataListFragmentTest {
     fun addMeterData_dateDisplayed() {
         val date = System.currentTimeMillis()
         val data = 14611
-        dataSource.testInsert(MeterData(data, date = date))
+        dataSource.insertMeterDataBlocking(MeterData(data, date = date))
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(dateToString(date)))))
@@ -79,8 +79,8 @@ class MeterDataListFragmentTest {
         val data2 = 14579
         val diff1 = "0"
         val diff2 = "23"
-        dataSource.testInsert(MeterData(data1))
-        dataSource.testInsert(MeterData(data2))
+        dataSource.insertMeterDataBlocking(MeterData(data1))
+        dataSource.insertMeterDataBlocking(MeterData(data2))
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.data_list)).check(matches(hasDescendant(withSubstring(diff1))))
@@ -105,10 +105,10 @@ class MeterDataListFragmentTest {
         val data4 = 15223
         val meterData4 = MeterData(data4, 4, date4)
 
-        dataSource.testInsert(meterData1)
-        dataSource.testInsert(meterData2)
-        dataSource.testInsert(meterData3)
-        dataSource.testInsert(meterData4)
+        dataSource.insertMeterDataBlocking(meterData1)
+        dataSource.insertMeterDataBlocking(meterData2)
+        dataSource.insertMeterDataBlocking(meterData3)
+        dataSource.insertMeterDataBlocking(meterData4)
         val total = 81
         val avg = 20
         val price = 136.08
@@ -125,8 +125,8 @@ class MeterDataListFragmentTest {
     fun twoItems_dailyPriceDisplayed() {
         val data1 = 14622
         val data2 = 14638
-        dataSource.testInsert(MeterData(data1))
-        dataSource.testInsert(MeterData(data2))
+        dataSource.insertMeterDataBlocking(MeterData(data1))
+        dataSource.insertMeterDataBlocking(MeterData(data2))
         val price1 = 0.0
         val price2 = 26.88
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
@@ -138,7 +138,7 @@ class MeterDataListFragmentTest {
     @Test
     fun oneItem_noItemsTextNotDisplayed() {
         val data = 14622
-        dataSource.testInsert(MeterData(data))
+        dataSource.insertMeterDataBlocking(MeterData(data))
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
         onView(withText(R.string.no_items)).check(matches(not(isDisplayed())))
     }
@@ -149,8 +149,8 @@ class MeterDataListFragmentTest {
         val date1 = 1602219377796
         val data2 = 14638
         val date2 = 1604123777809
-        dataSource.testInsert(MeterData(data1, date = date1))
-        dataSource.testInsert(MeterData(data2, date = date2))
+        dataSource.insertMeterDataBlocking(MeterData(data1, date = date1))
+        dataSource.insertMeterDataBlocking(MeterData(data2, date = date2))
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter) {
             val actionPaid = ActionMenuItem(
                 getApplicationContext(),
@@ -209,7 +209,7 @@ class MeterDataListFragmentTest {
         navController.setGraph(R.navigation.navigation)
 
         val data = 14314
-        dataSource.testInsert(MeterData(data))
+        dataSource.insertMeterDataBlocking(MeterData(data))
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter) {
             Navigation.setViewNavController(requireView(), navController)
         }
@@ -241,7 +241,7 @@ class MeterDataListFragmentTest {
 
     @Test
     fun noPriceSet_setPriceButtonDisplayed() {
-        dataSource.deletePriceBlocking()
+        dataSource.deletePricesBlocking()
 
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
@@ -250,8 +250,6 @@ class MeterDataListFragmentTest {
 
     @Test
     fun priceSet_setPriceButtonIsNotDisplayed() {
-        dataSource.insertPriceBlocking(Price(1, 1.68))
-
         launchFragmentInHiltContainer<MeterDataListFragment>(null, R.style.Theme_ElectricityMeter)
 
         onView(withId(R.id.set_price_button)).check(matches(not(isDisplayed())))
@@ -259,7 +257,7 @@ class MeterDataListFragmentTest {
 
     @Test
     fun noPriceSet_setPriceButtonClick_navigationCalled() {
-        dataSource.deletePriceBlocking()
+        dataSource.deletePricesBlocking()
 
         val navController = TestNavHostController(getApplicationContext())
         navController.setGraph(R.navigation.navigation)
@@ -270,7 +268,7 @@ class MeterDataListFragmentTest {
 
         onView(withId(R.id.set_price_button)).perform(click())
 
-        assertThat(navController.currentDestination?.id, `is`(R.id.priceFragment))
+        assertThat(navController.currentDestination?.id, `is`(R.id.priceListFragment))
     }
 
 }

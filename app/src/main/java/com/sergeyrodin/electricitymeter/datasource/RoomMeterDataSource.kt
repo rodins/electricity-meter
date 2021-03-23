@@ -12,13 +12,13 @@ class RoomMeterDataSource @Inject constructor(
     private val meterDataDao: MeterDataDatabaseDao
 ) : MeterDataSource {
 
-    override suspend fun insert(meterData: MeterData) {
+    override suspend fun insertMeterData(meterData: MeterData) {
         wrapEspressoIdlingResource {
-            meterDataDao.insert(meterData)
+            meterDataDao.insertMeterData(meterData)
         }
     }
 
-    override fun getObservableData(
+    override fun getObservableMeterDataByDates(
         beginDate: Long,
         endDate: Long
     ) : LiveData<List<MeterData>> {
@@ -33,9 +33,9 @@ class RoomMeterDataSource @Inject constructor(
         }
     }
 
-    override fun getLastPaidDate(): LiveData<PaidDate> {
+    override fun getLastObservablePaidDate(): LiveData<PaidDate> {
         wrapEspressoIdlingResource {
-            return meterDataDao.getLastPaidDate()
+            return meterDataDao.getLastObservablePaidDate()
         }
     }
 
@@ -45,15 +45,15 @@ class RoomMeterDataSource @Inject constructor(
         }
     }
 
-    override fun getPaidDates(): LiveData<List<PaidDate>> {
+    override fun getObservablePaidDates(): LiveData<List<PaidDate>> {
         wrapEspressoIdlingResource {
-            return meterDataDao.getPaidDates()
+            return meterDataDao.getObservablePaidDates()
         }
     }
 
-    override fun getPaidDatesRangeById(id: Int): LiveData<List<PaidDate>> {
+    override fun getObservablePaidDatesRangeById(id: Int): LiveData<List<PaidDate>> {
         wrapEspressoIdlingResource {
-            return meterDataDao.getPaidDatesRangeById(id)
+            return meterDataDao.getObservablePaidDatesRangeById(id)
         }
     }
 
@@ -75,9 +75,9 @@ class RoomMeterDataSource @Inject constructor(
         }
     }
 
-    override suspend fun update(meterData: MeterData) {
+    override suspend fun updateMeterData(meterData: MeterData) {
         wrapEspressoIdlingResource {
-            meterDataDao.update(meterData)
+            meterDataDao.updateMeterData(meterData)
         }
     }
 
@@ -99,9 +99,9 @@ class RoomMeterDataSource @Inject constructor(
         }
     }
 
-    override fun getObservablePrice(): LiveData<Price> {
+    override fun getFirstObservablePrice(): LiveData<Price> {
         wrapEspressoIdlingResource {
-            return meterDataDao.getObservablePrice()
+            return meterDataDao.getFirstObservablePrice()
         }
     }
 
@@ -111,9 +111,9 @@ class RoomMeterDataSource @Inject constructor(
         }
     }
 
-    override suspend fun deletePrice() {
+    override suspend fun deletePrices() {
         wrapEspressoIdlingResource {
-            meterDataDao.deletePrice()
+            meterDataDao.deletePrices()
         }
     }
 
@@ -132,6 +132,36 @@ class RoomMeterDataSource @Inject constructor(
     override suspend fun getPrice(): Price? {
         wrapEspressoIdlingResource {
             return meterDataDao.getPrice()
+        }
+    }
+
+    override fun getObservablePriceById(id: Int): LiveData<Price> {
+        wrapEspressoIdlingResource {
+            return meterDataDao.getObservablePriceById(id)
+        }
+    }
+
+    override fun getLastObservablePrice(): LiveData<Price> {
+        wrapEspressoIdlingResource {
+            return meterDataDao.getLastObservablePrice()
+        }
+    }
+
+    override fun getObservablePrices(): LiveData<List<Price>> {
+        wrapEspressoIdlingResource {
+            return meterDataDao.getObservablePrices()
+        }
+    }
+
+    override suspend fun deletePrice(price: Price) {
+        wrapEspressoIdlingResource {
+            meterDataDao.deletePrice(price)
+        }
+    }
+
+    override suspend fun getPaidDatesCountByPriceId(priceId: Int): Int {
+        wrapEspressoIdlingResource {
+            return meterDataDao.getPaidDatesCountByPriceId(priceId)
         }
     }
 }

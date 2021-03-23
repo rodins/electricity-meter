@@ -17,6 +17,8 @@ import org.junit.Rule
 import org.junit.Test
 import java.util.concurrent.TimeoutException
 
+private val PRICE = Price(1, 1.68)
+
 class PaidListViewModelTest {
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -31,7 +33,8 @@ class PaidListViewModelTest {
     @Before
     fun init() {
         dataSource = FakeDataSource()
-        dataSource.testInsert(MeterData(14704))
+        dataSource.insertMeterDataBlocking(MeterData(14704))
+        dataSource.insertPriceBlocking(PRICE)
         subject = PaidListViewModel(dataSource)
     }
 
@@ -44,7 +47,7 @@ class PaidListViewModelTest {
     @Test
     fun someData_noDataIsFalse() {
         val date = 1602219377796
-        dataSource.testInsert(PaidDate(date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date, priceId = PRICE.id))
 
         val noData = subject.noData.getOrAwaitValue()
         assertThat(noData, `is`(false))
@@ -53,7 +56,7 @@ class PaidListViewModelTest {
     @Test
     fun someData_dateEquals() {
         val date = 1602219377796
-        dataSource.testInsert(PaidDate(date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date, priceId = PRICE.id))
 
         val items = subject.pricePaidDates.getOrAwaitValue()
         assertThat(items[0].date, `is`(date))
@@ -64,9 +67,9 @@ class PaidListViewModelTest {
         val date1 = 1602219377796
         val date2 = 1604123777809
         val date3 = 1606715777809
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
-        dataSource.testInsert(PaidDate(date = date3))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date3, priceId = PRICE.id))
 
         val items = subject.pricePaidDates.getOrAwaitValue()
         assertThat(items.size, `is`(3))
@@ -105,9 +108,9 @@ class PaidListViewModelTest {
         val date2 = 1604123777809
         val date3 = 1606715777809
         val position = 1
-        dataSource.testInsert(PaidDate(date = date1))
-        dataSource.testInsert(PaidDate(date = date2))
-        dataSource.testInsert(PaidDate(date = date3))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date2, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date3, priceId = PRICE.id))
 
         subject.onItemLongClick(position)
         subject.deleteSelectedPaidDate()
@@ -122,7 +125,7 @@ class PaidListViewModelTest {
     fun deletePaidDate_actionModeFalse() {
         val date1 = 1602219377796
         val position = 0
-        dataSource.testInsert(PaidDate(date = date1))
+        dataSource.insertPaidDateBlocking(PaidDate(date = date1, priceId = PRICE.id))
 
         subject.onItemLongClick(position)
         subject.deleteSelectedPaidDate()
@@ -137,7 +140,7 @@ class PaidListViewModelTest {
         val date = 1602219377796
         val position = 0
         val resetPosition = -1
-        dataSource.testInsert(PaidDate(id = id, date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(id = id, date = date, priceId = PRICE.id))
 
         subject.onItemLongClick(position)
         subject.onItemClick(id)
@@ -151,7 +154,7 @@ class PaidListViewModelTest {
         val id = 1
         val date = 1602219377796
         val position = 0
-        dataSource.testInsert(PaidDate(id = id, date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(id = id, date = date, priceId = PRICE.id))
 
         subject.onItemLongClick(position)
         subject.onItemClick(id)
@@ -171,8 +174,8 @@ class PaidListViewModelTest {
         val date1 = 1602219377796
         val date2 = 1604123777809
         val position = 0
-        dataSource.testInsert(PaidDate(id = id1, date = date1))
-        dataSource.testInsert(PaidDate(id = id2, date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(id = id1, date = date1, priceId = PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(id = id2, date = date2, priceId = PRICE.id))
 
         subject.onItemLongClick(position)
         subject.onItemClick(id2)
@@ -190,7 +193,7 @@ class PaidListViewModelTest {
         val id = 1
         val date = 1602219377796
         val position = 0
-        dataSource.testInsert(PaidDate(id = id, date = date))
+        dataSource.insertPaidDateBlocking(PaidDate(id = id, date = date, priceId = PRICE.id))
 
         subject.onItemLongClick(position)
 
@@ -202,16 +205,14 @@ class PaidListViewModelTest {
 
     @Test
     fun onePaidDate_totalPriceEquals() {
-        val price = Price(1, 1.68)
         val date1 = dateToLong(2020, 12, 1, 9, 0)
         val data1 = 14704
         val date2 = dateToLong(2020, 12, 30, 9, 0)
         val data2 = 15123
         val totalPrice = 703.92
-        dataSource.insertPriceBlocking(price)
-        dataSource.testInsert(MeterData(data1, date = date1))
-        dataSource.testInsert(MeterData(data2, date = date2))
-        dataSource.testInsert(PaidDate(1, date2))
+        dataSource.insertMeterDataBlocking(MeterData(data1, date = date1))
+        dataSource.insertMeterDataBlocking(MeterData(data2, date = date2))
+        dataSource.insertPaidDateBlocking(PaidDate(1, date2, PRICE.id))
 
         val items = subject.pricePaidDates.getOrAwaitValue()
         assertThat(items[0].price, `is`(totalPrice))
@@ -219,7 +220,6 @@ class PaidListViewModelTest {
 
     @Test
     fun twoPaidDates_totalPriceEquals() {
-        val price = Price(1, 1.68)
         val date1 = dateToLong(2020, 12, 1, 9, 0)
         val data1 = 14704
         val date2 = dateToLong(2020, 12, 30, 9, 0)
@@ -228,12 +228,11 @@ class PaidListViewModelTest {
         val data3 = 15359
         val totalPrice1 = 703.92
         val totalPrice2 = 396.48
-        dataSource.insertPriceBlocking(price)
-        dataSource.testInsert(MeterData(data1, date = date1))
-        dataSource.testInsert(MeterData(data2, date = date2))
-        dataSource.testInsert(MeterData(data3, date = date3))
-        dataSource.testInsert(PaidDate(1, date2))
-        dataSource.testInsert(PaidDate(2, date3))
+        dataSource.insertMeterDataBlocking(MeterData(data1, date = date1))
+        dataSource.insertMeterDataBlocking(MeterData(data2, date = date2))
+        dataSource.insertMeterDataBlocking(MeterData(data3, date = date3))
+        dataSource.insertPaidDateBlocking(PaidDate(1, date2, PRICE.id))
+        dataSource.insertPaidDateBlocking(PaidDate(2, date3, PRICE.id))
 
         val items = subject.pricePaidDates.getOrAwaitValue()
         assertThat(items[0].price, `is`(totalPrice1))

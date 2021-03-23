@@ -33,7 +33,7 @@ class EditMeterDataViewModel @Inject constructor(
         meterData?.let {
             it.data = data
             viewModelScope.launch {
-                dataSource.update(it)
+                dataSource.updateMeterData(it)
                 onSaveMeterData()
             }
         }

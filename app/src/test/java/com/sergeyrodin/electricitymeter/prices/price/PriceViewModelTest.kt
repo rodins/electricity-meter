@@ -1,9 +1,11 @@
-package com.sergeyrodin.electricitymeter.price
+package com.sergeyrodin.electricitymeter.prices.price
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.sergeyrodin.electricitymeter.FakeDataSource
+import com.sergeyrodin.electricitymeter.MainCoroutineRule
 import com.sergeyrodin.electricitymeter.database.Price
 import com.sergeyrodin.electricitymeter.getOrAwaitValue
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.*
 import org.junit.Before
@@ -12,6 +14,10 @@ import org.junit.Test
 import java.util.concurrent.TimeoutException
 
 class PriceViewModelTest {
+
+    @ExperimentalCoroutinesApi
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -38,7 +44,7 @@ class PriceViewModelTest {
         val price = 1.68
         subject.onSaveFabClick(price.toString())
 
-        val priceFromDb = dataSource.getPriceBlocking()
+        val priceFromDb = dataSource.getFirstPriceBlocking()
         assertThat(priceFromDb?.price, `is`(price))
     }
 
@@ -46,7 +52,7 @@ class PriceViewModelTest {
     fun onSaveFabClick_emptyInput_priceNotSaved() {
         subject.onSaveFabClick("")
 
-        val priceFromDb = dataSource.getPriceBlocking()
+        val priceFromDb = dataSource.getFirstPriceBlocking()
         assertThat(priceFromDb?.price, `is`(nullValue()))
     }
 
@@ -63,29 +69,14 @@ class PriceViewModelTest {
     }
 
     @Test
-    fun priceSet_priceTextEquals() {
-        val price = 1.68
-        dataSource.insertPriceBlocking(Price(1, price))
+    fun insertPrice_saveNewPrice_priceEquals() {
+        val price1 = 1.68
+        val price2 = 2.0
+        dataSource.insertPriceBlocking(Price(1, price1))
 
-        val priceText = subject.priceText.getOrAwaitValue()
-        assertThat(priceText, `is`(price.toString()))
-    }
+        subject.onSaveFabClick(price2.toString())
 
-    @Test
-    fun noPriceSet_priceTextEmpty() {
-        dataSource.insertPriceBlocking(Price(1, 1.68))
-        dataSource.deletePriceBlocking()
-
-        val priceText = subject.priceText.getOrAwaitValue()
-        assertThat(priceText, `is`(""))
-    }
-
-    @Test
-    fun priceSaved_priceTextEquals() {
-        val price = 1.68
-        subject.onSaveFabClick(price.toString())
-
-        val priceText = subject.priceText.getOrAwaitValue()
-        assertThat(priceText, `is`(price.toString()))
+        val priceFromDb = dataSource.getLastPriceBlocking()
+        assertThat(priceFromDb?.price, `is`(price2))
     }
 }

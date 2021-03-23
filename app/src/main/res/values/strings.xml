@@ -18,6 +18,13 @@
     <string name="settings">Settings</string>
     <string name="save_price">Save price</string>
     <string name="price">Price</string>
-    <string name="set_price">Set kwh price first</string>
-    <string name="set_kwh_price">Set kwh price</string>
+    <string name="set_price">Add kwh price first</string>
+    <string name="set_kwh_price">Add price</string>
+    <string name="add_price">Add price</string>
+    <string name="prices">Prices</string>
+    <string name="no_prices">No prices</string>
+    <plurals name="delete_price_error">
+        <item quantity="one">Can\'t delete. Price is used by %d paid date</item>
+        <item quantity="other">Can\'t delete. Price is used by %d paid dates</item>
+    </plurals>
 </resources>

@@ -1,8 +1,10 @@
 package com.sergeyrodin.electricitymeter
 
+import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.map
 import com.sergeyrodin.electricitymeter.database.MeterData
 import com.sergeyrodin.electricitymeter.database.PaidDate
 import com.sergeyrodin.electricitymeter.database.Price
@@ -11,7 +13,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class FakeDataSource @Inject constructor(): MeterDataSource {
+class FakeDataSource @Inject constructor() : MeterDataSource {
 
     private val data = mutableListOf<MeterData>()
     private val observableData = MutableLiveData<List<MeterData>>()
@@ -25,28 +27,41 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
     private var paidDateId = 1
 
     private val prices = mutableListOf<Price>()
-    private val observablePrice = MutableLiveData<Price>()
-    private val observablePriceCount = MutableLiveData<Int>()
+    private val observablePrices = MutableLiveData<List<Price>>()
+    private val firstObservablePrice = observablePrices.map {
+        it.first()
+    }
+    private val lastObservablePrice = observablePrices.map {
+        it.last()
+    }
+    private val observablePriceCount = observablePrices.map {
+        it.size
+    }
 
-    init{
+    private val observablePrice = MutableLiveData<Price>()
+
+    init {
         observableData.value = data
         observablePaidDates.value = paidDates
-        observablePriceCount.value = 0
+        observablePrices.value = prices
     }
 
-    override suspend fun insert(meterData: MeterData) {
-        testInsert(meterData)
+    override suspend fun insertMeterData(meterData: MeterData) {
+        insertMeterDataBlocking(meterData)
     }
 
-    fun testInsert(meterData: MeterData) {
-        if(meterData.id == 0) {
+    fun insertMeterDataBlocking(meterData: MeterData) {
+        if (meterData.id == 0) {
             meterData.id = meterDataId++
         }
         data.add(meterData)
         observableData.value = data
     }
 
-    override fun getObservableData(beginDate: Long, endDate: Long): LiveData<List<MeterData>> {
+    override fun getObservableMeterDataByDates(
+        beginDate: Long,
+        endDate: Long
+    ): LiveData<List<MeterData>> {
         val filteredData = data.filter {
             it.date in beginDate..endDate
         }
@@ -57,18 +72,23 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
     }
 
     override suspend fun insertPaidDate(paidDate: PaidDate) {
-        testInsert(paidDate)
+        insertPaidDateBlocking(paidDate)
     }
 
-    fun testInsert(paidDate: PaidDate) {
-        if(paidDate.id == 0) {
+    fun insertPaidDateBlocking(paidDate: PaidDate) {
+        val index = prices.indexOfFirst {
+            it.id == paidDate.priceId
+        }
+
+        if (index == -1) throw SQLiteConstraintException()
+
+        if (paidDate.id == 0) {
             paidDate.id = paidDateId++
         }
-        paidDates.add(paidDate)
-        observablePaidDates.value = paidDates
+        insertPaidDateBlockingMigrated(paidDate)
     }
 
-    override fun getLastPaidDate(): LiveData<PaidDate> {
+    override fun getLastObservablePaidDate(): LiveData<PaidDate> {
         return observablePaidDate
     }
 
@@ -77,16 +97,16 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
         observablePaidDates.value = paidDates
     }
 
-    override fun getPaidDates(): LiveData<List<PaidDate>> {
+    override fun getObservablePaidDates(): LiveData<List<PaidDate>> {
         return observablePaidDates
     }
 
-    override fun getPaidDatesRangeById(id: Int): LiveData<List<PaidDate>> {
+    override fun getObservablePaidDatesRangeById(id: Int): LiveData<List<PaidDate>> {
         val paidDatesRange = paidDates.filter {
             it.id <= id
         }.reversed()
 
-        val paidDatesRangeLimited = if(paidDatesRange.size <= 2) {
+        val paidDatesRangeLimited = if (paidDatesRange.size <= 2) {
             paidDatesRange
         } else {
             paidDatesRange.subList(0, 2)
@@ -104,7 +124,7 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
         paidDates.clear()
     }
 
-    fun  getMeterDataForTest(): List<MeterData> {
+    fun getMeterDataForTest(): List<MeterData> {
         return data
     }
 
@@ -114,7 +134,7 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
         }?.copy()
     }
 
-    override suspend fun update(meterData: MeterData) {
+    override suspend fun updateMeterData(meterData: MeterData) {
         val oldMeterData = data.find {
             it.id == meterData.id
         }
@@ -135,22 +155,27 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
     }
 
     fun insertPriceBlocking(price: Price) {
-        if(prices.isEmpty()) {
-            prices.add(price)
-        } else {
-            prices.set(price.id - 1, price)
-        }
-        observablePrice.value = prices.first()
-        observablePriceCount.value = prices.size
+        if(prices.contains(price)) throw  SQLiteConstraintException()
+
+        prices.add(price)
+
+        observablePrices.value = prices
     }
 
-    override fun getObservablePrice(): LiveData<Price> {
-        return observablePrice
+    override fun getFirstObservablePrice(): LiveData<Price> {
+        return firstObservablePrice
     }
 
-    fun getPriceBlocking(): Price? {
-        if(prices.isNotEmpty()) {
+    fun getFirstPriceBlocking(): Price? {
+        if (prices.isNotEmpty()) {
             return prices.first()
+        }
+        return null
+    }
+
+    fun getLastPriceBlocking(): Price? {
+        if (prices.isNotEmpty()) {
+            return prices.last()
         }
         return null
     }
@@ -159,14 +184,13 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
         return observablePriceCount
     }
 
-    override suspend fun deletePrice() {
-        TODO("Not yet implemented")
+    override suspend fun deletePrices() {
+        deletePricesBlocking()
     }
 
-    fun deletePriceBlocking() {
+    fun deletePricesBlocking() {
         prices.clear()
-        observablePrice.value = null
-        observablePriceCount.value = 0
+        observablePrices.value = prices
     }
 
     override suspend fun getMeterDataByDate(date: Long): MeterData? {
@@ -180,6 +204,39 @@ class FakeDataSource @Inject constructor(): MeterDataSource {
     }
 
     override suspend fun getPrice(): Price? {
-        return getPriceBlocking()
+        return getFirstPriceBlocking()
     }
+
+    override fun getObservablePriceById(id: Int): LiveData<Price> {
+        val price = prices.find { price ->
+            price.id == id
+        }
+        observablePrice.value = price
+        return observablePrice
+    }
+
+    override fun getLastObservablePrice(): LiveData<Price> {
+        return lastObservablePrice
+    }
+
+    override fun getObservablePrices(): LiveData<List<Price>> {
+        return observablePrices
+    }
+
+    override suspend fun deletePrice(price: Price) {
+        prices.remove(price)
+        observablePrices.value = prices
+    }
+
+    override suspend fun getPaidDatesCountByPriceId(priceId: Int): Int {
+        return paidDates.filter { paidDate ->
+            paidDate.priceId == priceId
+        }.size
+    }
+
+    fun insertPaidDateBlockingMigrated(paidDate: PaidDate) {
+        paidDates.add(paidDate)
+        observablePaidDates.value = paidDates
+    }
+
 }

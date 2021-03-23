@@ -50,7 +50,7 @@ class EditMeterDataFragmentTest {
     fun meterDataIdArg_meterDataIsDisplayed() {
         val id = 1
         val data = 15058
-        dataSource.testInsert(MeterData(id = id, data = data))
+        dataSource.insertMeterDataBlocking(MeterData(id = id, data = data))
 
         val args = EditMeterDataFragmentArgs(id).toBundle()
         launchFragmentInHiltContainer<EditMeterDataFragment>(args, R.style.Theme_ElectricityMeter)
@@ -62,7 +62,7 @@ class EditMeterDataFragmentTest {
     fun onDeleteActionClick_navigationCalled() {
         val id = 1
         val data = 15058
-        dataSource.testInsert(MeterData(id = id, data = data))
+        dataSource.insertMeterDataBlocking(MeterData(id = id, data = data))
         val args = EditMeterDataFragmentArgs(id).toBundle()
 
         val navController = TestNavHostController(ApplicationProvider.getApplicationContext())

@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+        <import type="android.view.View"/>
+
+        <variable
+            name="viewModel"
+            type="com.sergeyrodin.electricitymeter.prices.list.PriceListViewModel" />
+    </data>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".prices.list.PriceListFragment">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/price_items"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="@string/no_prices"
+            android:textSize="20sp"
+            android:visibility="@{viewModel.noPricesEvent ? View.VISIBLE : View.INVISIBLE}" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/add_price_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/fab_margin"
+            android:layout_gravity="bottom|end"
+            android:onClick="@{() -> viewModel.onAddPrice()}"
+            app:srcCompat="@drawable/ic_add"
+            app:fabSize="normal"
+            app:layout_anchorGravity="bottom|right|end"
+            android:contentDescription="@string/add_price" />
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+</layout>

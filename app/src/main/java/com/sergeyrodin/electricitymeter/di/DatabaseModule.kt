@@ -23,7 +23,11 @@ object DatabaseModule {
             MeterDataDatabase::class.java,
             "meter_data_database"
         )
-            .addMigrations(MeterDataDatabase.MIGRATION_1_2, MeterDataDatabase.MIGRATION_2_3)
+            .addMigrations(
+                MeterDataDatabase.MIGRATION_1_2,
+                MeterDataDatabase.MIGRATION_2_3,
+                MeterDataDatabase.MIGRATION_3_4
+            )
             .build()
     }
 

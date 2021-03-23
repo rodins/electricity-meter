@@ -29,7 +29,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 import javax.inject.Inject
+
+private val PRICE = Price(1, price = 1.68)
 
 @RunWith(AndroidJUnit4::class)
 @LargeTest
@@ -61,16 +64,17 @@ class MainActivityTest {
     fun init() {
         hiltRule.inject()
         runBlocking {
-            dataSource.insertPrice(Price(1, 1.68))
             dataSource.deleteAllMeterData()
             dataSource.deleteAllPaidDates()
+            dataSource.deletePrices()
+            dataSource.insertPrice(PRICE)
         }
     }
 
     @Test
     fun onHistoryClick_noDataDisplayed() = runBlocking {
         val data = 14622
-        dataSource.insert(MeterData(data))
+        dataSource.insertMeterData(MeterData(data))
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
@@ -86,8 +90,8 @@ class MainActivityTest {
         val date1 = 1602219377796
         val data2 = 14509
         val date2 = 1604123777809
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -105,8 +109,8 @@ class MainActivityTest {
         val date1 = 1602219377796
         val data2 = 14509
         val date2 = 1604123777809
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
         val data3 = 14638
         val date3 = System.currentTimeMillis()
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
@@ -137,14 +141,14 @@ class MainActivityTest {
         val data4 = 14638
         val date4 = 1606802177809
         val data5 = 14971
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-        dataSource.insert(MeterData(data3, date = date3))
-        dataSource.insert(MeterData(data4, date = date4))
-        dataSource.insert(MeterData(data5))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data3, date = date3))
+        dataSource.insertMeterData(MeterData(data4, date = date4))
+        dataSource.insertMeterData(MeterData(data5))
 
-        val paidDate1 = PaidDate(date = date2)
-        val paidDate2 = PaidDate(date = date4)
+        val paidDate1 = PaidDate(date = date2, priceId = PRICE.id)
+        val paidDate2 = PaidDate(date = date4, priceId = PRICE.id)
 
         dataSource.insertPaidDate(paidDate1)
         dataSource.insertPaidDate(paidDate2)
@@ -175,13 +179,13 @@ class MainActivityTest {
         val data4 = 14638
         val date4 = 1606802177809
         val data5 = 14971
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-        dataSource.insert(MeterData(data3, date = date3))
-        dataSource.insert(MeterData(data4, date = date4))
-        dataSource.insert(MeterData(data5))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data3, date = date3))
+        dataSource.insertMeterData(MeterData(data4, date = date4))
+        dataSource.insertMeterData(MeterData(data5))
 
-        val paidDate = PaidDate(date = date2)
+        val paidDate = PaidDate(date = date2, priceId = PRICE.id)
 
         dataSource.insertPaidDate(paidDate)
 
@@ -241,7 +245,7 @@ class MainActivityTest {
     fun meterDataItemClick_editData_dataDisplayed() = runBlocking {
         val data1 = 14314
         val data2 = 14556
-        dataSource.insert(MeterData(data1))
+        dataSource.insertMeterData(MeterData(data1))
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
@@ -266,11 +270,11 @@ class MainActivityTest {
         val data4 = 14638
         val date4 = 1606802177809
         val data5 = 14971
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-        dataSource.insert(MeterData(data3, date = date3))
-        dataSource.insert(MeterData(data4, date = date4))
-        dataSource.insert(MeterData(data5))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data3, date = date3))
+        dataSource.insertMeterData(MeterData(data4, date = date4))
+        dataSource.insertMeterData(MeterData(data5))
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -314,7 +318,7 @@ class MainActivityTest {
     @Test
     fun editItem_titleEquals() = runBlocking {
         val data = 14314
-        dataSource.insert(MeterData(data))
+        dataSource.insertMeterData(MeterData(data))
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -342,8 +346,8 @@ class MainActivityTest {
         val date1 = 1602219377796
         val data2 = 14509
         val date2 = 1604123777809
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
@@ -358,8 +362,8 @@ class MainActivityTest {
         val date1 = 1602219377796
         val data2 = 14509
         val date2 = 1604123777809
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
 
@@ -381,13 +385,13 @@ class MainActivityTest {
         val data4 = 14638
         val date4 = 1606802177809
         val data5 = 14971
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-        dataSource.insert(MeterData(data3, date = date3))
-        dataSource.insert(MeterData(data4, date = date4))
-        dataSource.insert(MeterData(data5))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data3, date = date3))
+        dataSource.insertMeterData(MeterData(data4, date = date4))
+        dataSource.insertMeterData(MeterData(data5))
 
-        val paidDate = PaidDate(date = date2)
+        val paidDate = PaidDate(date = date2, priceId = PRICE.id)
 
         dataSource.insertPaidDate(paidDate)
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
@@ -412,13 +416,13 @@ class MainActivityTest {
         val data4 = 14638
         val date4 = 1606802177809
         val data5 = 14971
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-        dataSource.insert(MeterData(data3, date = date3))
-        dataSource.insert(MeterData(data4, date = date4))
-        dataSource.insert(MeterData(data5))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data3, date = date3))
+        dataSource.insertMeterData(MeterData(data4, date = date4))
+        dataSource.insertMeterData(MeterData(data5))
 
-        val paidDate = PaidDate(date = date2)
+        val paidDate = PaidDate(date = date2, priceId = PRICE.id)
 
         dataSource.insertPaidDate(paidDate)
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
@@ -442,10 +446,10 @@ class MainActivityTest {
         val date3 = 1606715777809
         val data4 = 14638
         val date4 = 1606802177809
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-        dataSource.insert(MeterData(data3, date = date3))
-        dataSource.insert(MeterData(data4, date = date4))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data3, date = date3))
+        dataSource.insertMeterData(MeterData(data4, date = date4))
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -463,77 +467,13 @@ class MainActivityTest {
     }
 
     @Test
-    fun noPriceSet_setPrice_priceEquals() = runBlocking {
-        dataSource.deletePrice()
-        val data1 = 14314
-        val date1 = 1602219377796
-        val data2 = 14509
-        val date2 = 1604123777809
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
-
-        onView(withId(R.id.priceFragment)).perform(click())
-        onView(withId(R.id.price_edit)).perform(typeText("2"))
-        onView(withId(R.id.save_price_fab)).perform(click())
-
-        onView(withSubstring("390")).check(matches(isDisplayed()))
-
-        activityScenario.close()
-    }
-
-    @Test
-    fun priceSet_updatePrice_priceEquals() = runBlocking {
-        val data1 = 14314
-        val date1 = 1602219377796
-        val data2 = 14509
-        val date2 = 1604123777809
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
-
-        onView(withId(R.id.priceFragment)).perform(click())
-        onView(withId(R.id.price_edit)).perform(replaceText("2"))
-        onView(withId(R.id.save_price_fab)).perform(click())
-
-        onView(withSubstring("390")).check(matches(isDisplayed()))
-
-        activityScenario.close()
-    }
-
-    @Test
-    fun setPriceButtonClick_setPrice_priceEquals() = runBlocking {
-        dataSource.deletePrice()
-
-        val data1 = 14314
-        val date1 = 1602219377796
-        val data2 = 14509
-        val date2 = 1604123777809
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
-
-        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
-        dataBindingIdlingResource.monitorActivity(activityScenario)
-
-        onView(withId(R.id.set_price_button)).perform(click())
-        onView(withId(R.id.price_edit)).perform(typeText("2"))
-        onView(withId(R.id.save_price_fab)).perform(click())
-
-        onView(withSubstring("390")).check(matches(isDisplayed()))
-
-        activityScenario.close()
-    }
-
-    @Test
     fun firstMonthPaidDateClick_historyDisplayed() = runBlocking {
-        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val date1 = dateToLong(2020, Calendar.DECEMBER, 1, 9, 0)
         val data1 = 14704
-        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val date2 = dateToLong(2020, Calendar.DECEMBER, 30, 9, 0)
         val data2 = 15123
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -550,13 +490,13 @@ class MainActivityTest {
 
     @Test
     fun displayPriceInPaidDate() = runBlocking {
-        val date1 = dateToLong(2020, 12, 1, 9, 0)
+        val date1 = dateToLong(2020, Calendar.DECEMBER, 1, 9, 0)
         val data1 = 14704
-        val date2 = dateToLong(2020, 12, 30, 9, 0)
+        val date2 = dateToLong(2020, Calendar.DECEMBER, 30, 9, 0)
         val data2 = 15123
         val price = 703.92
-        dataSource.insert(MeterData(data1, date = date1))
-        dataSource.insert(MeterData(data2, date = date2))
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
 
         val activityScenario = ActivityScenario.launch(MainActivity::class.java)
         dataBindingIdlingResource.monitorActivity(activityScenario)
@@ -565,6 +505,176 @@ class MainActivityTest {
         onView(withId(R.id.paidListFragment)).perform(click())
 
         onView(withText(price.toString())).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun pricesList_addPrice_totalPriceEquals() = runBlocking {
+        dataSource.deletePrices()
+        val date1 = dateToLong(2020, Calendar.DECEMBER, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, Calendar.DECEMBER, 3, 9, 0)
+        val data2 = 14714
+        val totalPrice = 16.8
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.set_price_button)).perform(click())
+        onView(withId(R.id.add_price_fab)).perform(click())
+        onView(withId(R.id.price_edit)).perform(typeText("1.68"))
+        onView(withId(R.id.save_price_fab)).perform(click())
+
+        Espresso.pressBack()
+
+        onView(withSubstring(totalPrice.toString())).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun pricesList_updatePrice_totalPriceEquals() = runBlocking {
+        val date1 = dateToLong(2020, Calendar.DECEMBER, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, Calendar.DECEMBER, 3, 9, 0)
+        val data2 = 14714
+        val totalPrice = 20.0
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.priceListFragment)).perform(click())
+        onView(withId(R.id.add_price_fab)).perform(click())
+        onView(withId(R.id.price_edit)).perform(replaceText("2.00"))
+        onView(withId(R.id.save_price_fab)).perform(click())
+
+        Espresso.pressBack()
+
+        onView(withSubstring(totalPrice.toString())).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun onePrice_deletePrice_setPriceButtonIsDisplayed() = runBlocking {
+        val date1 = dateToLong(2020, Calendar.DECEMBER, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, Calendar.DECEMBER, 3, 9, 0)
+        val data2 = 14714
+
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.priceListFragment)).perform(click())
+        onView(withText("1.68")).perform(longClick())
+        onView(withId(R.id.action_delete_price)).perform(click())
+
+        Espresso.pressBack()
+
+        onView(withId(R.id.set_price_button)).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun addSecondPrice_deleteSecondPrice_totalPriceEquals() = runBlocking {
+        val date1 = dateToLong(2020, Calendar.DECEMBER, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, Calendar.DECEMBER, 3, 9, 0)
+        val data2 = 14714
+        val price2 = 2.0
+
+        val totalPrice = 16.8
+
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.priceListFragment)).perform(click())
+        onView(withId(R.id.add_price_fab)).perform(click())
+        onView(withId(R.id.price_edit)).perform(replaceText(price2.toString()))
+        onView(withId(R.id.save_price_fab)).perform(click())
+
+        onView(withText(price2.toString())).perform(longClick())
+        onView(withId(R.id.action_delete_price)).perform(click())
+
+        Espresso.pressBack()
+
+        onView(withSubstring(totalPrice.toString())).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun priceInserted_paidButtonClicked_priceUpdated_firstHistoryPriceDisplayed() = runBlocking {
+        val date1 = dateToLong(2020, Calendar.DECEMBER, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, Calendar.DECEMBER, 3, 9, 0)
+        val data2 = 14714
+
+        val historyTotalPrice = 16.8
+
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.action_paid)).perform(click())
+
+        onView(withId(R.id.priceListFragment)).perform(click())
+        onView(withId(R.id.add_price_fab)).perform(click())
+        onView(withId(R.id.price_edit)).perform(replaceText("2.00"))
+        onView(withId(R.id.save_price_fab)).perform(click())
+
+        Espresso.pressBack()
+
+        onView(withId(R.id.paidListFragment)).perform(click())
+        onView(withText(dateToString(date2))).perform(click())
+
+        onView(withSubstring(historyTotalPrice.toString())).check(matches(isDisplayed()))
+
+        activityScenario.close()
+    }
+
+    @Test
+    fun paidDateConstraint_priceNotDeleted_historyTotalPriceEquals() = runBlocking {
+        val date1 = dateToLong(2020, Calendar.DECEMBER, 1, 9, 0)
+        val data1 = 14704
+        val date2 = dateToLong(2020, Calendar.DECEMBER, 3, 9, 0)
+        val data2 = 14714
+
+        val historyTotalPrice = 16.8
+
+        dataSource.insertMeterData(MeterData(data1, date = date1))
+        dataSource.insertMeterData(MeterData(data2, date = date2))
+
+        val activityScenario = ActivityScenario.launch(MainActivity::class.java)
+        dataBindingIdlingResource.monitorActivity(activityScenario)
+
+        onView(withId(R.id.action_paid)).perform(click())
+
+        onView(withId(R.id.priceListFragment)).perform(click())
+
+        onView(withText(PRICE.price.toString())).perform(longClick())
+        onView(withId(R.id.action_delete_price)).perform(click())
+
+        Espresso.pressBack()
+
+        onView(withId(R.id.paidListFragment)).perform(click())
+        onView(withText(dateToString(date2))).perform(click())
+
+        onView(withSubstring(historyTotalPrice.toString())).check(matches(isDisplayed()))
 
         activityScenario.close()
     }

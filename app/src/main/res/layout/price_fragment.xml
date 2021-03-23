@@ -6,13 +6,13 @@
     <data>
         <variable
             name="viewModel"
-            type="com.sergeyrodin.electricitymeter.price.PriceViewModel" />
+            type="com.sergeyrodin.electricitymeter.prices.price.PriceViewModel" />
     </data>
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".price.PriceFragment">
+        tools:context=".prices.price.PriceFragment">
 
         <EditText
             android:id="@+id/price_edit"
@@ -20,7 +20,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="8dp"
-            android:text="@{viewModel.priceText}"
             android:inputType="numberDecimal" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -18,7 +18,7 @@ class PaidListViewModel @Inject constructor(
     val positionEvent: LiveData<Int>
         get() = _positionEvent
 
-    private val paidDates = dataSource.getPaidDates()
+    private val paidDates = dataSource.getObservablePaidDates()
 
     val pricePaidDates = paidDates.switchMap { items ->
         liveData {

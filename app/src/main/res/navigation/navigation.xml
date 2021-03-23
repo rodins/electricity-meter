@@ -56,7 +56,21 @@
     </fragment>
     <fragment
         android:id="@+id/priceFragment"
-        android:name="com.sergeyrodin.electricitymeter.price.PriceFragment"
+        android:name="com.sergeyrodin.electricitymeter.prices.price.PriceFragment"
         android:label="@string/set_kwh_price"
-        tools:layout="@layout/price_fragment" />
+        tools:layout="@layout/price_fragment" >
+        <action
+            android:id="@+id/action_priceFragment_to_priceListFragment"
+            app:destination="@id/priceListFragment"
+            app:popUpTo="@id/meterDataListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/priceListFragment"
+        android:name="com.sergeyrodin.electricitymeter.prices.list.PriceListFragment"
+        android:label="@string/prices"
+        tools:layout="@layout/price_list_fragment">
+        <action
+            android:id="@+id/action_priceListFragment_to_priceFragment"
+            app:destination="@id/priceFragment" />
+    </fragment>
 </navigation>

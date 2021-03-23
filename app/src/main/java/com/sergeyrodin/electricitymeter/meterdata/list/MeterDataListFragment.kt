@@ -52,7 +52,7 @@ class MeterDataListFragment : Fragment() {
         })
 
         viewModel.setPriceEvent.observe(viewLifecycleOwner, EventObserver {
-            findNavController().navigate(R.id.priceFragment)
+            findNavController().navigate(R.id.priceListFragment)
         })
 
         setHasOptionsMenu(true)
@@ -85,12 +85,12 @@ class MeterDataListFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if(item.itemId == R.id.action_paid) {
+        return if(item.itemId == R.id.action_paid) {
             viewModel.onPaid()
-            return true
+            true
         } else {
-            return NavigationUI.onNavDestinationSelected(item, findNavController())
-                    || super.onOptionsItemSelected(item)
+            (NavigationUI.onNavDestinationSelected(item, findNavController())
+                    || super.onOptionsItemSelected(item))
         }
     }
 }

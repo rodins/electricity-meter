@@ -17,7 +17,7 @@ class AddMeterDataViewModel @Inject constructor(
         viewModelScope.launch {
             val lastMeterData = dataSource.getLastMeterData()
             if (lastMeterData == null || lastMeterData.data < data) {
-                dataSource.insert(MeterData(data))
+                dataSource.insertMeterData(MeterData(data))
                 onSaveMeterData()
             }
         }

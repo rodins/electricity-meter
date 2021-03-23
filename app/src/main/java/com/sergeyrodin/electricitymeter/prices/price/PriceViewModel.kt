@@ -1,4 +1,4 @@
-package com.sergeyrodin.electricitymeter.price
+package com.sergeyrodin.electricitymeter.prices.price
 
 import androidx.lifecycle.*
 import com.sergeyrodin.electricitymeter.Event
@@ -16,29 +16,10 @@ class PriceViewModel @Inject constructor(private val dataSource: MeterDataSource
     val saveEvent: LiveData<Event<Unit>>
        get() = _saveEvent
 
-    private val observablePrice = dataSource.getObservablePrice()
-    private val observablePriceCount = dataSource.getObservablePriceCount()
-
-    val priceText: LiveData<String> = observablePriceCount.switchMap { count ->
-        if(priceIsSet(count)) {
-            getObservablePriceText()
-        } else {
-            observableEmptyString()
-        }
-    }
-
-    private fun priceIsSet(count: Int) = count != 0
-
-    private fun getObservablePriceText() = observablePrice.map {
-        it.price.toString()
-    }
-
-    private fun observableEmptyString() = MutableLiveData("")
-
     fun onSaveFabClick(price: String) {
         viewModelScope.launch {
             try {
-                dataSource.insertPrice(Price(1, price.toDouble()))
+                dataSource.insertPrice(Price(price = price.toDouble()))
                 _saveEvent.value = Event(Unit)
             } catch(e: NumberFormatException) {
 
